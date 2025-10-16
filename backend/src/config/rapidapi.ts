@@ -9,6 +9,8 @@ export interface RapidApiConfig {
   tripAdvisorBaseUrl: string;
   timeout: number;
   isEnabled: boolean;
+  defaultCity: string;
+  defaultLocationId: string;
 }
 
 /**
@@ -17,9 +19,11 @@ export interface RapidApiConfig {
  */
 function loadRapidApiConfig(): RapidApiConfig {
   const apiKey = process.env.RAPIDAPI_KEY;
-  const tripAdvisorHost = process.env.TRIPADVISOR_RAPIDAPI_HOST || 'travel-advisor.p.rapidapi.com';
-  const tripAdvisorBaseUrl = process.env.TRIPADVISOR_BASE_URL || 'https://travel-advisor.p.rapidapi.com';
-  
+  const tripAdvisorHost = process.env.TRIPADVISOR_RAPIDAPI_HOST || 'tripadvisor16.p.rapidapi.com';
+  const tripAdvisorBaseUrl = process.env.TRIPADVISOR_BASE_URL || 'https://tripadvisor16.p.rapidapi.com';
+  const defaultCity = process.env.DEFAULT_CITY || 'Bucharest, Romania';
+  const defaultLocationId = process.env.DEFAULT_LOCATION_ID || '294458';
+
   // In production, fail fast if API key is missing
   if (process.env.NODE_ENV === 'production' && !apiKey) {
     throw new Error('RAPIDAPI_KEY is required in production environment');
@@ -37,6 +41,8 @@ function loadRapidApiConfig(): RapidApiConfig {
     tripAdvisorBaseUrl,
     timeout: 8000, // 8 second timeout
     isEnabled,
+    defaultCity,
+    defaultLocationId,
   };
 }
 
@@ -48,6 +54,8 @@ if (rapidApiConfig.isEnabled) {
     host: rapidApiConfig.tripAdvisorHost,
     baseUrl: rapidApiConfig.tripAdvisorBaseUrl,
     timeout: rapidApiConfig.timeout,
+    defaultCity: rapidApiConfig.defaultCity,
+    defaultLocationId: rapidApiConfig.defaultLocationId
   });
 } else {
   console.log('❌ RapidAPI TripAdvisor not configured (missing RAPIDAPI_KEY)');
