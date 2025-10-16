@@ -11,6 +11,7 @@ import {
 import { sanitizeQuery } from './middleware/validation';
 import healthRoutes from './routes/health';
 import recommendationRoutes from './routes/recommendations';
+import pingRoutes from './routes/ping';
 
 // Load environment variables
 dotenv.config();
@@ -35,6 +36,7 @@ app.use(sanitizeQuery);
 // Routes
 app.use('/api', healthRoutes);
 app.use('/api', recommendationRoutes);
+app.use('/api/ping', pingRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -46,7 +48,9 @@ app.get('/', (req, res) => {
       health: '/api/health',
       metrics: '/api/metrics',
       recommendations: 'POST /api/recommendations',
-      parseMood: 'POST /api/parse-mood'
+      parseMood: 'POST /api/parse-mood',
+      pingTripAdvisor: '/api/ping/tripadvisor',
+      pingAll: '/api/ping/all'
     }
   });
 });

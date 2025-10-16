@@ -1,21 +1,78 @@
-import { Activity, TripAdvisorResponse, TripAdvisorLocation, ActivityCategory, PriceLevel } from '../types';
+import { Activity, TripAdvisorResponse, TripAdvisorLocation, ActivityCategory, PriceLevel } from '../types/index.js';
+import { rapidApiClient, TripAdvisorPingResponse, TripAdvisorSearchResponse } from '../clients/rapidapi.js';
+import { rapidApiConfig } from '../config/rapidapi.js';
 import NodeCache from 'node-cache';
 
 // Cache for 5 minutes to reduce API calls
 const cache = new NodeCache({ stdTTL: 300 });
 
 export class TripAdvisorService {
-  private apiKey: string;
-  private apiHost: string;
-  private baseUrl: string;
-
   constructor() {
-    this.apiKey = process.env.RAPIDAPI_KEY || '';
-    this.apiHost = process.env.RAPIDAPI_HOST || 'travel-advisor.p.rapidapi.com';
-    this.baseUrl = `https://${this.apiHost}`;
-    
-    if (!this.apiKey) {
+    if (!rapidApiConfig.isEnabled) {
       console.warn('RAPIDAPI_KEY not configured - TripAdvisor API will not work');
+    }
+  }
+
+  /**
+   * Health check / ping endpoint for TripAdvisor API connectivity
+   * Uses a safe, read-only endpoint to verify API access
+   */
+  public async ping(): Promise<TripAdvisorPingResponse> {
+    try {
+      if (!rapidApiClient) {
+        return {
+          ok: false,
+          provider: 'TripAdvisor (travel-advisor.p.rapidapi.com)',
+          timestamp: new Date().toISOString(),
+          quotaHeaders: {},
+          sampleData: { error: 'RapidAPI client not configured' },
+        };
+      }
+
+      // Use a simple location search as a health check
+      // This is a safe, read-only endpoint that doesn't consume much quota
+      const response = await rapidApiClient.get<TripAdvisorSearchResponse>('/locations/search', {
+        query: 'Paris',
+        limit: '1',
+        offset: '0',
+        units: 'km',
+        lang: 'en_US',
+        currency: 'USD',
+      });
+
+      // Extract quota information from headers
+      const quotaHeaders: Record<string, string> = {};
+      Object.entries(response.headers).forEach(([key, value]) => {
+        if (key.toLowerCase().includes('ratelimit') || key.toLowerCase().includes('quota')) {
+          quotaHeaders[key] = value;
+        }
+      });
+
+      return {
+        ok: true,
+        provider: 'TripAdvisor (travel-advisor.p.rapidapi.com)',
+        timestamp: new Date().toISOString(),
+        quotaHeaders,
+        sampleData: {
+          status: response.status,
+          dataLength: response.data?.data?.length || 0,
+          firstResult: response.data?.data?.[0]?.name || null,
+        },
+      };
+
+    } catch (error: any) {
+      console.error('TripAdvisor ping failed:', error);
+      
+      return {
+        ok: false,
+        provider: 'TripAdvisor (travel-advisor.p.rapidapi.com)',
+        timestamp: new Date().toISOString(),
+        quotaHeaders: {},
+        sampleData: {
+          error: error.message || 'Unknown error',
+          status: error.status || 0,
+        },
+      };
     }
   }
 
@@ -61,6 +118,11 @@ export class TripAdvisorService {
 
   private async getLocationId(location: string): Promise<string | null> {
     try {
+      if (!rapidApiClient) {
+        console.warn('RapidAPI client not available');
+        return null;
+      }
+
       const cacheKey = `location_id_${location}`;
       const cached = cache.get<string>(cacheKey);
       
@@ -69,29 +131,22 @@ export class TripAdvisorService {
         return cached;
       }
 
-      const url = `${this.baseUrl}/locations/search?query=${encodeURIComponent(location)}&limit=1&offset=0&units=km&lang=en_US&currency=USD`;
       console.log('Searching for location:', location);
-      console.log('TripAdvisor search URL:', url);
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': this.apiKey,
-          'X-RapidAPI-Host': this.apiHost
-        }
+      const response = await rapidApiClient.get<TripAdvisorSearchResponse>('/locations/search', {
+        query: location,
+        limit: '1',
+        offset: '0',
+        units: 'km',
+        lang: 'en_US',
+        currency: 'USD',
       });
 
       console.log('Location search response status:', response.status);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await this.safeJsonParse(response) as TripAdvisorResponse;
-      console.log('Location search response data:', JSON.stringify(data, null, 2));
+      console.log('Location search response data:', JSON.stringify(response.data, null, 2));
       
-      if (data.data && data.data.length > 0) {
-        const locationId = data.data[0]!.location_id;
+      if (response.data?.data && response.data.data.length > 0) {
+        const locationId = response.data.data[0]!.location_id;
         console.log(`Found location ID for ${location}:`, locationId);
         cache.set(cacheKey, locationId, 3600); // Cache for 1 hour
         return locationId;
@@ -107,28 +162,26 @@ export class TripAdvisorService {
 
   private async getAttractions(locationId: string, limit: number): Promise<Activity[]> {
     try {
-      const url = `${this.baseUrl}/attractions/list?location_id=${locationId}&currency=USD&lang=en_US&lunit=km&limit=${limit}&offset=0`;
-      console.log('Fetching attractions for location ID:', locationId);
-      console.log('TripAdvisor attractions URL:', url);
+      if (!rapidApiClient) {
+        console.warn('RapidAPI client not available');
+        return [];
+      }
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': this.apiKey,
-          'X-RapidAPI-Host': this.apiHost
-        }
+      console.log('Fetching attractions for location ID:', locationId);
+
+      const response = await rapidApiClient.get<TripAdvisorResponse>('/attractions/list', {
+        location_id: locationId,
+        currency: 'USD',
+        lang: 'en_US',
+        lunit: 'km',
+        limit: limit.toString(),
+        offset: '0',
       });
 
       console.log('Attractions response status:', response.status);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await this.safeJsonParse(response) as TripAdvisorResponse;
-      console.log('Attractions response data:', JSON.stringify(data, null, 2));
+      console.log('Attractions response data:', JSON.stringify(response.data, null, 2));
       
-      const activities = data.data?.map(location => this.normalizeActivity(location)) || [];
+      const activities = response.data?.data?.map(location => this.normalizeActivity(location)) || [];
       console.log(`Found ${activities.length} activities`);
       
       return activities;
@@ -216,29 +269,6 @@ export class TripAdvisorService {
     return parts[parts.length - 2]?.trim() || parts[0]?.trim() || '';
   }
 
-  private async safeJsonParse(response: Response): Promise<any> {
-    try {
-      // Get response as text first to handle potential UTF-8 issues
-      const text = await response.text();
-      
-      // Check for invalid UTF-8 characters and log if found
-      const invalidChars = text.match(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\uFFFD]/g);
-      if (invalidChars) {
-        console.warn('Invalid UTF-8 characters detected in API response:', invalidChars.length, 'characters');
-      }
-      
-      // Sanitize invalid UTF-8 characters
-      const sanitizedText = text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, '');
-      
-      // Parse the sanitized JSON
-      return JSON.parse(sanitizedText);
-    } catch (error) {
-      console.error('JSON parsing error:', error);
-      console.error('Response URL:', response.url);
-      console.error('Response status:', response.status);
-      throw new Error('Invalid JSON response from external API');
-    }
-  }
 
   private sanitizeString(str: string): string {
     if (!str) return '';
