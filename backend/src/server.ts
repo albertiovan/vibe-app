@@ -11,7 +11,8 @@ import {
 import { sanitizeQuery } from './middleware/validation';
 import healthRoutes from './routes/health';
 import recommendationRoutes from './routes/recommendations';
-import pingRoutes from './routes/ping';
+import pingRoutes from './routes/ping.js';
+import activitiesRoutes from './routes/activities.js';
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +38,7 @@ app.use(sanitizeQuery);
 app.use('/api', healthRoutes);
 app.use('/api', recommendationRoutes);
 app.use('/api/ping', pingRoutes);
+app.use('/api/activities', activitiesRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -52,7 +54,11 @@ app.get('/', (req, res) => {
       pingTripAdvisor: '/api/ping/tripadvisor',
       pingAll: '/api/ping/all',
       quotaStatus: '/api/ping/quota',
-      testAlerts: '/api/ping/test-alerts'
+      testAlerts: '/api/ping/test-alerts',
+      activities: '/api/activities',
+      activityDetails: '/api/activities/:id',
+      activityPhotos: '/api/activities/:id/photos',
+      activityReviews: '/api/activities/:id/reviews'
     }
   });
 });
