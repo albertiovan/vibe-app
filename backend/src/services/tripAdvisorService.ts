@@ -1,6 +1,7 @@
 import { Activity, TripAdvisorResponse, TripAdvisorLocation, ActivityCategory, PriceLevel } from '../types/index.js';
 import { rapidApiClient, TripAdvisorPingResponse, TripAdvisorSearchResponse } from '../clients/rapidapi.js';
 import { rapidApiConfig } from '../config/rapidapi.js';
+import { locationResolver } from './locationResolver.js';
 import NodeCache from 'node-cache';
 
 // Cache for 5 minutes to reduce API calls
@@ -98,29 +99,52 @@ export class TripAdvisorService {
     limit: number = 10
   ): Promise<Activity[]> {
     try {
+      // If no location provided, use default city
+      const searchLocation = location || rapidApiConfig.defaultCity;
+      
       // Create cache key
-      const cacheKey = `activities_${location}_${categories?.join(',') || 'all'}_${limit}`;
+      const cacheKey = `activities_${searchLocation}_${categories?.join(',') || 'all'}_${limit}`;
       const cached = cache.get<Activity[]>(cacheKey);
       
       if (cached) {
+        console.log(`📦 Using cached activities for ${searchLocation}`);
         return cached;
       }
 
       // First, get location ID
-      const locationId = await this.getLocationId(location);
+      const locationId = await this.getLocationId(searchLocation);
       if (!locationId) {
+        console.log(`❌ Could not resolve location ID for ${searchLocation}`);
         return [];
       }
 
       // Then search for attractions/activities
       const activities = await this.getAttractions(locationId, limit);
       
-      // Filter by categories if specified
+      console.log(`🔍 Raw activities from API: ${activities.length}`);
+      console.log(`📂 Requested categories: ${categories?.join(', ') || 'none'}`);
+      console.log(`🏷️ Activity categories: ${activities.map(a => a.category).join(', ')}`);
+      
+      // Filter by categories if specified - but be more flexible
+      // If no food category is requested but we only have restaurants, include them anyway
       const filteredActivities = categories && categories.length > 0 
-        ? activities.filter(activity => 
-            categories.some(cat => activity.category === cat || activity.tags.includes(cat))
-          )
+        ? (() => {
+            const matchingActivities = activities.filter(activity => 
+              categories.some(cat => activity.category === cat || activity.tags.includes(cat))
+            );
+            
+            // If no activities match the requested categories but we have food activities,
+            // include some food activities as they can be adventurous/cultural experiences
+            if (matchingActivities.length === 0 && activities.some(a => a.category === 'food')) {
+              console.log('🍽️ No exact category matches, including food activities as cultural experiences');
+              return activities.slice(0, Math.min(5, activities.length)); // Include some restaurants
+            }
+            
+            return matchingActivities;
+          })()
         : activities;
+
+      console.log(`✅ Filtered activities: ${filteredActivities.length}`);
 
       // Cache the results
       cache.set(cacheKey, filteredActivities);
@@ -134,45 +158,18 @@ export class TripAdvisorService {
 
   private async getLocationId(location: string): Promise<string | null> {
     try {
-      if (!rapidApiClient) {
-        console.warn('RapidAPI client not available');
-        return null;
-      }
-
-      const cacheKey = `location_id_${location}`;
-      const cached = cache.get<string>(cacheKey);
+      // Use the location resolver to get proper location IDs
+      // This will default to Bucharest if the location can't be resolved
+      const locationId = await locationResolver.resolveCityToLocationId(location);
       
-      if (cached) {
-        console.log(`Using cached location ID for ${location}:`, cached);
-        return cached;
-      }
+      console.log(`📍 Resolved location "${location}" to ID: ${locationId}`);
+      return locationId;
 
-      console.log('Searching for location:', location);
-
-      const response = await rapidApiClient.get<TripAdvisorSearchResponse>('/locations/search', {
-        query: location,
-        limit: '1',
-        offset: '0',
-        units: 'km',
-        lang: 'en_US',
-        currency: 'USD',
-      });
-
-      console.log('Location search response status:', response.status);
-      console.log('Location search response data:', JSON.stringify(response.data, null, 2));
-      
-      if (response.data?.data && response.data.data.length > 0) {
-        const locationId = response.data.data[0]!.location_id;
-        console.log(`Found location ID for ${location}:`, locationId);
-        cache.set(cacheKey, locationId, 3600); // Cache for 1 hour
-        return locationId;
-      }
-
-      console.log(`No location found for: ${location}`);
-      return null;
     } catch (error) {
       console.error('Error getting location ID:', error);
-      return null;
+      // Fallback to default Bucharest location
+      console.log(`🔄 Using default location ID: ${rapidApiConfig.defaultLocationId}`);
+      return rapidApiConfig.defaultLocationId;
     }
   }
 
@@ -183,28 +180,51 @@ export class TripAdvisorService {
         return [];
       }
 
-      console.log('Fetching attractions for location ID:', locationId);
+      console.log('Fetching restaurants for location ID:', locationId);
 
-      const response = await rapidApiClient.get<TripAdvisorResponse>('/attractions/list', {
-        location_id: locationId,
-        currency: 'USD',
-        lang: 'en_US',
-        lunit: 'km',
-        limit: limit.toString(),
-        offset: '0',
+      // Use the restaurant search endpoint that we know works
+      const response = await rapidApiClient.get<any>('/api/v1/restaurant/searchRestaurants', {
+        locationId: locationId,
       });
 
-      console.log('Attractions response status:', response.status);
-      console.log('Attractions response data:', JSON.stringify(response.data, null, 2));
+      console.log('Restaurant response status:', response.status);
+      console.log('Restaurant response data length:', JSON.stringify(response.data).length);
       
-      const activities = response.data?.data?.map(location => this.normalizeActivity(location)) || [];
-      console.log(`Found ${activities.length} activities`);
+      // Parse the restaurant data and convert to activities
+      const restaurants = response.data?.data?.data || [];
+      const activities = restaurants.slice(0, limit).map((restaurant: any) => this.normalizeRestaurantToActivity(restaurant));
+      
+      console.log(`Found ${activities.length} restaurant activities`);
       
       return activities;
     } catch (error) {
-      console.error('Error getting attractions:', error);
+      console.error('Error getting restaurants:', error);
       return [];
     }
+  }
+
+  private normalizeRestaurantToActivity(restaurant: any): Activity {
+    // Convert restaurant data from DataCrawler API to our Activity interface
+    return {
+      id: restaurant.location_id || restaurant.restaurantsId || Math.random().toString(),
+      name: this.sanitizeString(restaurant.name || 'Restaurant'),
+      description: this.sanitizeString(restaurant.description || restaurant.cuisine?.map((c: any) => c.name).join(', ') || 'Great dining experience'),
+      category: 'food' as ActivityCategory,
+      location: {
+        address: this.sanitizeString(restaurant.address || restaurant.address_obj?.address_string || ''),
+        city: this.extractCity(restaurant.address || restaurant.address_obj?.city || ''),
+        coordinates: {
+          lat: parseFloat(restaurant.latitude || '0'),
+          lng: parseFloat(restaurant.longitude || '0')
+        }
+      },
+      rating: restaurant.rating ? parseFloat(restaurant.rating) : undefined,
+      priceLevel: this.mapPriceLevel(restaurant.price_level || restaurant.price),
+      imageUrl: restaurant.photo?.images?.medium?.url || restaurant.heroImgUrl,
+      website: restaurant.website,
+      phone: this.sanitizeString(restaurant.phone || ''),
+      tags: this.generateRestaurantTags(restaurant)
+    };
   }
 
   private normalizeActivity(location: TripAdvisorLocation): Activity {
@@ -292,6 +312,43 @@ export class TripAdvisorService {
     return str.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, '')
               .replace(/[\uFFFD]/g, '') // Remove replacement characters
               .trim();
+  }
+
+  private generateRestaurantTags(restaurant: any): string[] {
+    const tags: string[] = [];
+    
+    // Add cuisine tags
+    if (restaurant.cuisine) {
+      restaurant.cuisine.forEach((cuisine: any) => {
+        const cuisineName = this.sanitizeString(cuisine.name || cuisine);
+        if (cuisineName) {
+          tags.push(cuisineName.toLowerCase().replace(/\s+/g, '_'));
+        }
+      });
+    }
+
+    // Add tags based on name and description
+    const sanitizedName = this.sanitizeString(restaurant.name || '');
+    const sanitizedDesc = this.sanitizeString(restaurant.description || '');
+    const text = `${sanitizedName} ${sanitizedDesc}`.toLowerCase();
+    
+    const tagKeywords = [
+      'restaurant', 'bar', 'cafe', 'bistro', 'fine_dining', 'casual',
+      'family', 'romantic', 'outdoor', 'terrace', 'traditional', 'modern'
+    ];
+
+    tagKeywords.forEach(keyword => {
+      if (text.includes(keyword)) {
+        tags.push(keyword);
+      }
+    });
+
+    // Add price level as tag
+    if (restaurant.price_level || restaurant.price) {
+      tags.push('price_' + (restaurant.price_level || restaurant.price).toLowerCase());
+    }
+
+    return [...new Set(tags)].slice(0, 5); // Remove duplicates and limit
   }
 
   private generateTags(location: TripAdvisorLocation): string[] {
