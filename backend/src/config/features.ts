@@ -8,6 +8,13 @@ export interface FeatureFlags {
   restaurants: boolean;
   activitiesFirst: boolean; // Whether activities should be the default tab
   locationFilter: boolean; // Whether to enforce Bucharest-only results
+  
+  // New provider features
+  realTimeProviders: boolean; // Whether to use real activity providers
+  pois: boolean; // Points of Interest (OpenTripMap)
+  events: boolean; // Events (Eventbrite)
+  booking: boolean; // Booking capabilities
+  multiProvider: boolean; // Aggregate results from multiple providers
 }
 
 /**
@@ -25,7 +32,22 @@ function loadFeatureFlags(): FeatureFlags {
     activitiesFirst: process.env.FEATURE_ACTIVITIES_FIRST !== 'false',
     
     // Location filtering to Bucharest only - enabled by default
-    locationFilter: process.env.FEATURE_LOCATION_FILTER !== 'false'
+    locationFilter: process.env.FEATURE_LOCATION_FILTER !== 'false',
+    
+    // Real-time providers - disabled by default (use mock data)
+    realTimeProviders: process.env.FEATURE_REAL_TIME_PROVIDERS === 'true',
+    
+    // Points of Interest - disabled by default
+    pois: process.env.FEATURE_POIS === 'true',
+    
+    // Events - disabled by default
+    events: process.env.FEATURE_EVENTS === 'true',
+    
+    // Booking capabilities - disabled by default
+    booking: process.env.FEATURE_BOOKING === 'true',
+    
+    // Multi-provider aggregation - disabled by default
+    multiProvider: process.env.FEATURE_MULTI_PROVIDER === 'true'
   };
 }
 
@@ -36,7 +58,12 @@ console.log('🚩 Feature Flags:', {
   activities: features.activities ? '✅' : '❌',
   restaurants: features.restaurants ? '✅' : '❌',
   activitiesFirst: features.activitiesFirst ? '✅' : '❌',
-  locationFilter: features.locationFilter ? '✅' : '❌'
+  locationFilter: features.locationFilter ? '✅' : '❌',
+  realTimeProviders: features.realTimeProviders ? '✅' : '❌',
+  pois: features.pois ? '✅' : '❌',
+  events: features.events ? '✅' : '❌',
+  booking: features.booking ? '✅' : '❌',
+  multiProvider: features.multiProvider ? '✅' : '❌'
 });
 
 /**

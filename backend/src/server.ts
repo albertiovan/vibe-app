@@ -14,6 +14,9 @@ import recommendationRoutes from './routes/recommendations';
 import pingRoutes from './routes/ping.js';
 import activitiesRoutes from './routes/activities.js';
 
+// Import configurations to trigger startup logging
+import './config/providers.js';
+
 // Load environment variables
 dotenv.config();
 
