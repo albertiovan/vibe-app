@@ -75,7 +75,7 @@ router.post('/match', [
 
   } catch (error) {
     console.error('❌ Vibe match error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to find vibe matches',
       message: error instanceof Error ? error.message : 'Unknown error'
@@ -132,7 +132,7 @@ router.post('/quick-match', [
 
   } catch (error) {
     console.error('❌ Quick vibe match error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Failed to find quick vibe matches',
       message: error instanceof Error ? error.message : 'Unknown error'

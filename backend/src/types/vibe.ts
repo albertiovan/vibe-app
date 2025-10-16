@@ -180,18 +180,18 @@ export const VIBE_TO_GOOGLE_TYPES: Record<string, string[]> = {
   'playful': ['amusement_park', 'arcade', 'mini_golf', 'bowling_alley', 'trampoline_park'],
   
   // Budget levels
-  'free': ['park', 'library', 'beach', 'hiking_area', 'church', 'market'],
-  'budget': ['cafe', 'fast_food', 'thrift_store', 'public_pool', 'community_center'],
-  'moderate': ['restaurant', 'movie_theater', 'museum', 'bowling_alley', 'mini_golf'],
-  'splurge': ['fine_dining', 'spa', 'theater', 'luxury_shopping', 'wine_tasting'],
+  'budget_free': ['park', 'library', 'beach', 'hiking_area', 'church', 'market'],
+  'budget_low': ['cafe', 'fast_food', 'thrift_store', 'public_pool', 'community_center'],
+  'budget_moderate': ['restaurant', 'movie_theater', 'museum', 'bowling_alley', 'mini_golf'],
+  'budget_high': ['fine_dining', 'spa', 'theater', 'luxury_shopping', 'wine_tasting'],
   
   // Weather preferences
   'indoor': ['museum', 'library', 'shopping_mall', 'movie_theater', 'restaurant', 'spa'],
   'outdoor': ['park', 'beach', 'hiking_area', 'botanical_garden', 'outdoor_market'],
   
   // Time available
-  'quick': ['cafe', 'fast_food', 'convenience_store', 'atm', 'gas_station'],
-  'moderate': ['restaurant', 'movie_theater', 'museum', 'shopping_mall', 'bowling_alley'],
-  'extended': ['amusement_park', 'hiking_area', 'beach', 'zoo', 'aquarium'],
-  'all_day': ['amusement_park', 'beach', 'national_park', 'festival', 'tourist_attraction']
+  'time_quick': ['cafe', 'fast_food', 'convenience_store', 'atm', 'gas_station'],
+  'time_moderate': ['restaurant', 'movie_theater', 'museum', 'shopping_mall', 'bowling_alley'],
+  'time_extended': ['amusement_park', 'hiking_area', 'beach', 'zoo', 'aquarium'],
+  'time_all_day': ['amusement_park', 'beach', 'national_park', 'festival', 'tourist_attraction']
 };

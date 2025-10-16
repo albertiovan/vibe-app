@@ -10,13 +10,8 @@ import {
 } from './middleware/security';
 import { sanitizeQuery } from './middleware/validation';
 import healthRoutes from './routes/health';
-import recommendationRoutes from './routes/recommendations';
 import pingRoutes from './routes/ping.js';
-import activitiesRoutes from './routes/activities.js';
 import vibeRoutes from './routes/vibe.js';
-
-// Import configurations to trigger startup logging
-import './config/providers.js';
 
 // Load environment variables
 dotenv.config();
@@ -40,9 +35,7 @@ app.use(sanitizeQuery);
 
 // API Routes
 app.use('/api', healthRoutes);
-app.use('/api', recommendationRoutes);
 app.use('/api/ping', pingRoutes);
-app.use('/api/activities', activitiesRoutes);
 app.use('/api/vibe', vibeRoutes);
 
 // Root endpoint
@@ -54,22 +47,13 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/api/health',
       metrics: '/api/metrics',
-      recommendations: 'POST /api/recommendations',
-      activitiesRecommendations: 'POST /api/activities',
-      restaurantsRecommendations: 'POST /api/restaurants',
       vibeMatch: 'POST /api/vibe/match',
       quickVibeMatch: 'POST /api/vibe/quick-match',
       vibePresets: 'GET /api/vibe/presets',
       vibeOptions: 'GET /api/vibe/options',
-      parseMood: 'POST /api/parse-mood',
-      pingTripAdvisor: '/api/ping/tripadvisor',
+      vibeStatus: 'GET /api/vibe/status',
       pingAll: '/api/ping/all',
-      quotaStatus: '/api/ping/quota',
-      testAlerts: '/api/ping/test-alerts',
-      activities: '/api/activities',
-      activityDetails: '/api/activities/:id',
-      activityPhotos: '/api/activities/:id/photos',
-      activityReviews: '/api/activities/:id/reviews'
+      quotaStatus: '/api/ping/quota'
     }
   });
 });
