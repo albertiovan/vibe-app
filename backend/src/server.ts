@@ -13,6 +13,7 @@ import healthRoutes from './routes/health';
 import recommendationRoutes from './routes/recommendations';
 import pingRoutes from './routes/ping.js';
 import activitiesRoutes from './routes/activities.js';
+import vibeRoutes from './routes/vibe.js';
 
 // Import configurations to trigger startup logging
 import './config/providers.js';
@@ -37,11 +38,12 @@ app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 // Query sanitization
 app.use(sanitizeQuery);
 
-// Routes
+// API Routes
 app.use('/api', healthRoutes);
 app.use('/api', recommendationRoutes);
 app.use('/api/ping', pingRoutes);
 app.use('/api/activities', activitiesRoutes);
+app.use('/api/vibe', vibeRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -55,6 +57,10 @@ app.get('/', (req, res) => {
       recommendations: 'POST /api/recommendations',
       activitiesRecommendations: 'POST /api/activities',
       restaurantsRecommendations: 'POST /api/restaurants',
+      vibeMatch: 'POST /api/vibe/match',
+      quickVibeMatch: 'POST /api/vibe/quick-match',
+      vibePresets: 'GET /api/vibe/presets',
+      vibeOptions: 'GET /api/vibe/options',
       parseMood: 'POST /api/parse-mood',
       pingTripAdvisor: '/api/ping/tripadvisor',
       pingAll: '/api/ping/all',
