@@ -14,7 +14,7 @@ export const recommendationRequestSchema = z.object({
   city: z.string()
     .min(1)
     .max(100)
-    .regex(/^[a-zA-Z\s-]+$/, 'Invalid city name')
+    .regex(/^[a-zA-Z\s,.-]+$/, 'Invalid city name')
     .optional(),
   maxDistance: z.number()
     .min(1)

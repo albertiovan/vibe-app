@@ -1,14 +1,17 @@
 import { Activity, RecommendationRequest, MoodAnalysis, ActivityCategory } from '../types';
 import { MoodParser } from './moodParser';
 import { TripAdvisorService } from './tripAdvisorService';
+import { MockDataService } from './mockDataService';
 
 export class RecommendationService {
   private moodParser: MoodParser;
   private tripAdvisorService: TripAdvisorService;
+  private mockDataService: MockDataService;
 
   constructor() {
     this.moodParser = new MoodParser();
     this.tripAdvisorService = new TripAdvisorService();
+    this.mockDataService = new MockDataService();
   }
 
   public async getRecommendations(request: RecommendationRequest): Promise<{
@@ -29,12 +32,33 @@ export class RecommendationService {
         request.categories
       );
 
-      // Search for activities
-      let activities = await this.tripAdvisorService.searchActivities(
-        searchLocation,
-        searchCategories,
-        15 // Get more results for better filtering
-      );
+      // Search for activities - try TripAdvisor first, fallback to mock data
+      let activities: Activity[] = [];
+      
+      try {
+        activities = await this.tripAdvisorService.searchActivities(
+          searchLocation,
+          searchCategories,
+          15 // Get more results for better filtering
+        );
+        
+        // If TripAdvisor returns no results, use mock data
+        if (activities.length === 0) {
+          console.log('TripAdvisor returned no results, using mock data');
+          activities = await this.mockDataService.searchActivities(
+            searchLocation,
+            searchCategories,
+            15
+          );
+        }
+      } catch (error) {
+        console.log('TripAdvisor API failed, using mock data:', error);
+        activities = await this.mockDataService.searchActivities(
+          searchLocation,
+          searchCategories,
+          15
+        );
+      }
 
       // Apply additional filters
       activities = this.applyFilters(activities, request, moodAnalysis);

@@ -65,32 +65,39 @@ export class TripAdvisorService {
       const cached = cache.get<string>(cacheKey);
       
       if (cached) {
+        console.log(`Using cached location ID for ${location}:`, cached);
         return cached;
       }
 
-      const response = await fetch(
-        `${this.baseUrl}/locations/search?query=${encodeURIComponent(location)}&limit=1&offset=0&units=km&lang=en_US&currency=USD`,
-        {
-          method: 'GET',
-          headers: {
-            'X-RapidAPI-Key': this.apiKey,
-            'X-RapidAPI-Host': this.apiHost
-          }
+      const url = `${this.baseUrl}/locations/search?query=${encodeURIComponent(location)}&limit=1&offset=0&units=km&lang=en_US&currency=USD`;
+      console.log('Searching for location:', location);
+      console.log('TripAdvisor search URL:', url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': this.apiKey,
+          'X-RapidAPI-Host': this.apiHost
         }
-      );
+      });
+
+      console.log('Location search response status:', response.status);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json() as TripAdvisorResponse;
+      const data = await this.safeJsonParse(response) as TripAdvisorResponse;
+      console.log('Location search response data:', JSON.stringify(data, null, 2));
       
       if (data.data && data.data.length > 0) {
         const locationId = data.data[0]!.location_id;
+        console.log(`Found location ID for ${location}:`, locationId);
         cache.set(cacheKey, locationId, 3600); // Cache for 1 hour
         return locationId;
       }
 
+      console.log(`No location found for: ${location}`);
       return null;
     } catch (error) {
       console.error('Error getting location ID:', error);
@@ -100,24 +107,31 @@ export class TripAdvisorService {
 
   private async getAttractions(locationId: string, limit: number): Promise<Activity[]> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/attractions/list?location_id=${locationId}&currency=USD&lang=en_US&lunit=km&limit=${limit}&offset=0`,
-        {
-          method: 'GET',
-          headers: {
-            'X-RapidAPI-Key': this.apiKey,
-            'X-RapidAPI-Host': this.apiHost
-          }
+      const url = `${this.baseUrl}/attractions/list?location_id=${locationId}&currency=USD&lang=en_US&lunit=km&limit=${limit}&offset=0`;
+      console.log('Fetching attractions for location ID:', locationId);
+      console.log('TripAdvisor attractions URL:', url);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': this.apiKey,
+          'X-RapidAPI-Host': this.apiHost
         }
-      );
+      });
+
+      console.log('Attractions response status:', response.status);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json() as TripAdvisorResponse;
+      const data = await this.safeJsonParse(response) as TripAdvisorResponse;
+      console.log('Attractions response data:', JSON.stringify(data, null, 2));
       
-      return data.data?.map(location => this.normalizeActivity(location)) || [];
+      const activities = data.data?.map(location => this.normalizeActivity(location)) || [];
+      console.log(`Found ${activities.length} activities`);
+      
+      return activities;
     } catch (error) {
       console.error('Error getting attractions:', error);
       return [];
@@ -131,12 +145,12 @@ export class TripAdvisorService {
     
     return {
       id: location.location_id,
-      name: location.name,
-      description: location.description || '',
+      name: this.sanitizeString(location.name),
+      description: this.sanitizeString(location.description || ''),
       category,
       location: {
-        address: location.address,
-        city: this.extractCity(location.address),
+        address: this.sanitizeString(location.address),
+        city: this.extractCity(this.sanitizeString(location.address)),
         coordinates: {
           lat: parseFloat(location.latitude),
           lng: parseFloat(location.longitude)
@@ -146,7 +160,7 @@ export class TripAdvisorService {
       priceLevel,
       imageUrl: location.photo?.images?.medium?.url,
       website: location.website,
-      phone: location.phone,
+      phone: this.sanitizeString(location.phone || ''),
       tags: this.generateTags(location)
     };
   }
@@ -202,16 +216,53 @@ export class TripAdvisorService {
     return parts[parts.length - 2]?.trim() || parts[0]?.trim() || '';
   }
 
+  private async safeJsonParse(response: Response): Promise<any> {
+    try {
+      // Get response as text first to handle potential UTF-8 issues
+      const text = await response.text();
+      
+      // Check for invalid UTF-8 characters and log if found
+      const invalidChars = text.match(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\uFFFD]/g);
+      if (invalidChars) {
+        console.warn('Invalid UTF-8 characters detected in API response:', invalidChars.length, 'characters');
+      }
+      
+      // Sanitize invalid UTF-8 characters
+      const sanitizedText = text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, '');
+      
+      // Parse the sanitized JSON
+      return JSON.parse(sanitizedText);
+    } catch (error) {
+      console.error('JSON parsing error:', error);
+      console.error('Response URL:', response.url);
+      console.error('Response status:', response.status);
+      throw new Error('Invalid JSON response from external API');
+    }
+  }
+
+  private sanitizeString(str: string): string {
+    if (!str) return '';
+    // Remove invalid UTF-8 characters and normalize
+    return str.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, '')
+              .replace(/[\uFFFD]/g, '') // Remove replacement characters
+              .trim();
+  }
+
   private generateTags(location: TripAdvisorLocation): string[] {
     const tags: string[] = [];
     
     // Add subcategory tags
     location.subcategory?.forEach(sub => {
-      tags.push(sub.name.toLowerCase().replace(/\s+/g, '_'));
+      const sanitizedName = this.sanitizeString(sub.name);
+      if (sanitizedName) {
+        tags.push(sanitizedName.toLowerCase().replace(/\s+/g, '_'));
+      }
     });
 
     // Add tags based on name and description
-    const text = `${location.name} ${location.description || ''}`.toLowerCase();
+    const sanitizedName = this.sanitizeString(location.name);
+    const sanitizedDesc = this.sanitizeString(location.description || '');
+    const text = `${sanitizedName} ${sanitizedDesc}`.toLowerCase();
     
     const tagKeywords = [
       'museum', 'park', 'restaurant', 'bar', 'cafe', 'theater', 'gallery',

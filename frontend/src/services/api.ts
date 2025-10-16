@@ -1,10 +1,10 @@
 import Constants from 'expo-constants';
 import { RecommendationRequest, RecommendationResponse, ApiError } from '../types';
 
-// Get API base URL from environment or default to localhost
+// Get API base URL - use proxy for web, direct for mobile
 const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl || 
                      process.env.EXPO_PUBLIC_API_BASE_URL || 
-                     'http://localhost:3000/api';
+                     (typeof window !== 'undefined' ? '/api' : 'http://127.0.0.1:3000/api');
 
 class ApiService {
   private baseUrl: string;
@@ -28,8 +28,15 @@ class ApiService {
     };
 
     try {
+      console.log('Making request to:', url);
+      console.log('Request config:', config);
+      
       const response = await fetch(url, config);
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (!response.ok) {
         const error: ApiError = data;
@@ -38,6 +45,13 @@ class ApiService {
 
       return data;
     } catch (error) {
+      console.error('API request failed:', {
+        url,
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        type: typeof error
+      });
+      
       if (error instanceof Error) {
         throw error;
       }
