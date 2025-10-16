@@ -35,6 +35,56 @@ export type ActivityCategory =
 
 export type PriceLevel = 'free' | 'budget' | 'moderate' | 'expensive';
 
+// New Activity domain models for attractions/things to do
+export interface ActivitySummary {
+  id: string;
+  name: string;
+  primaryPhoto?: string;
+  rating?: number;
+  reviewCount?: number;
+  priceTier?: PriceLevel;
+  tags: string[];
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  category: 'cultural' | 'outdoor' | 'entertainment' | 'historical' | 'adventure' | 'food';
+  distance?: number; // Distance from user location in km
+}
+
+export interface ActivityDetails extends ActivitySummary {
+  description?: string;
+  address?: string;
+  openingHours?: string;
+  bookingLinks?: string[];
+  photos?: string[];
+  groups?: string[];
+  website?: string;
+  phone?: string;
+  duration?: string; // e.g., "2-3 hours"
+  bestTimeToVisit?: string;
+  accessibility?: string[];
+}
+
+export interface ActivityPhoto {
+  id: string;
+  url: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+}
+
+export interface ActivityReview {
+  id: string;
+  rating: number;
+  title?: string;
+  text: string;
+  author: string;
+  date: string;
+  helpful?: number;
+  language?: string;
+}
+
 export type Mood = 
   | 'adventurous'
   | 'relaxed'
