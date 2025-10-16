@@ -50,6 +50,8 @@ app.get('/', (req, res) => {
       health: '/api/health',
       metrics: '/api/metrics',
       recommendations: 'POST /api/recommendations',
+      activitiesRecommendations: 'POST /api/activities',
+      restaurantsRecommendations: 'POST /api/restaurants',
       parseMood: 'POST /api/parse-mood',
       pingTripAdvisor: '/api/ping/tripadvisor',
       pingAll: '/api/ping/all',
