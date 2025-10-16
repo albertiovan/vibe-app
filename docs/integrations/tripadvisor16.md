@@ -184,6 +184,135 @@ const restaurants = await getRestaurantsForLocation("294458", 20);
 // Returns: Array of Romanian restaurants in Bucharest
 ```
 
+## Attractions/Activities Endpoints
+
+### Current Limitation
+**Status**: ❌ **Not Available**  
+The DataCrawler TripAdvisor16 API provider currently only supports restaurant endpoints. Attraction/activity endpoints are not available in this provider.
+
+### Attempted Endpoints (All Return 404):
+```bash
+# Tried various endpoint patterns:
+/api/v1/attraction/searchAttractions
+/api/v1/attraction/list
+/api/v1/activity/searchActivities
+/api/v1/thingstodo/list
+/api/v1/things-to-do/list
+/api/v1/poi/search
+/attractions/list
+/api/attractions/list
+```
+
+### Alternative Solutions
+
+#### Option 1: Mock Data Service
+For development and testing, we implement a mock activities service that provides:
+- **Bucharest attractions** (Palace of Parliament, Old Town, Herastrau Park, etc.)
+- **Proper domain models** (ActivitySummary, ActivityDetails)
+- **Realistic data structure** matching expected TripAdvisor format
+
+#### Option 2: Alternative API Provider
+Consider switching to a different TripAdvisor API provider on RapidAPI that includes attractions:
+- **Travel Advisor by apidojo**: `travel-advisor.p.rapidapi.com`
+- **TripAdvisor API by DataCrawler**: Different provider with more endpoints
+- **Tripadvisor by DataCrawler**: Alternative naming
+
+#### Option 3: Hybrid Approach
+- **Restaurants**: Use current TripAdvisor16 API (working)
+- **Attractions**: Use alternative provider or mock data
+- **Unified interface**: Abstract the differences in the service layer
+
+### Planned Implementation
+
+Even without real attraction endpoints, we will implement:
+
+#### Domain Models:
+```typescript
+interface ActivitySummary {
+  id: string;
+  name: string;
+  primaryPhoto?: string;
+  rating?: number;
+  reviewCount?: number;
+  priceTier?: 'free' | 'budget' | 'moderate' | 'expensive';
+  tags: string[];
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+  category: 'cultural' | 'outdoor' | 'entertainment' | 'historical' | 'adventure';
+}
+
+interface ActivityDetails extends ActivitySummary {
+  description?: string;
+  address?: string;
+  openingHours?: string;
+  bookingLinks?: string[];
+  photos?: string[];
+  groups?: string[];
+  website?: string;
+  phone?: string;
+}
+```
+
+#### Service Methods:
+```typescript
+// Mock implementation until real API is available
+async listActivities(options: {
+  locationId?: string;
+  limit?: number;
+  sort?: 'rating' | 'popularity' | 'distance';
+  categories?: string[];
+}): Promise<ActivitySummary[]>
+
+async getActivityDetails(activityId: string): Promise<ActivityDetails | null>
+
+async getActivityPhotos(activityId: string, limit?: number): Promise<string[]>
+
+async getActivityReviews(activityId: string, options?: {
+  limit?: number;
+  sort?: 'recent' | 'helpful' | 'rating';
+}): Promise<Review[]>
+```
+
+### Mock Data for Bucharest
+
+#### Sample Activities:
+1. **Palace of Parliament** - Historical/Cultural
+2. **Old Town (Centrul Vechi)** - Cultural/Entertainment  
+3. **Herastrau Park** - Outdoor/Recreation
+4. **Romanian Athenaeum** - Cultural/Entertainment
+5. **Dimitrie Gusti National Village Museum** - Cultural/Historical
+6. **Calea Victoriei** - Cultural/Shopping
+7. **Cismigiu Gardens** - Outdoor/Recreation
+
+#### Sample Response Format:
+```json
+{
+  "status": true,
+  "message": "Success (Mock Data)",
+  "timestamp": 1697462400,
+  "data": {
+    "data": [
+      {
+        "activityId": "attraction-294458-palace-parliament",
+        "name": "Palace of Parliament",
+        "rating": 4.2,
+        "reviewCount": 15420,
+        "category": "historical",
+        "priceTier": "moderate",
+        "coordinates": {
+          "lat": 44.4276,
+          "lng": 26.0876
+        },
+        "primaryPhoto": "https://example.com/palace-parliament.jpg",
+        "tags": ["architecture", "history", "guided_tours", "government"]
+      }
+    ]
+  }
+}
+```
+
 ## Testing
 
 ### Smoke Test Checklist:
@@ -192,3 +321,6 @@ const restaurants = await getRestaurantsForLocation("294458", 20);
 - [ ] Results contain Bucharest addresses/coordinates
 - [ ] Caching works correctly (subsequent calls are faster)
 - [ ] Error handling gracefully falls back to defaults
+- [ ] Mock activities service returns Bucharest attractions
+- [ ] Activity details load correctly for sample IDs
+- [ ] Domain models properly normalize mock data
