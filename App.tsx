@@ -9,9 +9,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 type RootStackParamList = {
   Home: undefined;
   Results: {
-    activities: any[];
-    moodAnalysis: any;
+    places: any[];
+    vibeAnalysis: any;
     vibe: string;
+    totalFound: number;
   };
 };
 
@@ -31,31 +32,38 @@ function HomeScreen({ navigation }: any) {
     setLoading(true);
     
     try {
-      // Make API call to backend
-      const response = await fetch('http://10.103.30.198:3000/api/recommendations', {
+      // Make API call to new Google Places vibe endpoint
+      const response = await fetch('http://10.103.30.198:3000/api/vibe/quick-match', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          vibe: vibe.trim(),
-          city: 'Sinaia, Romania'
+          mood: 'relaxed', // Default mood - we'll make this dynamic later
+          energy: 'medium',
+          location: {
+            lat: 44.4268,
+            lng: 26.1025,
+            radius: 10
+          },
+          description: vibe.trim()
         }),
       });
 
       const data = await response.json();
       
-      if (data.success && data.data.activities.length > 0) {
-        // Navigate to results
+      if (data.success && data.data.match.places.length > 0) {
+        // Navigate to results with Google Places data
         navigation.navigate('Results', {
-          activities: data.data.activities,
-          moodAnalysis: data.data.moodAnalysis,
-          vibe: vibe.trim()
+          places: data.data.match.places,
+          vibeAnalysis: data.data.match.vibeAnalysis,
+          vibe: vibe.trim(),
+          totalFound: data.data.match.totalFound
         });
       } else {
         Alert.alert(
-          'No Activities Found',
-          'We couldn\'t find any activities matching your vibe. Try a different description or check back later!'
+          'No Places Found',
+          'We couldn\'t find any places matching your vibe. Try a different description or check back later!'
         );
       }
     } catch (error) {
@@ -75,7 +83,7 @@ function HomeScreen({ navigation }: any) {
       
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>vibe</Text>
+        <Text style={styles.title}>VIBE DEBUG</Text>
         <Text style={styles.subtitle}>Discover activities that match your mood</Text>
       </View>
 
@@ -123,7 +131,7 @@ function HomeScreen({ navigation }: any) {
 
 // Results Screen Component
 function ResultsScreen({ route, navigation }: any) {
-  const { activities, moodAnalysis, vibe } = route.params;
+  const { places, vibeAnalysis, vibe, totalFound } = route.params;
 
   return (
     <View style={styles.container}>
@@ -138,21 +146,53 @@ function ResultsScreen({ route, navigation }: any) {
           <Text style={styles.backButtonText}>←</Text>
         </TouchableOpacity>
         <View style={styles.resultsHeaderText}>
-          <Text style={styles.resultsTitle}>Your Activities</Text>
-          <Text style={styles.resultsSubtitle}>Based on: "{vibe}"</Text>
+          <Text style={styles.resultsTitle}>Your Places</Text>
+          <Text style={styles.resultsSubtitle}>Based on: "{vibe}" • {totalFound} found</Text>
         </View>
       </View>
 
-      {/* Activities List */}
+      {/* Vibe Analysis */}
+      {vibeAnalysis && (
+        <View style={styles.vibeAnalysis}>
+          <Text style={styles.vibeAnalysisText}>
+            {vibeAnalysis.primaryVibe} • {Math.round(vibeAnalysis.confidence * 100)}% match
+          </Text>
+        </View>
+      )}
+
+      {/* Places List */}
       <ScrollView style={styles.resultsList}>
-        {activities.map((activity: any, index: number) => (
-          <View key={activity.id || index} style={styles.activityCard}>
-            <Text style={styles.activityName}>{activity.name}</Text>
-            <Text style={styles.activityDescription}>{activity.description}</Text>
+        {places.map((place: any, index: number) => (
+          <View key={place.placeId || index} style={styles.activityCard}>
+            <View style={styles.placeHeader}>
+              <Text style={styles.activityName}>{place.name}</Text>
+              <View style={styles.placeRating}>
+                {place.rating && (
+                  <Text style={styles.activityRating}>★ {place.rating}</Text>
+                )}
+                {place.vibeScore && (
+                  <Text style={styles.vibeScore}>{Math.round(place.vibeScore * 100)}%</Text>
+                )}
+              </View>
+            </View>
+            
+            <Text style={styles.activityDescription}>{place.vicinity}</Text>
+            
+            {/* Vibe Reasons */}
+            {place.vibeReasons && place.vibeReasons.length > 0 && (
+              <View style={styles.vibeReasons}>
+                {place.vibeReasons.slice(0, 2).map((reason: string, idx: number) => (
+                  <Text key={idx} style={styles.vibeReason}>• {reason}</Text>
+                ))}
+              </View>
+            )}
+            
             <View style={styles.activityMeta}>
-              <Text style={styles.activityCategory}>{activity.category}</Text>
-              {activity.rating && (
-                <Text style={styles.activityRating}>★ {activity.rating}</Text>
+              <Text style={styles.activityCategory}>
+                {place.estimatedDuration || 'Visit time varies'}
+              </Text>
+              {place.walkingTime && (
+                <Text style={styles.walkingTime}>{place.walkingTime} min walk</Text>
               )}
             </View>
           </View>
@@ -345,6 +385,55 @@ const styles = StyleSheet.create({
   activityRating: {
     color: '#F59E0B',
     fontSize: 14,
+    fontWeight: '500',
+  },
+  // New styles for Google Places UI
+  vibeAnalysis: {
+    backgroundColor: '#EFF6FF',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderLeftWidth: 3,
+    borderLeftColor: '#0EA5E9',
+  },
+  vibeAnalysisText: {
+    color: '#1D4ED8',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  placeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  placeRating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  vibeScore: {
+    backgroundColor: '#10B981',
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  vibeReasons: {
+    marginVertical: 8,
+  },
+  vibeReason: {
+    color: '#059669',
+    fontSize: 12,
+    fontStyle: 'italic',
+    marginBottom: 2,
+  },
+  walkingTime: {
+    color: '#6B7280',
+    fontSize: 12,
     fontWeight: '500',
   },
 });

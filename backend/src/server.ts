@@ -12,6 +12,7 @@ import { sanitizeQuery } from './middleware/validation';
 import healthRoutes from './routes/health';
 import pingRoutes from './routes/ping.js';
 import vibeRoutes from './routes/vibe.js';
+import llmRoutes from './routes/llm.js';
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +38,7 @@ app.use(sanitizeQuery);
 app.use('/api', healthRoutes);
 app.use('/api/ping', pingRoutes);
 app.use('/api/vibe', vibeRoutes);
+app.use('/api/llm', llmRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -52,6 +54,10 @@ app.get('/', (req, res) => {
       vibePresets: 'GET /api/vibe/presets',
       vibeOptions: 'GET /api/vibe/options',
       vibeStatus: 'GET /api/vibe/status',
+      llmStatus: 'GET /api/llm/status',
+      llmParseVibe: 'POST /api/llm/parse-vibe',
+      llmCurate: 'POST /api/llm/curate',
+      llmTestFixtures: 'GET /api/llm/test-fixtures',
       pingAll: '/api/ping/all',
       quotaStatus: '/api/ping/quota'
     }

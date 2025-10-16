@@ -5,7 +5,9 @@
 
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import { enhancedGooglePlacesService } from '../services/enhancedGooglePlacesService.js';
 import { googlePlacesService } from '../services/googlePlacesService.js';
+import { parseVibeToFilterSpec } from '../services/llm/queryUnderstanding.js';
 import { UserVibe } from '../types/vibe.js';
 
 const router = express.Router();
@@ -61,7 +63,34 @@ router.post('/match', [
       location: vibe.location ? 'provided' : 'default'
     });
 
-    // Find experiences using Google Places
+    // Use Claude to enhance vibe understanding if description provided
+    if (vibe.description) {
+      console.log('🧠 Using Claude to parse vibe description:', vibe.description);
+      try {
+        const filterSpec = await parseVibeToFilterSpec(vibe.description);
+        console.log('🎯 Claude parsed filter spec:', filterSpec);
+        
+        // Enhance the vibe with Claude's insights
+        if (filterSpec.energy) vibe.energy = filterSpec.energy as any;
+        if (filterSpec.timeOfDay) vibe.timeOfDay = filterSpec.timeOfDay as any;
+        if (filterSpec.indoorOutdoor && filterSpec.indoorOutdoor !== 'either') {
+          vibe.weatherPreference = filterSpec.indoorOutdoor === 'indoor' ? 'indoor' : 'outdoor';
+        }
+        // CRITICAL: Use Claude's intelligent place types
+        if (filterSpec.types && filterSpec.types.length > 0) {
+          (vibe as any).claudeTypes = filterSpec.types;
+          console.log('🎯 Using Claude types:', filterSpec.types);
+        }
+        if (filterSpec.keywords && filterSpec.keywords.length > 0) {
+          (vibe as any).claudeKeywords = filterSpec.keywords;
+          console.log('🔍 Using Claude keywords:', filterSpec.keywords);
+        }
+      } catch (error) {
+        console.warn('⚠️ Claude vibe parsing failed, using original vibe:', error);
+      }
+    }
+
+    // Find experiences using original working Google Places service
     const match = await googlePlacesService.findExperiencesByVibe(vibe);
 
     res.json({
@@ -117,6 +146,33 @@ router.post('/quick-match', [
     };
 
     console.log('⚡ Processing quick vibe match:', quickVibe.mood);
+
+    // Use Claude to enhance vibe understanding if description provided
+    if (quickVibe.description) {
+      console.log('🧠 Using Claude to parse quick vibe description:', quickVibe.description);
+      try {
+        const filterSpec = await parseVibeToFilterSpec(quickVibe.description);
+        console.log('🎯 Claude parsed filter spec for quick match:', filterSpec);
+        
+        // Enhance the vibe with Claude's insights
+        if (filterSpec.energy) quickVibe.energy = filterSpec.energy as any;
+        if (filterSpec.timeOfDay) quickVibe.timeOfDay = filterSpec.timeOfDay as any;
+        if (filterSpec.indoorOutdoor && filterSpec.indoorOutdoor !== 'either') {
+          quickVibe.weatherPreference = filterSpec.indoorOutdoor === 'indoor' ? 'indoor' : 'outdoor';
+        }
+        // CRITICAL: Use Claude's intelligent place types
+        if (filterSpec.types && filterSpec.types.length > 0) {
+          (quickVibe as any).claudeTypes = filterSpec.types;
+          console.log('🎯 Using Claude types for quick match:', filterSpec.types);
+        }
+        if (filterSpec.keywords && filterSpec.keywords.length > 0) {
+          (quickVibe as any).claudeKeywords = filterSpec.keywords;
+          console.log('🔍 Using Claude keywords for quick match:', filterSpec.keywords);
+        }
+      } catch (error) {
+        console.warn('⚠️ Claude quick vibe parsing failed, using original vibe:', error);
+      }
+    }
 
     const match = await googlePlacesService.findExperiencesByVibe(quickVibe);
 

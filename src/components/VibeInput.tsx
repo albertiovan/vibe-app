@@ -21,9 +21,15 @@ export const VibeInput: React.FC<VibeInputProps> = ({
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSubmit = () => {
+    console.log('🔵 BLUE ARROW PRESSED! Vibe:', vibe.trim());
+    console.log('🔵 Loading:', loading);
+    console.log('🔵 Has text:', !!vibe.trim());
     if (vibe.trim() && !loading) {
+      console.log('🔵 CALLING onSubmit with:', vibe.trim());
       Keyboard.dismiss();
       onSubmit(vibe.trim());
+    } else {
+      console.log('🔵 NOT calling onSubmit - conditions not met');
     }
   };
 

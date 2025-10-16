@@ -17,7 +17,22 @@ interface HomeScreenProps {
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
+  const testApiConnection = async () => {
+    console.log('🧪 Testing API connection...');
+    try {
+      const response = await fetch('http://10.103.30.198:3000/api/health');
+      const data = await response.json();
+      console.log('✅ API Connection Test:', data);
+      Alert.alert('API Test', `Connection: ${response.ok ? 'SUCCESS' : 'FAILED'}\nStatus: ${data.status}`);
+    } catch (error) {
+      console.error('❌ API Connection Test Failed:', error);
+      Alert.alert('API Test', `Connection FAILED: ${error}`);
+    }
+  };
+
   const handleVibeSubmit = async (vibe: string) => {
+    console.log('🎭 VIBE SUBMIT CALLED:', vibe);
+    console.log('🔗 API BASE URL:', 'http://10.103.30.198:3000/api');
     setLoading(true);
     
     try {
@@ -30,6 +45,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       // Get recommendations from API
       const response = await apiService.getRecommendations(request);
       
+      console.log('🎭 API Response:', response);
+      
+      // Handle API response (now converted by API service)
       if (response.success && response.data.activities.length > 0) {
         // Navigate to results screen
         navigation.navigate('Results', {
@@ -73,7 +91,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           className="pt-8 pb-6"
         >
           <Text className="text-4xl font-bold text-center text-gray-900 font-inter">
-            vibe
+            vibe DEBUG
           </Text>
           <Text className="text-lg text-center text-gray-600 mt-2 font-inter">
             Discover activities that match your mood
@@ -120,6 +138,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text className="text-center text-gray-500 text-sm font-inter">
             Powered by AI • Discover Romania
           </Text>
+          {/* Temporary API Test Button */}
+          <View style={{ marginTop: 10, alignItems: 'center' }}>
+            <Text 
+              style={{ 
+                backgroundColor: '#007AFF', 
+                color: 'white', 
+                padding: 10, 
+                borderRadius: 5,
+                textAlign: 'center',
+                fontSize: 14
+              }}
+              onPress={testApiConnection}
+            >
+              🧪 Test API Connection
+            </Text>
+          </View>
         </MotiView>
       </ScrollView>
     </SafeAreaView>

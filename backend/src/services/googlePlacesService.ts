@@ -62,7 +62,30 @@ export class GooglePlacesService {
   private analyzeVibeToSearchTypes(vibe: UserVibe): string[] {
     const types = new Set<string>();
     
-    // Add types based on energy level
+    // PRIORITY: Use Claude's intelligent types if available
+    if ((vibe as any).claudeTypes && Array.isArray((vibe as any).claudeTypes)) {
+      console.log('🧠 Using Claude-parsed types:', (vibe as any).claudeTypes);
+      (vibe as any).claudeTypes.forEach((type: string) => types.add(type));
+      
+      // For exercise/fitness, add additional comprehensive types
+      if ((vibe as any).claudeKeywords && Array.isArray((vibe as any).claudeKeywords)) {
+        const keywords = (vibe as any).claudeKeywords.join(' ').toLowerCase();
+        if (keywords.includes('exercise') || keywords.includes('fitness') || keywords.includes('workout') || keywords.includes('sport')) {
+          console.log('🏃‍♂️ Detected exercise request, adding comprehensive sports types');
+          // Add all possible exercise-related types
+          ['gym', 'stadium', 'park', 'tourist_attraction', 'bowling_alley', 'amusement_park', 'spa'].forEach(type => types.add(type));
+        }
+      }
+      
+      // If Claude provided types, use them (now expanded for exercise)
+      if (types.size > 0) {
+        return Array.from(types);
+      }
+    }
+    
+    console.log('🔄 Falling back to rule-based type mapping');
+    
+    // FALLBACK: Add types based on energy level
     const energyTypes = VIBE_TO_GOOGLE_TYPES[`${vibe.energy}_energy`] || [];
     energyTypes.forEach(type => types.add(type));
     
@@ -103,7 +126,13 @@ export class GooglePlacesService {
     const radius = (location.radius || 10) * 1000; // Convert km to meters
     const maxRadius = Math.min(radius, 50000); // Google Places max radius is 50km
     
-    // Search for each type
+    // First, try text search with Claude's keywords if available
+    if ((vibe as any).claudeKeywords && Array.isArray((vibe as any).claudeKeywords)) {
+      console.log('🔍 Performing text search with Claude keywords:', (vibe as any).claudeKeywords);
+      await this.performTextSearch(location, (vibe as any).claudeKeywords, allPlaces, vibe);
+    }
+    
+    // Then search for each type
     for (const type of types.slice(0, 5)) { // Limit to 5 types to avoid rate limits
       try {
         const response = await this.client.placesNearby({
@@ -463,6 +492,91 @@ export class GooglePlacesService {
     
     // Convert to walking time (assume 5 km/h walking speed)
     return Math.round(distance / 5 * 60); // Minutes
+  }
+
+  /**
+   * Perform text search using Claude's keywords
+   */
+  private async performTextSearch(
+    location: { lat: number; lng: number; radius?: number },
+    keywords: string[],
+    allPlaces: any[],
+    vibe: UserVibe
+  ): Promise<void> {
+    const radius = (location.radius || 10) * 1000;
+    const maxRadius = Math.min(radius, 50000);
+    
+    // Try each keyword combination
+    const searchQueries = [
+      ...keywords, // Individual keywords
+      keywords.join(' '), // Combined keywords
+      // Add location-specific searches for better results
+      ...keywords.map(k => `${k} Bucharest`),
+      ...keywords.map(k => `${k} București`)
+    ];
+    
+    for (const query of searchQueries.slice(0, 3)) { // Limit searches to avoid rate limits
+      try {
+        console.log(`🔍 Text searching for: "${query}"`);
+        
+        const response = await this.client.textSearch({
+          params: {
+            query: query,
+            location: { lat: location.lat, lng: location.lng },
+            radius: maxRadius,
+            key: this.apiKey,
+            ...(vibe.budget !== 'free' && { minprice: this.budgetToPriceLevel(vibe.budget).min }),
+            ...(vibe.budget !== 'splurge' && { maxprice: this.budgetToPriceLevel(vibe.budget).max }),
+          }
+        });
+        
+        if (response.data.results) {
+          const placesWithContext = response.data.results.map(place => ({
+            ...place,
+            searchType: 'text_search',
+            searchQuery: query,
+            vibeCategories: this.inferVibeCategories(place, keywords)
+          }));
+          
+          allPlaces.push(...placesWithContext);
+          console.log(`📍 Found ${response.data.results.length} places for "${query}"`);
+        }
+        
+        // Small delay to avoid rate limits
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+      } catch (error) {
+        console.warn(`⚠️ Text search failed for "${query}":`, error);
+      }
+    }
+  }
+
+  /**
+   * Infer vibe categories from place data and keywords
+   */
+  private inferVibeCategories(place: any, keywords: string[]): string[] {
+    const categories: string[] = [];
+    const name = (place.name || '').toLowerCase();
+    const types = place.types || [];
+    
+    // Infer categories based on keywords and place types
+    if (keywords.some(k => ['exercise', 'fitness', 'workout', 'gym'].includes(k.toLowerCase()))) {
+      categories.push('energizing', 'health_focused', 'active');
+    }
+    
+    if (keywords.some(k => ['sport', 'tennis', 'golf', 'swimming'].includes(k.toLowerCase()))) {
+      categories.push('competitive', 'skill_building', 'recreational');
+    }
+    
+    if (types.includes('park')) {
+      categories.push('nature_connection', 'outdoor', 'peaceful');
+    }
+    
+    if (types.includes('gym') || name.includes('gym') || name.includes('fitness')) {
+      categories.push('fitness_focused', 'equipment_based', 'structured');
+    }
+    
+    return categories;
   }
 }
 
