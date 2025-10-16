@@ -29,16 +29,27 @@ export class TripAdvisorService {
         };
       }
 
-      // Use a simple location search as a health check
-      // This is a safe, read-only endpoint that doesn't consume much quota
-      const response = await rapidApiClient.get<TripAdvisorSearchResponse>('/locations/search', {
-        query: 'Paris',
-        limit: '1',
-        offset: '0',
-        units: 'km',
-        lang: 'en_US',
-        currency: 'USD',
-      });
+      // Try different endpoints based on the API provider
+      // DataCrawler TripAdvisor uses different endpoints than Travel Advisor
+      let response;
+      const host = rapidApiConfig.tripAdvisorHost;
+      
+      if (host.includes('tripadvisor16')) {
+        // DataCrawler TripAdvisor API - try a restaurant search endpoint
+        response = await rapidApiClient.get<any>('/api/v1/restaurant/searchRestaurants', {
+          locationId: '304554' // Paris location ID
+        });
+      } else {
+        // Travel Advisor API - use location search
+        response = await rapidApiClient.get<TripAdvisorSearchResponse>('/locations/search', {
+          query: 'Paris',
+          limit: '1',
+          offset: '0',
+          units: 'km',
+          lang: 'en_US',
+          currency: 'USD',
+        });
+      }
 
       // Extract quota information from headers
       const quotaHeaders: Record<string, string> = {};
@@ -47,6 +58,11 @@ export class TripAdvisorService {
           quotaHeaders[key] = value;
         }
       });
+
+      // Manually trigger quota monitoring with all available headers
+      if (rapidApiClient) {
+        rapidApiClient.monitorQuotaUsage(quotaHeaders);
+      }
 
       return {
         ok: true,

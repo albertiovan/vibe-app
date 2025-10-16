@@ -50,7 +50,9 @@ app.get('/', (req, res) => {
       recommendations: 'POST /api/recommendations',
       parseMood: 'POST /api/parse-mood',
       pingTripAdvisor: '/api/ping/tripadvisor',
-      pingAll: '/api/ping/all'
+      pingAll: '/api/ping/all',
+      quotaStatus: '/api/ping/quota',
+      testAlerts: '/api/ping/test-alerts'
     }
   });
 });
