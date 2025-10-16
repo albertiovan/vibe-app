@@ -16,7 +16,7 @@ import recommendationRoutes from './routes/recommendations';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // Security middleware (must be applied in correct order)
 app.use(securityHeaders); // Helmet security headers
@@ -89,10 +89,11 @@ process.on('SIGINT', () => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🌊 Vibe API server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Health check: http://localhost:${PORT}/api/health`);
+  console.log(`Network access: http://10.103.30.198:${PORT}/api/health`);
   
   // Warn if required env vars are missing
   if (!process.env.RAPIDAPI_KEY) {

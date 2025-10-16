@@ -1,10 +1,47 @@
 import Constants from 'expo-constants';
 import { RecommendationRequest, RecommendationResponse, ApiError } from '../types';
 
-// Get API base URL - use proxy for web, direct for mobile
-const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl || 
-                     process.env.EXPO_PUBLIC_API_BASE_URL || 
-                     (typeof window !== 'undefined' ? '/api' : 'http://127.0.0.1:3000/api');
+// Get API base URL - detect environment properly
+const getApiBaseUrl = () => {
+  // Check if we have explicit configuration
+  if (Constants.expoConfig?.extra?.apiBaseUrl) {
+    return Constants.expoConfig.extra.apiBaseUrl;
+  }
+  
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
+    return process.env.EXPO_PUBLIC_API_BASE_URL;
+  }
+  
+  // Auto-detect based on environment
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // If accessing from localhost, use proxy
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return '/api';
+    }
+    
+    // If accessing from network IP, use direct connection to backend
+    if (hostname.startsWith('10.') || hostname.startsWith('192.168.')) {
+      return `http://10.103.30.198:3000/api`;
+    }
+    
+    // Fallback for web
+    return '/api';
+  }
+  
+  // Mobile/native fallback
+  return 'http://127.0.0.1:3000/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Debug logging
+console.log('=== API Configuration Debug ===');
+console.log('Window hostname:', typeof window !== 'undefined' ? window.location.hostname : 'N/A');
+console.log('Window href:', typeof window !== 'undefined' ? window.location.href : 'N/A');
+console.log('Detected API_BASE_URL:', API_BASE_URL);
+console.log('================================');
 
 class ApiService {
   private baseUrl: string;
@@ -20,29 +57,34 @@ class ApiService {
     const url = `${this.baseUrl}${endpoint}`;
     
     const config: RequestInit = {
+      ...options,
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
-      ...options,
     };
 
     try {
-      console.log('Making request to:', url);
+      console.log('=== API Request Debug ===');
+      console.log('Base URL:', this.baseUrl);
+      console.log('Endpoint:', endpoint);
+      console.log('Full URL:', url);
       console.log('Request config:', config);
+      console.log('========================');
       
       const response = await fetch(url, config);
       console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      console.log('Response ok:', response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response text:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
       
       const data = await response.json();
       console.log('Response data:', data);
-
-      if (!response.ok) {
-        const error: ApiError = data;
-        throw new Error(error.message || `HTTP ${response.status}`);
-      }
-
+      
       return data;
     } catch (error) {
       console.error('API request failed:', {
