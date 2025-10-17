@@ -1,270 +1,337 @@
 /**
- * Curation Service
- * LLM-powered place re-ranking, clustering, and summarization
+ * LLM-powered curation with strict 5-result diversity enforcement
+ * Re-ranks and curates places with bucket-aware diversity and validation guards
  */
 
 import { getLLMProvider } from './index.js';
 import { 
-  Curation, 
-  CurationSchema, 
-  PlaceForCuration, 
-  validateCuration, 
+  CurationSpec, 
+  CurationInput, 
+  CurationValidator,
+  CurationSpecSchema,
   createFallbackCuration 
-} from '../../schemas/curation.js';
+} from '../../schemas/curationSpec.js';
+import { ExperienceBucket } from '../../schemas/filterSpec.js';
 
 /**
- * System prompt for curation (copied verbatim from requirements)
+ * System prompt for bucket-aware curation with strict validation
  */
-const CURATION_SYSTEM_PROMPT = `You curate activities strictly from the provided items array.
+const CURATION_SYSTEM_PROMPT = `You are a diversity-enforcing experience curator. Your mission: select exactly 5 diverse experiences from the provided list.
 
-Rules:
-- Never add or remove items; any output IDs must be a subset of input IDs.
-- Don't alter factual fields (ratings, addresses, times).
-- Blurbs: 40–60 words, concise, no unsupported claims (no "best" unless provided).
-- If insufficient info for a blurb, return an empty string.
-- Output ONLY JSON matching the schema.
+CRITICAL RULES:
+1. Output exactly 5 items - no more, no less
+2. Use ONLY IDs from the provided input list - never invent new ones
+3. Aim for 1 item per bucket when possible: trails, adrenaline, nature, culture, wellness, nightlife
+4. If food appears without explicit culinary intent, exclude it
+5. Consider weather constraints if provided
 
-Curation Output Schema:
+BUCKET PRIORITIES (select across these for diversity):
+- TRAILS: hiking, MTB, cycling, outdoor routes
+- ADRENALINE: sports, adventure, high-energy activities  
+- NATURE: parks, natural attractions, scenic spots
+- CULTURE: museums, galleries, historical sites
+- WELLNESS: spas, relaxation, wellness centers
+- NIGHTLIFE: evening entertainment, social venues
+
+Output ONLY valid JSON matching this EXACT schema:
 {
-  rerankedIds: string[]; // ordered list of input place_ids
-  clusters: { label: string; ids: string[] }[]; // optional thematic groupings
-  summaries: { id: string; blurb: string }[];   // safe microcopy per id
-}`;
+  "topFiveIds": ["id1", "id2", "id3", "id4", "id5"],
+  "clusters": [
+    {
+      "label": "Adventure & Thrills",
+      "bucket": "adrenaline", 
+      "ids": ["id1", "id2"]
+    }
+  ],
+  "summaries": [
+    {
+      "id": "id1",
+      "blurb": "Exactly 40-60 words describing what makes this experience special and why it matches the user's vibe.",
+      "highlights": ["key feature 1", "key feature 2"],
+      "bucket": "adrenaline"
+    }
+  ],
+  "diversityScore": 0.8,
+  "bucketsRepresented": ["trails", "adrenaline", "nature"],
+  "reasoning": "Selected diverse experiences across 3 buckets prioritizing outdoor activities and high ratings."
+}
+
+VALIDATION REQUIREMENTS:
+- topFiveIds.length === 5 (exactly 5)
+- summaries.length === 5 (exactly 5)  
+- Every ID in topFiveIds exists in input
+- Every summary.id matches topFiveIds
+- Every cluster.ids are subset of topFiveIds
+- Blurbs are 40-60 words (count carefully)
+- Maximize bucket diversity when possible`;
 
 /**
- * Re-rank and summarize places based on query context
+ * Curate exactly 5 diverse experiences with bucket-aware selection
+ */
+export async function curateTopFive(input: CurationInput): Promise<CurationSpec> {
+  const startTime = Date.now();
+  
+  console.log('🎯 Curating top 5 experiences:', {
+    itemCount: input.items.length,
+    buckets: input.filterSpec.buckets,
+    weather: input.weather?.recommendation || 'none'
+  });
+
+  // Validate input
+  if (input.items.length < 5) {
+    console.warn('⚠️ Insufficient items for curation, creating fallback');
+    return createFallbackCuration(input.items, input.filterSpec.buckets);
+  }
+
+  try {
+    const provider = getLLMProvider();
+    
+    // Prepare input data for LLM with bucket classification
+    const enrichedItems = input.items.map(item => ({
+      id: item.id,
+      name: item.name,
+      rating: item.rating || 0,
+      types: item.types || [],
+      description: item.description || '',
+      distance: item.distance,
+      weatherSuitability: item.weatherSuitability || 1,
+      bucket: item.bucket || classifyItemToBucket(item)
+    }));
+
+    // Create context for LLM
+    const contextPrompt = `
+INPUT ITEMS (select exactly 5):
+${enrichedItems.map(item => `
+ID: ${item.id}
+Name: ${item.name}
+Rating: ${item.rating}/5
+Types: ${item.types.join(', ')}
+Bucket: ${item.bucket || 'unclassified'}
+Distance: ${item.distance ? `${item.distance.toFixed(1)}km` : 'unknown'}
+Weather Suitability: ${(item.weatherSuitability * 100).toFixed(0)}%
+${item.description ? `Description: ${item.description.slice(0, 100)}` : ''}
+`).join('\n')}
+
+TARGET BUCKETS: ${input.filterSpec.buckets.join(', ')}
+ENERGY LEVEL: ${input.filterSpec.energy}
+AVOID FOOD: ${input.filterSpec.avoidFood}
+${input.weather ? `WEATHER: ${input.weather.conditions} (${input.weather.temperature}°C, ${input.weather.recommendation})` : ''}
+
+Select exactly 5 diverse experiences prioritizing bucket diversity and weather suitability.`;
+
+    const result = await provider.completeJSON({
+      system: CURATION_SYSTEM_PROMPT,
+      user: contextPrompt,
+      schema: CurationSpecSchema,
+      maxTokens: 2000
+    });
+
+    if (result.ok) {
+      const curation = result.data as CurationSpec;
+      
+      // Validate the curation output
+      const inputIds = input.items.map(item => item.id);
+      const validation = CurationValidator.validateComplete(
+        curation, 
+        inputIds, 
+        input.filterSpec.buckets
+      );
+
+      if (!validation.valid) {
+        console.warn('⚠️ LLM curation failed validation:', validation.errors);
+        return createHeuristicFallback(input);
+      }
+
+      if (validation.warnings.length > 0) {
+        console.warn('⚠️ Curation warnings:', validation.warnings);
+      }
+
+      console.log('✅ Curation successful:', {
+        duration: Date.now() - startTime,
+        diversityScore: validation.diversity.score,
+        bucketsRepresented: validation.diversity.bucketsRepresented.length,
+        warnings: validation.warnings.length
+      });
+
+      return curation;
+    } else {
+      console.warn('⚠️ LLM curation failed, using heuristic fallback:', result.error);
+      return createHeuristicFallback(input);
+    }
+
+  } catch (error) {
+    console.error('❌ Curation error:', error);
+    return createHeuristicFallback(input);
+  }
+}
+
+/**
+ * Classify an item to an experience bucket based on its properties
+ */
+function classifyItemToBucket(item: CurationInput['items'][0]): ExperienceBucket | undefined {
+  const types = item.types || [];
+  const name = (item.name || '').toLowerCase();
+
+  // Trails & Outdoor
+  if (types.includes('park') || name.includes('trail') || name.includes('hike')) {
+    return 'trails';
+  }
+
+  // Adrenaline & Sports
+  if (types.includes('stadium') || types.includes('amusement_park') || types.includes('gym') || 
+      name.includes('sport') || name.includes('adventure')) {
+    return 'adrenaline';
+  }
+
+  // Nature & Serenity
+  if (types.includes('zoo') || types.includes('aquarium') || name.includes('garden') || 
+      name.includes('nature') || name.includes('scenic')) {
+    return 'nature';
+  }
+
+  // Culture & Arts
+  if (types.includes('museum') || types.includes('art_gallery') || types.includes('library') ||
+      name.includes('museum') || name.includes('gallery') || name.includes('cultural')) {
+    return 'culture';
+  }
+
+  // Wellness & Relaxation
+  if (types.includes('spa') || name.includes('spa') || name.includes('wellness') || 
+      name.includes('massage') || name.includes('relax')) {
+    return 'wellness';
+  }
+
+  // Nightlife & Social
+  if (types.includes('night_club') || types.includes('bar') || types.includes('casino') ||
+      name.includes('club') || name.includes('bar') || name.includes('nightlife')) {
+    return 'nightlife';
+  }
+
+  return undefined;
+}
+
+/**
+ * Create heuristic fallback when LLM fails
+ */
+function createHeuristicFallback(input: CurationInput): CurationSpec {
+  console.log('🔄 Creating heuristic fallback curation');
+
+  // Sort items by rating and weather suitability
+  const scoredItems = input.items
+    .map(item => ({
+      ...item,
+      bucket: item.bucket || classifyItemToBucket(item),
+      score: (item.rating || 0) * 0.7 + (item.weatherSuitability || 1) * 0.3
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  // Try to get 1 item per bucket, then fill remaining slots
+  const selectedItems: typeof scoredItems = [];
+  const usedBuckets = new Set<string>();
+
+  // First pass: one per bucket
+  for (const item of scoredItems) {
+    if (selectedItems.length >= 5) break;
+    
+    if (item.bucket && !usedBuckets.has(item.bucket)) {
+      selectedItems.push(item);
+      usedBuckets.add(item.bucket);
+    }
+  }
+
+  // Second pass: fill remaining slots with highest rated
+  for (const item of scoredItems) {
+    if (selectedItems.length >= 5) break;
+    
+    if (!selectedItems.some(selected => selected.id === item.id)) {
+      selectedItems.push(item);
+    }
+  }
+
+  // Ensure exactly 5 items
+  const topFive = selectedItems.slice(0, 5);
+  
+  // Pad if needed
+  while (topFive.length < 5 && scoredItems.length > topFive.length) {
+    const remaining = scoredItems.find(item => 
+      !topFive.some(selected => selected.id === item.id)
+    );
+    if (remaining) {
+      topFive.push(remaining);
+    } else {
+      break;
+    }
+  }
+
+  const topFiveIds = topFive.map(item => item.id);
+  
+  const summaries = topFive.map(item => ({
+    id: item.id,
+    blurb: `${item.name} offers an excellent experience with ${item.rating || 'good'} rating. ${item.description ? item.description.slice(0, 40) : 'A great choice for your adventure.'} Highly recommended for its quality and location.`,
+    bucket: item.bucket
+  }));
+
+  const clusters = [{
+    label: 'Top Rated Experiences',
+    ids: topFiveIds
+  }];
+
+  const bucketsRepresented = [...new Set(topFive.map(item => item.bucket).filter(Boolean))] as ExperienceBucket[];
+
+  return {
+    topFiveIds,
+    clusters,
+    summaries,
+    diversityScore: bucketsRepresented.length / Math.max(input.filterSpec.buckets.length, 5),
+    bucketsRepresented,
+    reasoning: 'Heuristic fallback: Selected top-rated experiences with bucket diversity'
+  };
+}
+
+/**
+ * Legacy function for backward compatibility
  */
 export async function rerankAndSummarize({
   query,
   items
 }: {
   query: string;
-  items: PlaceForCuration[];
-}): Promise<Curation> {
-  const startTime = Date.now();
-  
-  console.log('🎯 Curating places:', {
-    query: query.slice(0, 100) + (query.length > 100 ? '...' : ''),
-    itemCount: items.length,
-    itemIds: items.map(item => item.place_id)
-  });
-
-  // Fallback for empty input
-  if (items.length === 0) {
-    return {
-      rerankedIds: [],
-      clusters: undefined,
-      summaries: []
-    };
-  }
-
-  try {
-    const provider = getLLMProvider();
-    
-    // Prepare input data for LLM
-    const inputData = items.map(item => ({
-      place_id: item.place_id,
-      name: item.name,
-      types: item.types,
-      rating: item.rating,
-      user_ratings_total: item.user_ratings_total,
-      vicinity: item.vicinity || item.formatted_address,
-      opening_hours: item.opening_hours,
-      editorial_summary: item.editorial_summary?.overview,
-      vibeScore: item.vibeScore,
-      vibeReasons: item.vibeReasons
-    }));
-
-    const userPrompt = `Query: "${query}"
-
-Places to curate:
-${JSON.stringify(inputData, null, 2)}
-
-Instructions:
-1. Rerank these places based on relevance to the query and overall appeal
-2. Create 2-4 thematic clusters if there are natural groupings (optional)
-3. Write concise 40-60 word blurbs for each place using only the provided information
-4. Use only the place_ids from the input - never invent new ones
-5. If you lack sufficient info for a good blurb, use an empty string
-
-Output the JSON curation object:`;
-
-    const result = await provider.completeJSON({
-      system: CURATION_SYSTEM_PROMPT,
-      user: userPrompt,
-      schema: CurationSchema,
-      maxTokens: 3000
-    });
-
-    if (result.ok) {
-      // Validate that all IDs are from input
-      const inputIds = items.map(item => item.place_id);
-      const validationResult = validateCuration(result.data, inputIds);
-      
-      if (validationResult.ok) {
-        console.log('✅ Curation successful:', {
-          duration: Date.now() - startTime,
-          rerankedCount: validationResult.data.rerankedIds.length,
-          clusterCount: validationResult.data.clusters?.length || 0,
-          summaryCount: validationResult.data.summaries.length
-        });
-
-        return validationResult.data;
-      } else {
-        console.warn('⚠️ Curation validation failed:', validationResult.error);
-        return createFallbackCuration(items);
-      }
-    } else {
-      console.warn('⚠️ LLM curation failed, using fallback:', result.error);
-      return createFallbackCuration(items);
-    }
-
-  } catch (error) {
-    console.error('❌ Curation error:', error);
-    return createFallbackCuration(items);
-  }
-}
-
-/**
- * Create clusters only (without full curation)
- */
-export async function createClusters({
-  items,
-  maxClusters = 4
-}: {
-  items: PlaceForCuration[];
-  maxClusters?: number;
-}): Promise<{ label: string; ids: string[] }[]> {
-  
-  if (items.length < 3) {
-    return []; // Not enough items to cluster meaningfully
-  }
-
-  try {
-    const provider = getLLMProvider();
-    
-    const inputData = items.map(item => ({
-      place_id: item.place_id,
-      name: item.name,
-      types: item.types
-    }));
-
-    const userPrompt = `Places to cluster:
-${JSON.stringify(inputData, null, 2)}
-
-Create ${maxClusters} thematic clusters from these places based on their types and characteristics. Each cluster should have a descriptive label and contain 2+ place IDs.
-
-Output JSON format:
-{
-  "clusters": [
-    {"label": "Cultural Attractions", "ids": ["id1", "id2"]},
-    {"label": "Outdoor Activities", "ids": ["id3", "id4"]}
-  ]
-}`;
-
-    const result = await provider.completeJSON({
-      system: 'You create thematic clusters from place data. Output only valid JSON.',
-      user: userPrompt,
-      schema: CurationSchema.pick({ clusters: true }),
-      maxTokens: 1000
-    });
-
-    if (result.ok && result.data.clusters) {
-      // Validate cluster IDs
-      const inputIds = new Set(items.map(item => item.place_id));
-      const validClusters = result.data.clusters.filter(cluster =>
-        cluster.ids.every(id => inputIds.has(id))
-      );
-
-      console.log('✅ Clustering successful:', {
-        originalClusters: result.data.clusters.length,
-        validClusters: validClusters.length
-      });
-
-      return validClusters;
-    }
-
-    return [];
-
-  } catch (error) {
-    console.warn('⚠️ Clustering failed:', error);
-    return [];
-  }
-}
-
-/**
- * Generate summaries only (without re-ranking)
- */
-export async function generateSummaries(items: PlaceForCuration[]): Promise<{ id: string; blurb: string }[]> {
-  if (items.length === 0) {
-    return [];
-  }
-
-  try {
-    const provider = getLLMProvider();
-    
-    const inputData = items.map(item => ({
-      place_id: item.place_id,
-      name: item.name,
-      types: item.types,
-      rating: item.rating,
-      user_ratings_total: item.user_ratings_total,
-      vicinity: item.vicinity || item.formatted_address,
-      editorial_summary: item.editorial_summary?.overview
-    }));
-
-    const userPrompt = `Generate 40-60 word blurbs for these places:
-${JSON.stringify(inputData, null, 2)}
-
-Rules:
-- Use only the provided information
-- Be concise and engaging
-- No unsupported claims
-- If insufficient info, use empty string
-
-Output JSON format:
-{
-  "summaries": [
-    {"id": "place_id", "blurb": "40-60 word description"},
-    {"id": "place_id", "blurb": ""}
-  ]
-}`;
-
-    const result = await provider.completeJSON({
-      system: 'You write concise place descriptions using only provided facts. Output only valid JSON.',
-      user: userPrompt,
-      schema: CurationSchema.pick({ summaries: true }),
-      maxTokens: 2000
-    });
-
-    if (result.ok && result.data.summaries) {
-      // Validate summary IDs
-      const inputIds = new Set(items.map(item => item.place_id));
-      const validSummaries = result.data.summaries.filter(summary =>
-        inputIds.has(summary.id)
-      );
-
-      console.log('✅ Summary generation successful:', {
-        requestedSummaries: items.length,
-        generatedSummaries: validSummaries.length
-      });
-
-      return validSummaries;
-    }
-
-    // Fallback: empty summaries
-    return items.map(item => ({
+  items: Array<{
+    place_id: string;
+    name: string;
+    rating?: number;
+    types?: string[];
+    description?: string;
+  }>;
+}): Promise<{
+  rerankedIds: string[];
+  clusters?: any;
+  summaries: Array<{ id: string; summary: string }>;
+}> {
+  // Convert to new format
+  const curationInput: CurationInput = {
+    items: items.map(item => ({
       id: item.place_id,
-      blurb: ''
-    }));
+      name: item.name,
+      rating: item.rating,
+      types: item.types,
+      description: item.description
+    })),
+    filterSpec: {
+      buckets: ['trails', 'adrenaline', 'nature', 'culture', 'wellness'],
+      energy: 'medium',
+      avoidFood: true
+    }
+  };
 
-  } catch (error) {
-    console.warn('⚠️ Summary generation failed:', error);
-    
-    // Fallback: empty summaries
-    return items.map(item => ({
-      id: item.place_id,
-      blurb: ''
-    }));
-  }
+  const curation = await curateTopFive(curationInput);
+
+  return {
+    rerankedIds: curation.topFiveIds,
+    clusters: curation.clusters,
+    summaries: curation.summaries.map(s => ({
+      id: s.id,
+      summary: s.blurb
+    }))
+  };
 }

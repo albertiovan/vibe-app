@@ -9,6 +9,8 @@ import { diversifyResults, shouldEnableCulinary, FOOD_POLICY } from '../config/a
 import { features } from '../config/features.js';
 import { OutdoorActivitiesOrchestrator } from './outdoor/orchestrator.js';
 import { LocationService } from './location/index.js';
+import { curateTopFive } from './llm/curation.js';
+import { CurationInput } from '../schemas/curationSpec.js';
 
 export class GooglePlacesService {
   private client: Client;

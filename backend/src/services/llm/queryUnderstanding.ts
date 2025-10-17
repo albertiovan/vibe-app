@@ -10,45 +10,56 @@ import { ACTIVITY_TYPES_ALLOWLIST, FOOD_TYPES_BLOCKLIST } from '../../config/pla
 /**
  * System prompt for vibe-to-filter mapping (copied verbatim from requirements)
  */
-const VIBE_TO_FILTER_SYSTEM_PROMPT = `You are a strict JSON generator that maps a user's "vibe" into Google Places filters.
+const VIBE_TO_FILTER_SYSTEM_PROMPT = `You are a bucket-aware experience curator that maps user vibes to exactly 5 diverse activities.
 
-CORE PRINCIPLE: Default to EXPERIENCES over food. Food is only included for explicit culinary requests.
+CORE MISSION: Transform vibes into structured filters that enable discovery of exactly 5 diverse experiences across different buckets.
 
-Your job: Convert natural language vibes into structured search parameters for finding diverse experiences across these sectors:
-- TRAILS & OUTDOOR: hiking, nature walks, outdoor exploration
-- ADRENALINE & SPORTS: high-energy activities, sports, adventure
-- NATURE & SERENITY: peaceful natural settings, gardens, scenic spots  
-- CULTURE & ARTS: museums, galleries, historical sites, cultural experiences
-- WELLNESS & RELAXATION: spas, wellness centers, relaxation activities
-- NIGHTLIFE & SOCIAL: evening entertainment, social venues (non-food focused)
+EXPERIENCE BUCKETS (aim for 1 per bucket when possible):
+- TRAILS: hiking, MTB, cycling, outdoor routes, nature walks
+- ADRENALINE: high-energy sports, adventure activities, thrill experiences  
+- NATURE: natural attractions, parks, scenic spots, wildlife, gardens
+- CULTURE: museums, galleries, historical sites, art, heritage
+- WELLNESS: spas, relaxation, wellness centers, meditation, rejuvenation
+- NIGHTLIFE: evening entertainment, social venues, bars, clubs (non-food)
 
-Output ONLY valid JSON matching this schema:
+Output ONLY valid JSON matching this EXACT schema:
 {
-  types: string[],           // Google Places types (diverse across sectors)
-  keywords?: string[],       // Search keywords for experiences
-  radiusMeters: number,      // Search radius
-  timeOfDay?: string|null,   // 'morning'|'afternoon'|'evening'|null
-  indoorOutdoor?: string,    // 'indoor'|'outdoor'|'either'
-  energy?: string,           // 'chill'|'medium'|'high'
-  minRating?: number,        // 0–5
-  maxPriceLevel?: number,    // 0–4 (Google price scale)
-  avoid?: string[]           // Things to avoid
+  "types": ["type1", "type2", ...],           // 3-15 Google Places types
+  "keywords": ["keyword1", "keyword2", ...],  // 1-10 search keywords
+  "buckets": ["trails", "adrenaline", ...],   // 1-6 target buckets for diversity
+  "radiusKm": 10,                            // 1-50 km search radius
+  "maxTravelMinutes": 60,                     // 5-120 max travel time
+  "timeOfDay": "afternoon",                   // morning|afternoon|evening|null
+  "indoorOutdoor": "outdoor",                 // indoor|outdoor|either
+  "energy": "high",                          // chill|medium|high
+  "minRating": 4.2,                          // 0-5 minimum rating
+  "maxPriceLevel": 3,                        // 0-4 or null
+  "avoidFood": true,                         // true unless explicit culinary request
+  "avoid": ["crowded", "expensive"]          // things to avoid or null
 }
 
-EXPERIENCE-FIRST Activity Types (prioritize these):
+ACTIVITY TYPES (use these for 'types' field):
 ${ACTIVITY_TYPES_ALLOWLIST.join(', ')}
 
-EXERCISE/FITNESS - Think broadly:
-- gym, stadium, sports_complex (traditional fitness)
-- park (running, outdoor workouts, sports fields)  
-- tourist_attraction (sports venues, recreational facilities)
-- bowling_alley, amusement_park (active entertainment)
-- Keywords: fitness, sports, outdoor, recreation, tennis, golf, swimming, running, cycling
+BUCKET MAPPING RULES:
+- TRAILS → park, tourist_attraction, natural_feature
+- ADRENALINE → amusement_park, stadium, gym, bowling_alley  
+- NATURE → park, zoo, aquarium, botanical_garden
+- CULTURE → museum, art_gallery, library, church, synagogue
+- WELLNESS → spa, beauty_salon, gym (wellness-focused)
+- NIGHTLIFE → night_club, bar, casino, movie_theater
 
-FOOD POLICY - Only include food for EXPLICIT culinary requests:
-- User must specifically mention: dining, restaurant, food, eating, culinary, michelin, tasting menu
-- When included, focus on premium experiences: ${FOOD_TYPES_BLOCKLIST.join(', ')}
-- Default behavior: AVOID food, focus on experiences`;
+FOOD POLICY (avoidFood: true by default):
+- Set avoidFood: false ONLY for explicit culinary requests
+- Culinary triggers: "dining", "restaurant", "food", "michelin", "tasting menu", "culinary experience"
+- When food enabled: focus on premium (price_level >= 3, rating >= 4.3)
+
+DIVERSITY REQUIREMENTS:
+- Select 3-6 buckets based on vibe complexity
+- Prioritize buckets that match user's energy/mood
+- Include outdoor buckets (trails/nature) for outdoor vibes
+- Include culture/wellness for relaxed vibes
+- Include adrenaline/nightlife for high-energy vibes`;
 
 /**
  * Parse user vibe text into Google Places filter specification
@@ -90,8 +101,9 @@ Output only the JSON object:`;
         duration: Date.now() - startTime,
         types: filterSpec.types?.length || 0,
         keywords: filterSpec.keywords?.length || 0,
+        buckets: filterSpec.buckets?.length || 0,
         energy: filterSpec.energy,
-        radiusMeters: filterSpec.radiusMeters
+        radiusKm: filterSpec.radiusKm
       });
 
       return filterSpec;
@@ -146,7 +158,7 @@ function createVibeBasedFallback(vibeText: string): FilterSpec {
   } else if (text.includes('evening')) {
     fallback.timeOfDay = 'evening';
   } else if (text.includes('night') || text.includes('late')) {
-    fallback.timeOfDay = 'late';
+    fallback.timeOfDay = 'evening';
   }
 
   // Budget considerations
@@ -211,6 +223,6 @@ export function validateFilterSpecTypes(filterSpec: FilterSpec): FilterSpec {
 
   return {
     ...filterSpec,
-    types: validTypes.length > 0 ? validTypes : undefined
+    types: validTypes.length > 0 ? validTypes : ['tourist_attraction', 'park']
   };
 }
