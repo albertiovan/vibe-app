@@ -7,6 +7,7 @@ import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { NearbyOrchestrator } from '../services/places/nearbyOrchestrator.js';
 import { VibeToPlacesMapper } from '../services/llm/vibeToPlacesMapper.js';
+import { PersonalizationService } from '../services/personalization/personalizationService.js';
 import { SearchFilters } from '../types/vibe.js';
 
 const router = Router();
@@ -22,7 +23,10 @@ router.post('/search', [
   body('filters.radiusMeters').optional().isInt({ min: 100, max: 200000 }).withMessage('Radius must be 100m-200km'),
   body('filters.durationHours').optional().isFloat({ min: 0.5, max: 24 }).withMessage('Duration must be 0.5-24 hours'),
   body('filters.nationwide').optional().isBoolean().withMessage('Nationwide must be boolean'),
-  body('filters.travelMode').optional().isIn(['drive', 'transit', 'walk']).withMessage('Invalid travel mode')
+  body('filters.travelMode').optional().isIn(['drive', 'transit', 'walk']).withMessage('Invalid travel mode'),
+  body('userId').optional().isString().withMessage('Invalid user ID'),
+  body('timeOfDay').optional().isIn(['morning', 'afternoon', 'evening', 'night']).withMessage('Invalid time of day'),
+  body('weatherConditions').optional().isString().withMessage('Invalid weather conditions')
 ], async (req: Request, res: Response): Promise<void> => {
   try {
     // Validate input
@@ -36,7 +40,7 @@ router.post('/search', [
       return;
     }
 
-    const { vibe, location, filters = {} } = req.body;
+    const { vibe, location, filters = {}, userId, timeOfDay, weatherConditions } = req.body;
     
     console.log('🔍 Nearby search request:', {
       vibe: vibe.slice(0, 50),
@@ -73,6 +77,58 @@ router.post('/search', [
       buckets: vibeMapping.buckets
     });
 
+    // Apply personalized scoring if user ID provided
+    let personalizedPlaces = searchResult.places;
+    let personalizedChallenges = searchResult.challenges;
+    
+    if (userId) {
+      console.log('🎯 Applying personalized scoring for user:', userId);
+      
+      const personalizationService = new PersonalizationService();
+      
+      // Get personalized scores for main places
+      const scoredPlaces = await personalizationService.getPersonalizedScores(
+        userId,
+        searchResult.places,
+        {
+          weatherConditions,
+          timeOfDay,
+          userLocation: location
+        }
+      );
+      
+      // Sort by personalized score
+      personalizedPlaces = scoredPlaces
+        .sort((a, b) => b.personalizedScore - a.personalizedScore)
+        .slice(0, 5); // Keep top 5
+      
+      // Apply personalized scoring to challenges too
+      if (searchResult.challenges.length > 0) {
+        const scoredChallenges = await personalizationService.getPersonalizedScores(
+          userId,
+          searchResult.challenges,
+          {
+            weatherConditions,
+            timeOfDay,
+            userLocation: location
+          }
+        );
+        
+        // Merge personalized scores back into challenge objects
+        personalizedChallenges = scoredChallenges
+          .map((scoredPlace: any) => {
+            const originalChallenge = searchResult.challenges.find(c => c.placeId === scoredPlace.placeId);
+            return originalChallenge ? {
+              ...originalChallenge,
+              personalizedScore: scoredPlace.personalizedScore
+            } : null;
+          })
+          .filter((challenge): challenge is any => challenge !== null)
+          .sort((a: any, b: any) => b.personalizedScore - a.personalizedScore)
+          .slice(0, 2) as any; // Keep top 2 challenges
+      }
+    }
+
     // Format response
     res.json({
       success: true,
@@ -87,7 +143,7 @@ router.post('/search', [
           reasoning: vibeMapping.reasoning,
           confidence: vibeMapping.confidence
         },
-        places: searchResult.places.map(place => ({
+        places: personalizedPlaces.map((place: any) => ({
           id: place.placeId,
           name: place.name,
           rating: place.rating,
