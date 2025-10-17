@@ -104,10 +104,27 @@ router.post('/search', [
           vibeReasons: place.vibeReasons,
           openingHours: place.openingHours
         })),
+        challenges: searchResult.challenges.map(challenge => ({
+          id: challenge.placeId,
+          name: challenge.name,
+          rating: challenge.rating,
+          location: challenge.geometry.location,
+          vicinity: challenge.vicinity,
+          city: challenge.travelEstimate.distanceKm > 50 ? 'Regional destination' : 'Extended area',
+          imageUrl: challenge.imageUrl,
+          mapsUrl: challenge.mapsUrl,
+          travelEstimate: `${challenge.travelEstimate.distanceKm}km, ${Math.round(challenge.travelEstimate.estimatedMinutes / 60)}h drive`,
+          weatherBadge: challenge.weatherForecast.badge,
+          challengeReason: challenge.challengeReason,
+          challengeScore: challenge.challengeScore,
+          riskNote: challenge.riskNote,
+          seasonalPerks: challenge.seasonalPerks
+        })),
         searchStats: {
           totalFound: searchResult.totalFound,
           searchCenters: searchResult.searchCenters,
-          deduplication: searchResult.deduplicationStats
+          deduplication: searchResult.deduplicationStats,
+          challenges: searchResult.challengeStats
         },
         processingTime: Date.now() - Date.now() // Will be calculated properly
       }

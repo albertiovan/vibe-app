@@ -12,6 +12,7 @@ import {
   VIBE_TO_PLACES_MAPPING,
   VibeMapping
 } from '../../types/vibe.js';
+import { ChallengeSelector, ChallengePlace } from './challengeSelector.js';
 
 export interface NearbySearchParams {
   origin: { lat: number; lng: number };
@@ -23,12 +24,18 @@ export interface NearbySearchParams {
 
 export interface NearbySearchResult {
   places: VibePlace[];
+  challenges: ChallengePlace[];
   totalFound: number;
   searchCenters: Array<{ name: string; lat: number; lng: number; resultsCount: number }>;
   deduplicationStats: {
     totalRaw: number;
     duplicatesRemoved: number;
     finalCount: number;
+  };
+  challengeStats?: {
+    totalCandidates: number;
+    weatherChecked: number;
+    reasoning: string;
   };
 }
 
@@ -44,6 +51,7 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 export class NearbyOrchestrator {
   private client: Client;
   private apiKey: string;
+  private challengeSelector: ChallengeSelector;
 
   constructor() {
     this.apiKey = process.env.GOOGLE_MAPS_API_KEY || '';
@@ -52,7 +60,8 @@ export class NearbyOrchestrator {
     }
     
     this.client = new Client({});
-    console.log('🔍 Nearby Orchestrator initialized');
+    this.challengeSelector = new ChallengeSelector();
+    console.log('🔍 Nearby Orchestrator initialized with challenge selector');
   }
 
   /**
@@ -99,8 +108,17 @@ export class NearbyOrchestrator {
       // Enrich with photos and maps URLs
       const enrichedPlaces = await this.enrichWithDetails(filteredPlaces);
 
+      // Select challenge destinations (outside-the-box suggestions)
+      const challengeResult = await this.challengeSelector.selectChallenges(
+        places, // Use all places including those outside radius
+        origin,
+        filters,
+        `${types.join(' ')} ${keywords.join(' ')}`
+      );
+
       const result: NearbySearchResult = {
         places: enrichedPlaces,
+        challenges: challengeResult.challenges,
         totalFound: enrichedPlaces.length,
         searchCenters: searchCenters.map(center => ({
           name: center.name,
@@ -108,7 +126,12 @@ export class NearbyOrchestrator {
           lng: center.lng,
           resultsCount: allResults.filter(r => r.centerName === center.name).length
         })),
-        deduplicationStats
+        deduplicationStats,
+        challengeStats: {
+          totalCandidates: challengeResult.totalCandidates,
+          weatherChecked: challengeResult.weatherChecked,
+          reasoning: challengeResult.reasoning
+        }
       };
 
       // Cache the result
