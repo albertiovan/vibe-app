@@ -1,5 +1,17 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  Linking,
+  Dimensions,
+} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -223,17 +235,45 @@ function ResultsScreen({ route, navigation }: any) {
       <ScrollView style={styles.resultsList}>
         {places.map((place: any, index: number) => (
           <View key={place.id || index} style={styles.activityCard}>
-            <View style={styles.placeHeader}>
-              <Text style={styles.activityName}>{place.name}</Text>
-              <View style={styles.placeRating}>
-                {place.rating && (
-                  <Text style={styles.activityRating}>★ {place.rating}</Text>
-                )}
-                {place.weatherSuitability && (
-                  <Text style={styles.vibeScore}>{Math.round(place.weatherSuitability * 100)}%</Text>
-                )}
-              </View>
+            {/* Place Image with 16:9 Aspect Ratio */}
+            <View style={styles.imageContainer}>
+              <Image
+                source={{
+                  uri: place.imageUrl 
+                    ? `http://10.103.30.198:3000${place.imageUrl}`
+                    : 'https://via.placeholder.com/400x225/E5E7EB/9CA3AF?text=No+Photo'
+                }}
+                style={styles.placeImage}
+                resizeMode="cover"
+                onError={() => {
+                  console.log('Image failed to load for:', place.name);
+                }}
+              />
+              
+              {/* Photo Attribution Overlay */}
+              {place.photoAttribution && (
+                <View style={styles.attributionOverlay}>
+                  <Text style={styles.attributionText}>📷 Google</Text>
+                </View>
+              )}
+              
+              {/* Rating Badge Overlay */}
+              {place.rating && (
+                <View style={styles.ratingBadge}>
+                  <Text style={styles.ratingBadgeText}>★ {place.rating}</Text>
+                </View>
+              )}
             </View>
+
+            <View style={styles.cardContent}>
+              <View style={styles.placeHeader}>
+                <Text style={styles.activityName}>{place.name}</Text>
+                <View style={styles.placeRating}>
+                  {place.weatherSuitability && (
+                    <Text style={styles.vibeScore}>{Math.round(place.weatherSuitability * 100)}%</Text>
+                  )}
+                </View>
+              </View>
             
             {/* Location and Distance */}
             <Text style={styles.activityDescription}>
@@ -270,6 +310,22 @@ function ResultsScreen({ route, navigation }: any) {
               {place.source && (
                 <Text style={styles.walkingTime}>via {place.source}</Text>
               )}
+            </View>
+
+            {/* Google Maps Button */}
+            {place.mapsUrl && (
+              <TouchableOpacity
+                style={styles.mapsButton}
+                onPress={() => {
+                  Linking.openURL(place.mapsUrl).catch(err => {
+                    console.error('Failed to open Google Maps:', err);
+                    Alert.alert('Error', 'Could not open Google Maps');
+                  });
+                }}
+              >
+                <Text style={styles.mapsButtonText}>🗺️ Open in Google Maps</Text>
+              </TouchableOpacity>
+            )}
             </View>
           </View>
         ))}
@@ -424,7 +480,7 @@ const styles = StyleSheet.create({
   activityCard: {
     backgroundColor: 'white',
     borderRadius: 12,
-    padding: 16,
+    padding: 12,
     marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -511,5 +567,64 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontSize: 12,
     fontWeight: '500',
+  },
+  // New styles for images and Google Maps integration
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+    aspectRatio: 16 / 9, // 16:9 aspect ratio
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  placeImage: {
+    width: '100%',
+    height: '100%',
+  },
+  attributionOverlay: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  attributionText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '500',
+  },
+  ratingBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ratingBadgeText: {
+    color: '#F59E0B',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  cardContent: {
+    paddingHorizontal: 4,
+  },
+  mapsButton: {
+    backgroundColor: '#0EA5E9',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  mapsButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });
