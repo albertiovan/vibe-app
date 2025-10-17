@@ -22,6 +22,17 @@ function loadLLMConfig(): LLMConfig {
   const model = process.env.LLM_MODEL || getDefaultModel(provider);
   const timeoutMs = parseInt(process.env.LLM_TIMEOUT_MS || '15000', 10);
 
+  // Debug environment variable loading
+  console.log('🔧 Loading LLM config:', {
+    provider,
+    model,
+    timeoutMs,
+    claudeKeyExists: !!process.env.CLAUDE_API_KEY,
+    claudeKeyLength: process.env.CLAUDE_API_KEY?.length || 0,
+    openaiKeyExists: !!process.env.OPENAI_API_KEY,
+    openaiKeyLength: process.env.OPENAI_API_KEY?.length || 0
+  });
+
   const config: LLMConfig = {
     provider,
     model,
@@ -106,8 +117,27 @@ function validateLLMConfig(config: LLMConfig): void {
   });
 }
 
-// Export singleton configuration
-export const llmConfig = loadLLMConfig();
+/**
+ * Global LLM configuration instance (lazy loaded)
+ */
+let _llmConfig: LLMConfig | null = null;
+
+export function getLLMConfig(): LLMConfig {
+  if (!_llmConfig) {
+    _llmConfig = loadLLMConfig();
+  }
+  return _llmConfig;
+}
+
+// For backward compatibility - but this should be avoided, use getLLMConfig() instead
+export let llmConfig: LLMConfig;
+
+// Initialize lazily when first accessed
+Object.defineProperty(exports, 'llmConfig', {
+  get() {
+    return getLLMConfig();
+  }
+});
 
 /**
  * Check if LLM is properly configured

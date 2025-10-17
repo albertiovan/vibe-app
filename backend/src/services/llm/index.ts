@@ -6,7 +6,7 @@
 import { LLMProvider } from './provider.js';
 import { ClaudeProvider } from './claude.js';
 import { OpenAIProvider } from './openai.js';
-import { llmConfig, getProviderConfig } from '../../config/llm.js';
+import { getLLMConfig, getProviderConfig } from '../../config/llm.js';
 
 // Singleton provider instance
 let _providerInstance: LLMProvider | null = null;
@@ -16,7 +16,8 @@ let _providerInstance: LLMProvider | null = null;
  */
 export function getLLMProvider(): LLMProvider {
   if (!_providerInstance) {
-    _providerInstance = createProvider(llmConfig.provider);
+    const config = getLLMConfig();
+    _providerInstance = createProvider(config.provider);
   }
   return _providerInstance;
 }
@@ -69,10 +70,11 @@ export function resetLLMProvider(): void {
  * Get provider info
  */
 export function getLLMProviderInfo() {
+  const config = getLLMConfig();
   return {
-    provider: llmConfig.provider,
-    model: llmConfig.model,
-    timeoutMs: llmConfig.timeoutMs,
+    provider: config.provider,
+    model: config.model,
+    timeoutMs: config.timeoutMs,
     isConfigured: !!_providerInstance
   };
 }

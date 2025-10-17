@@ -1,5 +1,11 @@
+// Load environment variables FIRST before any other imports
+import { loadEnvironment, validateEnvironment } from './config/env.js';
+
+// Load and validate environment
+loadEnvironment();
+validateEnvironment();
+
 import express from 'express';
-import dotenv from 'dotenv';
 import {
   globalRateLimit,
   securityHeaders,
@@ -14,9 +20,6 @@ import pingRoutes from './routes/ping.js';
 import vibeRoutes from './routes/vibe.js';
 import llmRoutes from './routes/llm.js';
 import weatherRoutes from './routes/weather.js';
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
