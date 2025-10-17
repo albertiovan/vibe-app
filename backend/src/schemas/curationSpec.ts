@@ -12,7 +12,7 @@ import { ExperienceBucketSchema } from './filterSpec.js';
 export const ClusterSchema = z.object({
   label: z.string().min(1).max(50),
   bucket: ExperienceBucketSchema.optional(),
-  ids: z.array(z.string()).min(1).max(3) // Max 3 items per cluster for diversity
+  ids: z.array(z.string()).min(1).max(5) // Max 5 items per cluster (can be all items)
 });
 
 export type Cluster = z.infer<typeof ClusterSchema>;
@@ -22,7 +22,7 @@ export type Cluster = z.infer<typeof ClusterSchema>;
  */
 export const SummarySchema = z.object({
   id: z.string().min(1),
-  blurb: z.string().min(20).max(80), // Strict 40-60 words enforcement
+  blurb: z.string().min(40).max(300), // 40-60 words ≈ 200-300 characters
   highlights: z.array(z.string()).max(3).optional(),
   bucket: ExperienceBucketSchema.optional()
 });
