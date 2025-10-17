@@ -237,6 +237,13 @@ function ResultsScreen({ route, navigation }: any) {
           <View key={place.id || index} style={styles.activityCard}>
             {/* Place Image with 16:9 Aspect Ratio */}
             <View style={styles.imageContainer}>
+              {/* Loading indicator for images */}
+              {place.imageUrl && (
+                <View style={styles.imageLoadingIndicator}>
+                  <ActivityIndicator size="small" color="#0EA5E9" />
+                </View>
+              )}
+              
               <Image
                 source={{
                   uri: place.imageUrl 
@@ -245,8 +252,14 @@ function ResultsScreen({ route, navigation }: any) {
                 }}
                 style={styles.placeImage}
                 resizeMode="cover"
-                onError={() => {
-                  console.log('Image failed to load for:', place.name);
+                onLoad={() => {
+                  console.log('✅ Image loaded successfully for:', place.name);
+                }}
+                onError={(error) => {
+                  console.log('❌ Image failed to load for:', place.name, error.nativeEvent.error);
+                }}
+                onLoadStart={() => {
+                  console.log('🔄 Image loading started for:', place.name);
                 }}
               />
               
@@ -576,6 +589,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
+  },
+  imageLoadingIndicator: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -10 }, { translateY: -10 }],
+    zIndex: 1,
   },
   placeImage: {
     width: '100%',

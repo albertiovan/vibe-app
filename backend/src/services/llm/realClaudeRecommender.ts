@@ -358,25 +358,28 @@ export class RealClaudeRecommender {
    * Search Google Places for a term
    */
   private async searchGooglePlaces(searchTerm: string, expectedType: string): Promise<any[]> {
-    // Use the existing Google Places service
-    const location = { lat: 44.4268, lng: 26.1025 }; // Bucharest center
-    
     try {
-      // Try to use the places service methods
-      const results = await this.placesService.findExperiencesByVibe({
-        energy: 'medium',
-        social: 'intimate',
-        mood: 'adventurous',
-        timeAvailable: 'moderate',
-        budget: 'moderate',
-        weatherPreference: 'either',
-        exploration: 'mixed',
-        location: { ...location, radius: 20 }
-      });
+      console.log('🔍 Searching Google Places for:', searchTerm);
       
-      return results.places || [];
+      // Use Google Places Text Search API directly
+      const { Client } = await import('@googlemaps/google-maps-services-js');
+      const client = new Client({});
+      
+      const response = await client.textSearch({
+        params: {
+          query: `${searchTerm} Bucharest Romania`,
+          location: { lat: 44.4268, lng: 26.1025 },
+          radius: 20000, // 20km radius
+          type: expectedType as any,
+          key: process.env.GOOGLE_MAPS_API_KEY || ''
+        }
+      });
+
+      console.log('🔍 Google Places found', response.data.results.length, 'results for:', searchTerm);
+      return response.data.results || [];
+      
     } catch (error) {
-      console.warn('Google Places search failed:', error);
+      console.warn('🔍 Google Places search failed for:', searchTerm, error);
       return [];
     }
   }

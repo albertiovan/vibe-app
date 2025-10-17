@@ -76,7 +76,7 @@ router.get('/photo', [
       const imageUrl = response.headers.get('location');
       
       if (imageUrl) {
-        console.log('📸 Got redirect to image URL');
+        console.log('📸 Got redirect to image URL, fetching actual image');
         
         // Cache the resolved URL
         photoCache.set(cacheKey, {
@@ -84,14 +84,31 @@ router.get('/photo', [
           timestamp: Date.now()
         });
 
-        // Set cache headers and redirect
-        res.set({
-          'Cache-Control': 'public, max-age=86400', // 1 day
-          'Vary': 'Accept-Encoding'
-        });
-        
-        res.redirect(302, imageUrl);
-        return;
+        // Fetch the actual image from the redirected URL
+        try {
+          const imageResponse = await fetch(imageUrl);
+          
+          if (imageResponse.ok) {
+            const contentType = imageResponse.headers.get('content-type') || 'image/jpeg';
+            const buffer = await imageResponse.arrayBuffer();
+            
+            console.log('📸 Successfully fetched image from redirect');
+            
+            res.set({
+              'Content-Type': contentType,
+              'Cache-Control': 'public, max-age=86400', // 1 day
+              'Content-Length': buffer.byteLength.toString()
+            });
+            
+            res.send(Buffer.from(buffer));
+            return;
+          }
+        } catch (fetchError) {
+          console.warn('📸 Failed to fetch redirected image:', fetchError);
+          // Fall back to redirect if direct fetch fails
+          res.redirect(302, imageUrl);
+          return;
+        }
       }
     }
 
