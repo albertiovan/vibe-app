@@ -129,15 +129,13 @@ export function getLLMConfig(): LLMConfig {
   return _llmConfig;
 }
 
-// For backward compatibility - but this should be avoided, use getLLMConfig() instead
-export let llmConfig: LLMConfig;
-
-// Initialize lazily when first accessed
-Object.defineProperty(exports, 'llmConfig', {
-  get() {
-    return getLLMConfig();
-  }
-});
+// For backward compatibility - but use getLLMConfig() for proper lazy loading
+export const llmConfig = {
+  get provider() { return getLLMConfig().provider; },
+  get model() { return getLLMConfig().model; },
+  get timeoutMs() { return getLLMConfig().timeoutMs; },
+  get apiKeys() { return getLLMConfig().apiKeys; }
+};
 
 /**
  * Check if LLM is properly configured
@@ -161,10 +159,21 @@ export function getProviderConfig(preferredProvider?: string) {
   
   switch (provider) {
     case 'claude':
+      console.log('🔧 Claude config debug:', {
+        claudeKeyExists: !!llmConfig.apiKeys.claude,
+        claudeKeyLength: llmConfig.apiKeys.claude?.length || 0,
+        model: llmConfig.model,
+        provider: llmConfig.provider
+      });
+      
+      if (!llmConfig.apiKeys.claude) {
+        throw new Error('Claude API key is not configured');
+      }
+      
       return {
         provider: 'claude' as const,
         model: llmConfig.model,
-        apiKey: llmConfig.apiKeys.claude!,
+        apiKey: llmConfig.apiKeys.claude,
         timeoutMs: llmConfig.timeoutMs
       };
     

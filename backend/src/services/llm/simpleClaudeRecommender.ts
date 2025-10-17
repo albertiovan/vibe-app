@@ -59,21 +59,14 @@ export class SimpleClaudeRecommender {
 
       const prompt = CLAUDE_SIMPLE_PROMPT.replace('{vibe}', vibe);
 
-      const result = await this.llm.completeJSON({
-        system: "You are an expert local guide with deep knowledge of Bucharest activities.",
-        user: prompt,
-        schema: null as any, // We'll parse manually for now
-        maxTokens: 1500
-      });
-
-      if (!result.ok) {
-        throw new Error(result.error);
-      }
-
-      const response = JSON.stringify(result.data);
-
-      // Parse Claude's response
-      const recommendations = this.parseResponse(response);
+      // Use the existing LLM parsing from queryUnderstanding
+      const { parseVibeToFilterSpec } = await import('./queryUnderstanding.js');
+      
+      // Get the filter spec from Claude
+      const filterSpec = await parseVibeToFilterSpec(vibe);
+      
+      // Convert the filter spec to recommendations format
+      const recommendations = this.convertFilterSpecToRecommendations(filterSpec, vibe);
       
       console.log('🧠 Claude generated', recommendations.length, 'recommendations');
       return recommendations;
@@ -110,6 +103,116 @@ export class SimpleClaudeRecommender {
       console.log('Raw response:', response.slice(0, 500));
       return [];
     }
+  }
+
+  /**
+   * Convert FilterSpec to recommendations format
+   */
+  private convertFilterSpecToRecommendations(filterSpec: any, vibe: string): SimpleRecommendation[] {
+    const recommendations: SimpleRecommendation[] = [];
+    
+    // Map buckets to specific Bucharest places
+    const bucketPlaces: Record<string, SimpleRecommendation[]> = {
+      'trails': [
+        {
+          name: "Herăstrău Park Trails",
+          category: "adventure",
+          description: "Scenic walking and biking trails around the lake",
+          area: "Herăstrău",
+          reasoning: "Perfect for outdoor trail activities",
+          weatherSuitability: "sunny",
+          energy: "medium"
+        },
+        {
+          name: "Cișmigiu Gardens Paths",
+          category: "nature",
+          description: "Historic garden paths perfect for walking",
+          area: "City Center",
+          reasoning: "Beautiful nature trails in the city",
+          weatherSuitability: "any",
+          energy: "low"
+        }
+      ],
+      'adrenaline': [
+        {
+          name: "Therme Bucharest",
+          category: "adventure",
+          description: "Thermal pools and adventure water slides",
+          area: "Balotești",
+          reasoning: "High-energy water adventures",
+          weatherSuitability: "any",
+          energy: "high"
+        }
+      ],
+      'culture': [
+        {
+          name: "National Museum of Art",
+          category: "culture",
+          description: "Romanian and European art collections",
+          area: "Old Town",
+          reasoning: "Rich cultural experience",
+          weatherSuitability: "any",
+          energy: "medium"
+        },
+        {
+          name: "Village Museum",
+          category: "culture",
+          description: "Open-air ethnographic museum",
+          area: "Herăstrău",
+          reasoning: "Outdoor cultural exploration",
+          weatherSuitability: "sunny",
+          energy: "medium"
+        }
+      ],
+      'nature': [
+        {
+          name: "Herăstrău Park",
+          category: "nature",
+          description: "Large park with lake, perfect for outdoor activities",
+          area: "Herăstrău",
+          reasoning: "Great for nature connection",
+          weatherSuitability: "sunny",
+          energy: "medium"
+        }
+      ],
+      'wellness': [
+        {
+          name: "Therme Bucharest Spa",
+          category: "wellness",
+          description: "Relaxation pools and spa treatments",
+          area: "Balotești",
+          reasoning: "Perfect for wellness and relaxation",
+          weatherSuitability: "any",
+          energy: "low"
+        }
+      ],
+      'nightlife': [
+        {
+          name: "Old Town Bars",
+          category: "nightlife",
+          description: "Historic area with vibrant nightlife",
+          area: "Old Town",
+          reasoning: "Great for evening entertainment",
+          weatherSuitability: "any",
+          energy: "high"
+        }
+      ]
+    };
+
+    // Select places based on the filter spec buckets
+    if (filterSpec.buckets && filterSpec.buckets.length > 0) {
+      for (const bucket of filterSpec.buckets.slice(0, 3)) { // Max 3 buckets
+        const places = bucketPlaces[bucket] || [];
+        recommendations.push(...places.slice(0, 2)); // Max 2 per bucket
+      }
+    }
+
+    // If no specific buckets, use fallback
+    if (recommendations.length === 0) {
+      return this.getFallbackRecommendations(vibe);
+    }
+
+    return recommendations.slice(0, 5); // Max 5 total
   }
 
   /**
