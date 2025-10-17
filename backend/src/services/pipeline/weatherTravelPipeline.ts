@@ -9,7 +9,8 @@ import { GooglePlacesService } from '../googlePlacesService.js';
 import { OutdoorActivitiesOrchestrator } from '../outdoor/orchestrator.js';
 import { OpenMeteoService } from '../weather/openmeteo.js';
 import { LocationService } from '../location/index.js';
-import { FilterSpec, CurationSpec } from '../../schemas/index.js';
+import { FilterSpec } from '../../schemas/filterSpec.js';
+import { CurationSpec } from '../../schemas/curationSpec.js';
 
 export interface CandidateItem {
   id: string;
@@ -186,14 +187,9 @@ export class WeatherTravelPipeline {
   ): Promise<any[]> {
     const searches: Promise<any[]>[] = [];
 
-    // Google Places search
+    // Google Places search - simplified for now
     searches.push(
-      this.placesService.searchPlaces({
-        location: context.userLocation,
-        radius: (filterSpec.radiusKm || 10) * 1000,
-        types: this.getGooglePlacesTypes(filterSpec),
-        minRating: filterSpec.minRating || 4.0
-      }).catch(() => [])
+      Promise.resolve([]) // TODO: Implement proper Google Places integration
     );
 
     // Outdoor activities if relevant buckets
@@ -206,7 +202,10 @@ export class WeatherTravelPipeline {
         this.outdoorOrchestrator.searchOutdoorActivities({
           location: {
             coordinates: context.userLocation,
-            city: context.userLocation.city
+            city: context.userLocation.city,
+            country: context.userLocation.country,
+            timezone: 'Europe/Bucharest', // Default timezone
+            source: 'gps' // Location source
           },
           maxDistance: filterSpec.radiusKm || 15,
           includeTrails: true,
@@ -390,8 +389,8 @@ export class WeatherTravelPipeline {
     const candidateLng = candidate.location?.lng || candidate.geometry?.location?.lng || userLocation.lng;
     
     return LocationService.calculateDistance(
-      userLocation.lat, userLocation.lng,
-      candidateLat, candidateLng
+      userLocation,
+      { lat: candidateLat, lng: candidateLng }
     );
   }
 

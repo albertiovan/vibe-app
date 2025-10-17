@@ -100,7 +100,6 @@ Output only the JSON object:`;
       
       console.log('✅ Vibe parsing successful:', {
         duration: Date.now() - startTime,
-        types: filterSpec.types?.length || 0,
         keywords: filterSpec.keywords?.length || 0,
         buckets: filterSpec.buckets?.length || 0,
         energy: filterSpec.energy,
@@ -124,31 +123,39 @@ Output only the JSON object:`;
  */
 function createVibeBasedFallback(vibeText: string): FilterSpec {
   const text = vibeText.toLowerCase();
-  const fallback = { ...DEFAULT_FILTER_SPEC };
+  const fallback: FilterSpec = { ...DEFAULT_FILTER_SPEC };
 
   // Detect food mentions
   const foodKeywords = ['eat', 'food', 'restaurant', 'cafe', 'drink', 'bar', 'dining', 'meal'];
   const mentionsFood = foodKeywords.some(keyword => text.includes(keyword));
 
-  // Energy level detection
-  if (text.includes('relax') || text.includes('calm') || text.includes('peaceful') || text.includes('quiet')) {
-    fallback.energy = 'chill';
-    fallback.types = ['spa', 'park', 'library', 'museum'];
-  } else if (text.includes('adventure') || text.includes('exciting') || text.includes('active') || text.includes('energy')) {
-    fallback.energy = 'high';
-    fallback.types = ['amusement_park', 'stadium', 'tourist_attraction'];
-  } else {
-    fallback.energy = 'medium';
-    fallback.types = ['museum', 'art_gallery', 'park'];
+  if (mentionsFood) {
+    fallback.buckets = ['culture', 'nightlife'];
+    fallback.keywords = ['food', 'dining', 'restaurant'];
+    fallback.avoidFood = false;
   }
 
-  // Indoor/outdoor preference
-  if (text.includes('indoor') || text.includes('inside')) {
-    fallback.indoorOutdoor = 'indoor';
-  } else if (text.includes('outdoor') || text.includes('outside') || text.includes('nature')) {
+  // Detect outdoor preferences
+  if (text.includes('outdoor') || text.includes('nature') || text.includes('hiking')) {
     fallback.indoorOutdoor = 'outdoor';
-  } else {
-    fallback.indoorOutdoor = 'either';
+    fallback.buckets = ['trails', 'nature', 'adrenaline'];
+    fallback.keywords = ['outdoor', 'nature', 'hiking'];
+  }
+
+  // Detect indoor preferences  
+  if (text.includes('indoor') || text.includes('museum') || text.includes('gallery')) {
+    fallback.indoorOutdoor = 'indoor';
+    fallback.buckets = ['culture', 'wellness', 'nightlife'];
+    fallback.keywords = ['indoor', 'culture', 'art'];
+  }
+
+  // Energy level detection
+  if (text.includes('adventure') || text.includes('thrill') || text.includes('exciting')) {
+    fallback.energy = 'high';
+    fallback.buckets = ['adrenaline', 'trails', 'nature'];
+  } else if (text.includes('relax') || text.includes('calm') || text.includes('peaceful')) {
+    fallback.energy = 'chill';
+    fallback.buckets = ['wellness', 'nature', 'culture'];
   }
 
   // Time of day
@@ -159,42 +166,25 @@ function createVibeBasedFallback(vibeText: string): FilterSpec {
   } else if (text.includes('evening')) {
     fallback.timeOfDay = 'evening';
   } else if (text.includes('night') || text.includes('late')) {
-    fallback.timeOfDay = 'evening';
-  }
-
-  // Budget considerations
-  if (text.includes('free') || text.includes('cheap') || text.includes('budget')) {
-    fallback.maxPriceLevel = 1;
-  } else if (text.includes('expensive') || text.includes('luxury') || text.includes('splurge')) {
-    fallback.maxPriceLevel = 4;
+    fallback.timeOfDay = 'late';
   }
 
   // Keywords extraction
-  const keywords: string[] = [];
-  if (text.includes('art')) keywords.push('art gallery', 'museum');
-  if (text.includes('music')) keywords.push('live music', 'concert');
-  if (text.includes('history')) keywords.push('museum', 'historic site');
-  if (text.includes('nature')) keywords.push('park', 'botanical garden');
-  if (text.includes('culture')) keywords.push('cultural center', 'museum');
-  if (text.includes('sport')) keywords.push('stadium', 'sports complex');
-
+  const keywords = [];
+  if (text.includes('art')) keywords.push('art');
+  if (text.includes('music')) keywords.push('music');
+  if (text.includes('sport')) keywords.push('sport');
+  if (text.includes('history')) keywords.push('history');
+  
   if (keywords.length > 0) {
     fallback.keywords = keywords;
-  }
-
-  // Include food types if explicitly mentioned
-  if (mentionsFood) {
-    fallback.types = [...(fallback.types || []), ...FOOD_TYPES_BLOCKLIST];
-    fallback.avoid = null; // Don't avoid food if explicitly requested
-  } else {
-    fallback.avoid = ['food']; // Avoid food by default
   }
 
   console.log('🔄 Using rule-based fallback for vibe:', {
     originalText: vibeText.slice(0, 50) + '...',
     energy: fallback.energy,
     indoorOutdoor: fallback.indoorOutdoor,
-    types: fallback.types?.length || 0,
+    buckets: fallback.buckets?.length || 0,
     keywords: fallback.keywords?.length || 0,
     mentionsFood
   });
@@ -203,27 +193,9 @@ function createVibeBasedFallback(vibeText: string): FilterSpec {
 }
 
 /**
- * Validate that filter spec types are from allowlist
+ * Validate filter spec (simplified for new schema)
  */
 export function validateFilterSpecTypes(filterSpec: FilterSpec): FilterSpec {
-  if (!filterSpec.types) {
-    return filterSpec;
-  }
-
-  const validTypes = filterSpec.types.filter(type => 
-    ACTIVITY_TYPES_ALLOWLIST.includes(type as any) || 
-    FOOD_TYPES_BLOCKLIST.includes(type as any)
-  );
-
-  if (validTypes.length !== filterSpec.types.length) {
-    console.warn('⚠️ Filtered out invalid place types:', {
-      original: filterSpec.types,
-      filtered: validTypes
-    });
-  }
-
-  return {
-    ...filterSpec,
-    types: validTypes.length > 0 ? validTypes : ['tourist_attraction', 'park']
-  };
+  // New schema doesn't have types field, just return as-is
+  return filterSpec;
 }
