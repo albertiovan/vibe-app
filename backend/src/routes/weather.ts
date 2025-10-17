@@ -39,11 +39,11 @@ router.post('/claude-search', [
       location: location.city || 'Unknown'
     });
 
-    // LAZY IMPORT: Load Claude service only when needed (after environment is loaded)
-    const { SimpleClaudeRecommender } = await import('../services/llm/simpleClaudeRecommender.js');
+    // LAZY IMPORT: Load REAL Claude service only when needed (after environment is loaded)
+    const { RealClaudeRecommender } = await import('../services/llm/realClaudeRecommender.js');
     
-    // Execute simple Claude recommender
-    const claudeRecommender = new SimpleClaudeRecommender();
+    // Execute REAL Claude recommender with Google Places verification
+    const claudeRecommender = new RealClaudeRecommender();
     const recommendations = await claudeRecommender.getRecommendations(vibe);
     const apiResponse = claudeRecommender.formatForAPI(recommendations, vibe);
 
