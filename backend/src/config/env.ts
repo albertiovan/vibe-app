@@ -38,7 +38,8 @@ export function loadEnvironment(): void {
     'OPENTRIPMAP_API_KEY',
     'NODE_ENV',
     'PORT',
-    'LLM_PROVIDER'
+    'LLM_PROVIDER',
+    'CORS_ORIGINS'
   ];
 
   console.log('🔧 Environment variables status:');

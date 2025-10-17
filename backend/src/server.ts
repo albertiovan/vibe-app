@@ -118,8 +118,11 @@ app.listen(PORT, '0.0.0.0', () => {
   // Warn if optional env vars are missing (legacy TripAdvisor removed)
   // RAPIDAPI_KEY no longer required - using Google Places API exclusively
   
-  if (!process.env.CORS_ORIGINS) {
-    console.warn('⚠️  CORS_ORIGINS not configured - using default localhost origins');
+  // CORS configuration info
+  if (process.env.CORS_ORIGINS) {
+    console.log('🌐 CORS origins configured:', process.env.CORS_ORIGINS.split(',').map(o => o.trim()).join(', '));
+  } else {
+    console.log('🌐 CORS using development defaults: localhost, Expo, network access');
   }
 });
 

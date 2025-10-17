@@ -61,26 +61,59 @@ export const securityHeaders = helmet({
   crossOriginEmbedderPolicy: false
 });
 
-// CORS configuration from environment variables
+// CORS configuration with smart defaults for development
 export const corsConfig = cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    const allowedOrigins = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'];
+    // Get configured origins or use smart defaults
+    const configuredOrigins = process.env.CORS_ORIGINS?.split(',').map(o => o.trim());
     
-    // Allow requests with no origin (mobile apps, Postman, etc.)
+    // Default development origins
+    const defaultOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001', 
+      'http://localhost:8081', // Expo dev server
+      'http://10.103.30.198:3000', // Network access
+      'http://10.103.30.198:8081', // Expo network access
+      'exp://10.103.30.198:8081', // Expo protocol
+      'exp://localhost:8081' // Expo localhost
+    ];
+    
+    const allowedOrigins = configuredOrigins || defaultOrigins;
+    
+    // Allow requests with no origin (mobile apps, Postman, curl, etc.)
     if (!origin) {
       callback(null, true);
       return;
     }
     
-    if (allowedOrigins.includes(origin)) {
+    // Check exact match or development patterns
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed === origin) return true;
+      // Allow Expo development URLs
+      if (origin.startsWith('exp://') && process.env.NODE_ENV !== 'production') return true;
+      // Allow localhost variations in development
+      if (origin.includes('localhost') && process.env.NODE_ENV !== 'production') return true;
+      return false;
+    });
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS policy'));
+      console.warn(`🚫 CORS blocked origin: ${origin}`);
+      callback(new Error(`Origin ${origin} not allowed by CORS policy`));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Cache-Control',
+    'X-File-Name'
+  ]
 });
 
 // JSON payload size limit: 100KB
