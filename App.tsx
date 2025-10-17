@@ -11,6 +11,7 @@ import {
   Image,
   Linking,
   Dimensions,
+  Modal,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
@@ -51,10 +52,70 @@ function getVibeToEnergy(vibe: string): string {
 }
 
 // Home Screen Component
-function HomeScreen({ navigation }: any) {
-  const [vibe, setVibe] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
-  const [location, setLocation] = React.useState<{lat: number, lng: number} | null>(null);
+// Search filters interface
+interface SearchFilters {
+  distanceKm: number;
+  durationHours: number;
+}
+
+// Preset configurations
+const DISTANCE_PRESETS = [
+  { label: 'Nearby', value: 4, description: '3-5km around you' },
+  { label: 'In the city', value: 10, description: '8-12km radius' },
+  { label: 'Day trip', value: 100, description: '50-150km adventure' }
+];
+
+const DURATION_PRESETS = [
+  { label: '1-2h', value: 1.5, description: 'Quick experience' },
+  { label: '2-4h', value: 3, description: 'Half day activity' },
+  { label: '4-6h', value: 5, description: 'Full day adventure' }
+];
+
+// Help suggestions based on context
+const HELP_SUGGESTIONS = [
+  {
+    condition: 'clear_day',
+    title: 'Clear afternoon?',
+    suggestion: 'Try 8km, 2-4h, "adrenaline outdoors"',
+    vibe: 'adrenaline outdoors',
+    distance: 8,
+    duration: 3
+  },
+  {
+    condition: 'rainy_day', 
+    title: 'Rainy weather?',
+    suggestion: 'Try 4km, 1-2h, "cozy cultural indoor"',
+    vibe: 'cozy cultural indoor',
+    distance: 4,
+    duration: 1.5
+  },
+  {
+    condition: 'weekend',
+    title: 'Weekend vibes?',
+    suggestion: 'Try 15km, 4-6h, "adventure with friends"',
+    vibe: 'adventure with friends',
+    distance: 15,
+    duration: 5
+  }
+];
+
+function HomeScreen({ navigation }: { navigation: any }) {
+  const [vibe, setVibe] = useState('');
+  const [filters, setFilters] = useState<SearchFilters>({ distanceKm: 10, durationHours: 3 });
+  const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
+  const [selectedDistancePreset, setSelectedDistancePreset] = useState(1); // Default to "In the city"
+  const [selectedDurationPreset, setSelectedDurationPreset] = useState(1); // Default to "2-4h"
+
+  // Sample vibe suggestions
+  const vibeChips = [
+    "I want adventure",
+    "Something cultural", 
+    "Peaceful nature",
+    "Fun with friends",
+    "Romantic evening"
+  ];
 
   // Get user's current location
   React.useEffect(() => {
@@ -71,18 +132,18 @@ function HomeScreen({ navigation }: any) {
 
       // FOR TESTING: Always use Bucharest coordinates where we have rich data
       // TODO: Remove this when ready for international deployment
-      setLocation({ lat: 44.4268, lng: 26.1025 });
+      setLocation({ latitude: 44.4268, longitude: 26.1025 });
       
       // FUTURE: Uncomment this for real GPS location
       // let currentLocation = await Location.getCurrentPositionAsync({});
       // setLocation({
-      //   lat: currentLocation.coords.latitude,
-      //   lng: currentLocation.coords.longitude
+      //   latitude: currentLocation.coords.latitude,
+      //   longitude: currentLocation.coords.longitude
       // });
     } catch (error) {
       console.log('Location error:', error);
       // Fallback to Bucharest for testing
-      setLocation({ lat: 44.4268, lng: 26.1025 });
+      setLocation({ latitude: 44.4268, longitude: 26.1025 });
     }
   };
 
@@ -100,8 +161,8 @@ function HomeScreen({ navigation }: any) {
     setLoading(true);
     
     try {
-      // NEW: Use Claude-first recommendation engine
-      const response = await fetch('http://10.103.30.198:3000/api/weather/claude-search', {
+      // NEW: Use enhanced nearby search with mandatory filters
+      const response = await fetch('http://10.103.30.198:3000/api/nearby/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,10 +170,13 @@ function HomeScreen({ navigation }: any) {
         body: JSON.stringify({
           vibe: vibe.trim(),
           location: {
-            lat: location.lat,
-            lng: location.lng,
-            city: 'Bucharest',
-            country: 'Romania'
+            lat: location.latitude,
+            lng: location.longitude
+          },
+          filters: {
+            radiusMeters: filters.distanceKm * 1000, // Convert km to meters
+            durationHours: filters.durationHours,
+            nationwide: filters.distanceKm > 50 // Auto-enable nationwide for long distances
           }
         }),
       });
@@ -158,24 +222,105 @@ function HomeScreen({ navigation }: any) {
         <Text style={styles.subtitle}>Weather-aware activity discovery • {location ? 'Bucharest, Romania (Testing)' : 'Getting location...'}</Text>
       </View>
 
-      {/* Input Section */}
-      <View style={styles.inputSection}>
-        <TextInput
-          style={styles.input}
-          placeholder="How are you feeling today?"
-          value={vibe}
-          onChangeText={setVibe}
-          multiline
-        />
-        
+      {/* Enhanced input section with mandatory filters */}
+      <View style={styles.searchContainer}>
+        {/* Vibe text input */}
+        <View style={styles.vibeInputSection}>
+          <TextInput
+            style={styles.vibeInput}
+            placeholder="What's your vibe? (e.g., I want adventure, something cultural...)"
+            value={vibe}
+            onChangeText={setVibe}
+            multiline
+            maxLength={500}
+          />
+          <TouchableOpacity 
+            style={styles.helpButton}
+            onPress={() => setShowHelp(true)}
+          >
+            <Text style={styles.helpButtonText}>?</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Distance filter */}
+        <View style={styles.filterSection}>
+          <Text style={styles.filterLabel}>Distance</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.presetsScroll}>
+            {DISTANCE_PRESETS.map((preset, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.presetChip,
+                  selectedDistancePreset === index && styles.presetChipSelected
+                ]}
+                onPress={() => {
+                  setSelectedDistancePreset(index);
+                  setFilters(prev => ({ ...prev, distanceKm: preset.value }));
+                }}
+              >
+                <Text style={[
+                  styles.presetChipText,
+                  selectedDistancePreset === index && styles.presetChipTextSelected
+                ]}>
+                  {preset.label}
+                </Text>
+                <Text style={[
+                  styles.presetChipDescription,
+                  selectedDistancePreset === index && styles.presetChipDescriptionSelected
+                ]}>
+                  {preset.description}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Duration filter */}
+        <View style={styles.filterSection}>
+          <Text style={styles.filterLabel}>Duration</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.presetsScroll}>
+            {DURATION_PRESETS.map((preset, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.presetChip,
+                  selectedDurationPreset === index && styles.presetChipSelected
+                ]}
+                onPress={() => {
+                  setSelectedDurationPreset(index);
+                  setFilters(prev => ({ ...prev, durationHours: preset.value }));
+                }}
+              >
+                <Text style={[
+                  styles.presetChipText,
+                  selectedDurationPreset === index && styles.presetChipTextSelected
+                ]}>
+                  {preset.label}
+                </Text>
+                <Text style={[
+                  styles.presetChipDescription,
+                  selectedDurationPreset === index && styles.presetChipDescriptionSelected
+                ]}>
+                  {preset.description}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Submit button */}
         <TouchableOpacity 
-          style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+          style={[styles.enhancedSubmitButton, (!vibe.trim() || loading) && styles.submitButtonDisabled]}
           onPress={handleSubmit}
-          disabled={loading}
+          disabled={!vibe.trim() || loading}
         >
-          <Text style={styles.submitButtonText}>
-            {loading ? '...' : '→'}
-          </Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Text style={styles.enhancedSubmitButtonText}>
+              Find Places • {filters.distanceKm}km • {filters.durationHours}h
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -194,8 +339,47 @@ function HomeScreen({ navigation }: any) {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>🧠 Claude-powered • 🎯 Real places • ✅ Verified with APIs</Text>
+        <Text style={styles.footerText}>Powered by Claude AI • Google Places • OpenMeteo</Text>
       </View>
+
+      {/* Help Modal */}
+      <Modal
+        visible={showHelp}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowHelp(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.helpModal}>
+            <Text style={styles.helpModalTitle}>Help me decide</Text>
+            <Text style={styles.helpModalSubtitle}>Here are some suggestions based on the current context:</Text>
+            
+            {HELP_SUGGESTIONS.map((suggestion, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.helpSuggestion}
+                onPress={() => {
+                  setVibe(suggestion.vibe);
+                  setFilters({ distanceKm: suggestion.distance, durationHours: suggestion.duration });
+                  setSelectedDistancePreset(DISTANCE_PRESETS.findIndex(p => Math.abs(p.value - suggestion.distance) < 2));
+                  setSelectedDurationPreset(DURATION_PRESETS.findIndex(p => Math.abs(p.value - suggestion.duration) < 0.5));
+                  setShowHelp(false);
+                }}
+              >
+                <Text style={styles.helpSuggestionTitle}>{suggestion.title}</Text>
+                <Text style={styles.helpSuggestionText}>{suggestion.suggestion}</Text>
+              </TouchableOpacity>
+            ))}
+            
+            <TouchableOpacity
+              style={styles.helpCloseButton}
+              onPress={() => setShowHelp(false)}
+            >
+              <Text style={styles.helpCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -645,6 +829,157 @@ const styles = StyleSheet.create({
   mapsButtonText: {
     color: 'white',
     fontSize: 14,
+    fontWeight: '600',
+  },
+  // Enhanced search interface styles
+  searchContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  vibeInputSection: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginBottom: 20,
+  },
+  vibeInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#1F2937',
+    minHeight: 24,
+    maxHeight: 80,
+    paddingRight: 12,
+  },
+  helpButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  helpButtonText: {
+    color: '#6B7280',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  filterSection: {
+    marginBottom: 16,
+  },
+  filterLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  presetsScroll: {
+    flexDirection: 'row',
+  },
+  presetChip: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginRight: 12,
+    minWidth: 100,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  presetChipSelected: {
+    backgroundColor: '#EFF6FF',
+    borderColor: '#0EA5E9',
+  },
+  presetChipText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6B7280',
+    textAlign: 'center',
+  },
+  presetChipTextSelected: {
+    color: '#0EA5E9',
+  },
+  presetChipDescription: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 2,
+  },
+  presetChipDescriptionSelected: {
+    color: '#0EA5E9',
+  },
+  enhancedSubmitButton: {
+    backgroundColor: '#0EA5E9',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  enhancedSubmitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  // Help modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  helpModal: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 400,
+  },
+  helpModalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 8,
+  },
+  helpModalSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 20,
+  },
+  helpSuggestion: {
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  helpSuggestionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  helpSuggestionText: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  helpCloseButton: {
+    backgroundColor: '#0EA5E9',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  helpCloseButtonText: {
+    color: 'white',
+    fontSize: 16,
     fontWeight: '600',
   },
 });
