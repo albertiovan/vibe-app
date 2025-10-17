@@ -7,6 +7,8 @@ import { Client, PlaceInputType } from '@googlemaps/google-maps-services-js';
 import { UserVibe, VibePlace, VibeMatch, VIBE_TO_GOOGLE_TYPES, GOOGLE_TYPES_TO_VIBE } from '../types/vibe.js';
 import { diversifyResults, shouldEnableCulinary, FOOD_POLICY } from '../config/app.experiences.js';
 import { features } from '../config/features.js';
+import { OutdoorActivitiesOrchestrator } from './outdoor/orchestrator.js';
+import { LocationService } from './location/index.js';
 
 export class GooglePlacesService {
   private client: Client;
