@@ -108,10 +108,8 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`Health check: http://localhost:${PORT}/api/health`);
   console.log(`Network access: http://10.103.30.198:${PORT}/api/health`);
   
-  // Warn if required env vars are missing
-  if (!process.env.RAPIDAPI_KEY) {
-    console.warn('⚠️  RAPIDAPI_KEY not configured - TripAdvisor integration will not work');
-  }
+  // Warn if optional env vars are missing (legacy TripAdvisor removed)
+  // RAPIDAPI_KEY no longer required - using Google Places API exclusively
   
   if (!process.env.CORS_ORIGINS) {
     console.warn('⚠️  CORS_ORIGINS not configured - using default localhost origins');

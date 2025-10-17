@@ -55,7 +55,7 @@ export const securityHeaders = helmet({
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://travel-advisor.p.rapidapi.com"]
+      connectSrc: ["'self'", "https://maps.googleapis.com"]
     }
   },
   crossOriginEmbedderPolicy: false

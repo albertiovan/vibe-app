@@ -12,38 +12,43 @@ import { ACTIVITY_TYPES_ALLOWLIST, FOOD_TYPES_BLOCKLIST } from '../../config/pla
  */
 const VIBE_TO_FILTER_SYSTEM_PROMPT = `You are a strict JSON generator that maps a user's "vibe" into Google Places filters.
 
-Rules:
-- Output ONLY valid JSON matching the provided schema.
-- Use ONLY place types from the provided allowlist (activities, not food).
-- If the user explicitly asks for food, include food types; otherwise exclude them.
-- If uncertain, leave fields null/empty rather than guessing.
-- Never invent places or facts. You only produce filters.
+CORE PRINCIPLE: Default to EXPERIENCES over food. Food is only included for explicit culinary requests.
 
-FilterSpec JSON Schema (TypeScript for reference):
+Your job: Convert natural language vibes into structured search parameters for finding diverse experiences across these sectors:
+- TRAILS & OUTDOOR: hiking, nature walks, outdoor exploration
+- ADRENALINE & SPORTS: high-energy activities, sports, adventure
+- NATURE & SERENITY: peaceful natural settings, gardens, scenic spots  
+- CULTURE & ARTS: museums, galleries, historical sites, cultural experiences
+- WELLNESS & RELAXATION: spas, wellness centers, relaxation activities
+- NIGHTLIFE & SOCIAL: evening entertainment, social venues (non-food focused)
+
+Output ONLY valid JSON matching this schema:
 {
-  types?: string[];              // must be subset of ACTIVITY_TYPES_ALLOWLIST unless user asks for food
-  keywords?: string[];           // e.g. ["viewpoint","live music","indoor climbing"]
-  radiusMeters?: number | null;  // prefer 3000–10000 if unspecified
-  timeOfDay?: 'morning'|'afternoon'|'evening'|'late'|null;
-  indoorOutdoor?: 'indoor'|'outdoor'|'either'|null;
-  energy?: 'chill'|'medium'|'high'|null;
-  minRating?: number | null;     // 0–5
-  maxPriceLevel?: 0|1|2|3|4|null;// Google price_level
-  avoid?: string[] | null;       // e.g. ["crowded","food"]
+  types: string[],           // Google Places types (diverse across sectors)
+  keywords?: string[],       // Search keywords for experiences
+  radiusMeters: number,      // Search radius
+  timeOfDay?: string|null,   // 'morning'|'afternoon'|'evening'|null
+  indoorOutdoor?: string,    // 'indoor'|'outdoor'|'either'
+  energy?: string,           // 'chill'|'medium'|'high'
+  minRating?: number,        // 0–5
+  maxPriceLevel?: number,    // 0–4 (Google price scale)
+  avoid?: string[]           // Things to avoid
 }
 
-Available Activity Types (ONLY use these unless user explicitly asks for food):
+EXPERIENCE-FIRST Activity Types (prioritize these):
 ${ACTIVITY_TYPES_ALLOWLIST.join(', ')}
 
-IMPORTANT: For exercise/fitness requests, think broadly:
+EXERCISE/FITNESS - Think broadly:
 - gym, stadium, sports_complex (traditional fitness)
-- park (running, outdoor workouts, sports fields)
+- park (running, outdoor workouts, sports fields)  
 - tourist_attraction (sports venues, recreational facilities)
 - bowling_alley, amusement_park (active entertainment)
-- Use keywords like: fitness, sports, outdoor, recreation, tennis, golf, swimming, running, cycling
+- Keywords: fitness, sports, outdoor, recreation, tennis, golf, swimming, running, cycling
 
-Food Types (ONLY include if user explicitly mentions food/eating/dining):
-${FOOD_TYPES_BLOCKLIST.join(', ')}`;
+FOOD POLICY - Only include food for EXPLICIT culinary requests:
+- User must specifically mention: dining, restaurant, food, eating, culinary, michelin, tasting menu
+- When included, focus on premium experiences: ${FOOD_TYPES_BLOCKLIST.join(', ')}
+- Default behavior: AVOID food, focus on experiences`;
 
 /**
  * Parse user vibe text into Google Places filter specification

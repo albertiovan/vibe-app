@@ -1,10 +1,12 @@
 /**
  * Google Places Service
- * Replaces TripAdvisor/Viator with Google Places API for real-world experiences
+ * Experiences-first place discovery and curation service
  */
 
 import { Client, PlaceInputType } from '@googlemaps/google-maps-services-js';
 import { UserVibe, VibePlace, VibeMatch, VIBE_TO_GOOGLE_TYPES, GOOGLE_TYPES_TO_VIBE } from '../types/vibe.js';
+import { diversifyResults, shouldEnableCulinary, FOOD_POLICY } from '../config/app.experiences.js';
+import { features } from '../config/features.js';
 
 export class GooglePlacesService {
   private client: Client;
@@ -40,14 +42,17 @@ export class GooglePlacesService {
       // 4. Apply filters and limits
       const filteredPlaces = this.applyVibeFilters(scoredPlaces, vibe);
       
-      // 5. Generate insights and suggestions
-      const vibeAnalysis = this.generateVibeAnalysis(vibe, filteredPlaces);
+      // 5. Apply experiences-first diversity and cap at exactly 5 results
+      const diversifiedPlaces = this.applyExperiencesDiversity(filteredPlaces, vibe);
+      
+      // 6. Generate insights and suggestions
+      const vibeAnalysis = this.generateVibeAnalysis(vibe, diversifiedPlaces);
       
       return {
-        places: filteredPlaces.slice(0, 10), // Top 10 matches
+        places: diversifiedPlaces, // Exactly 5 diverse results
         totalFound: allPlaces.length,
         vibeAnalysis,
-        suggestions: this.generateSuggestions(vibe, filteredPlaces)
+        suggestions: this.generateSuggestions(vibe, diversifiedPlaces)
       };
       
     } catch (error) {
@@ -577,6 +582,79 @@ export class GooglePlacesService {
     }
     
     return categories;
+  }
+
+  /**
+   * Apply experiences-first diversity and food policy
+   */
+  private applyExperiencesDiversity(places: any[], vibe: UserVibe): any[] {
+    console.log('🎯 Applying experiences diversity to', places.length, 'places');
+    
+    // Check if culinary experiences should be enabled
+    const enableCulinary = features.food || this.shouldEnableCulinaryForVibe(vibe);
+    
+    let filteredPlaces = places;
+    
+    // Apply food policy if culinary is not enabled
+    if (!enableCulinary) {
+      filteredPlaces = places.filter(place => {
+        const types = place.types || [];
+        const isFood = types.some((type: string) => 
+          ['restaurant', 'food', 'meal_takeaway', 'meal_delivery', 'cafe', 'bakery'].includes(type)
+        );
+        
+        // If it's food-related, only include if it meets premium criteria
+        if (isFood) {
+          return this.isPremiumCulinaryExperience(place);
+        }
+        
+        return true; // Include non-food places
+      });
+      
+      console.log('🍽️ Food policy applied:', places.length, '→', filteredPlaces.length, 'places');
+    }
+    
+    // Apply sector diversity and cap at 5 results
+    const diversifiedPlaces = diversifyResults(filteredPlaces);
+    
+    console.log('🎨 Diversity applied:', filteredPlaces.length, '→', diversifiedPlaces.length, 'places');
+    
+    return diversifiedPlaces;
+  }
+
+  /**
+   * Check if culinary experiences should be enabled for this vibe
+   */
+  private shouldEnableCulinaryForVibe(vibe: UserVibe): boolean {
+    const description = vibe.description || '';
+    const claudeKeywords = (vibe as any).claudeKeywords || [];
+    
+    return shouldEnableCulinary(description, claudeKeywords);
+  }
+
+  /**
+   * Check if a place meets premium culinary experience criteria
+   */
+  private isPremiumCulinaryExperience(place: any): boolean {
+    const priceLevel = place.priceLevel || place.price_level || 0;
+    const rating = place.rating || 0;
+    const name = (place.name || '').toLowerCase();
+    
+    // Check minimum price level
+    if (priceLevel < FOOD_POLICY.minimumPriceLevel) {
+      return false;
+    }
+    
+    // Check minimum rating
+    if (rating < FOOD_POLICY.minimumRating) {
+      return false;
+    }
+    
+    // Check for premium culinary keywords
+    const premiumKeywords = ['michelin', 'starred', 'fine dining', 'tasting', 'chef'];
+    const hasPremiumKeywords = premiumKeywords.some(keyword => name.includes(keyword));
+    
+    return hasPremiumKeywords || (priceLevel >= 3 && rating >= 4.5);
   }
 }
 

@@ -9,6 +9,10 @@ export interface FeatureFlags {
   activitiesFirst: boolean; // Whether activities should be the default tab
   locationFilter: boolean; // Whether to enforce Bucharest-only results
   
+  // Experiences-first configuration
+  experiencesDefault: boolean; // Default to experiences over restaurants
+  food: boolean; // Whether food/restaurants are enabled by default
+  
   // New provider features
   realTimeProviders: boolean; // Whether to use real activity providers
   pois: boolean; // Points of Interest (OpenTripMap)
@@ -33,6 +37,10 @@ function loadFeatureFlags(): FeatureFlags {
     
     // Location filtering to Bucharest only - enabled by default
     locationFilter: process.env.FEATURE_LOCATION_FILTER !== 'false',
+    
+    // Experiences-first configuration - NEW
+    experiencesDefault: process.env.FEATURE_EXPERIENCES_DEFAULT !== 'false', // Default TRUE
+    food: process.env.FEATURE_FOOD === 'true', // Default FALSE
     
     // Real-time providers - disabled by default (use mock data)
     realTimeProviders: process.env.FEATURE_REAL_TIME_PROVIDERS === 'true',
@@ -59,6 +67,8 @@ console.log('🚩 Feature Flags:', {
   restaurants: features.restaurants ? '✅' : '❌',
   activitiesFirst: features.activitiesFirst ? '✅' : '❌',
   locationFilter: features.locationFilter ? '✅' : '❌',
+  experiencesDefault: features.experiencesDefault ? '✅' : '❌',
+  food: features.food ? '✅' : '❌',
   realTimeProviders: features.realTimeProviders ? '✅' : '❌',
   pois: features.pois ? '✅' : '❌',
   events: features.events ? '✅' : '❌',
