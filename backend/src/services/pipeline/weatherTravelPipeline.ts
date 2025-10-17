@@ -187,9 +187,9 @@ export class WeatherTravelPipeline {
   ): Promise<any[]> {
     const searches: Promise<any[]>[] = [];
 
-    // Google Places search - simplified for now
+    // Google Places search using existing service
     searches.push(
-      Promise.resolve([]) // TODO: Implement proper Google Places integration
+      this.searchGooglePlacesIntegrated(filterSpec, context).catch(() => [])
     );
 
     // Outdoor activities if relevant buckets
@@ -501,5 +501,63 @@ export class WeatherTravelPipeline {
       return 'covered';
     }
     return 'outdoor';
+  }
+
+  /**
+   * Integrate with existing Google Places service
+   */
+  private async searchGooglePlacesIntegrated(
+    filterSpec: FilterSpec,
+    context: PipelineContext
+  ): Promise<any[]> {
+    try {
+      // Convert new FilterSpec to legacy UserVibe format
+      const legacyVibe = {
+        energy: this.mapEnergyLevel(filterSpec.energy || 'medium'),
+        social: 'intimate' as const, // Default
+        mood: this.bucketToMood(filterSpec.buckets?.[0] || 'nature'),
+        timeAvailable: 'moderate' as const,
+        budget: 'moderate' as const,
+        weatherPreference: filterSpec.indoorOutdoor || 'either',
+        exploration: 'mixed' as const,
+        location: {
+          lat: context.userLocation.lat,
+          lng: context.userLocation.lng,
+          radius: filterSpec.radiusKm || 10
+        }
+      };
+
+      // Use existing Google Places service
+      const result = await this.placesService.findExperiencesByVibe(legacyVibe);
+      
+      return result.places || [];
+    } catch (error) {
+      console.warn('Google Places integration failed:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Map energy level from new schema to legacy schema
+   */
+  private mapEnergyLevel(energy: 'chill' | 'medium' | 'high'): 'low' | 'medium' | 'high' {
+    if (energy === 'chill') return 'low';
+    return energy;
+  }
+
+  /**
+   * Convert bucket to mood for legacy compatibility
+   */
+  private bucketToMood(bucket: string): 'adventurous' | 'relaxed' | 'creative' | 'productive' | 'social' | 'contemplative' | 'playful' {
+    const bucketToMoodMap: Record<string, 'adventurous' | 'relaxed' | 'creative' | 'productive' | 'social' | 'contemplative' | 'playful'> = {
+      'trails': 'adventurous',
+      'adrenaline': 'adventurous', 
+      'nature': 'contemplative',
+      'culture': 'creative',
+      'wellness': 'relaxed',
+      'nightlife': 'social'
+    };
+    
+    return bucketToMoodMap[bucket] || 'adventurous';
   }
 }

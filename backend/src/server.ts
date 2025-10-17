@@ -13,6 +13,7 @@ import healthRoutes from './routes/health';
 import pingRoutes from './routes/ping.js';
 import vibeRoutes from './routes/vibe.js';
 import llmRoutes from './routes/llm.js';
+import weatherRoutes from './routes/weather.js';
 
 // Load environment variables
 dotenv.config();
@@ -39,6 +40,7 @@ app.use('/api', healthRoutes);
 app.use('/api/ping', pingRoutes);
 app.use('/api/vibe', vibeRoutes);
 app.use('/api/llm', llmRoutes);
+app.use('/api/weather', weatherRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -57,6 +59,8 @@ app.get('/', (req, res) => {
       llmStatus: 'GET /api/llm/status',
       llmParseVibe: 'POST /api/llm/parse-vibe',
       llmCurate: 'POST /api/llm/curate',
+      weatherVibeSearch: 'POST /api/weather/vibe-search',
+      weatherQuickSearch: 'POST /api/weather/quick-search',
       llmTestFixtures: 'GET /api/llm/test-fixtures',
       pingAll: '/api/ping/all',
       quotaStatus: '/api/ping/quota'
