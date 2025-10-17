@@ -31,7 +31,7 @@ router.get('/interests', (req: Request, res: Response) => {
  */
 router.post('/onboarding', [
   body('userId').isString().isLength({ min: 1 }).withMessage('User ID required'),
-  body('interests').isArray({ min: 1 }).withMessage('At least one interest required'),
+  body('interests').isArray({ min: 3 }).withMessage('Please select at least 3 interests to build your taste profile'),
   body('interests.*').isString().withMessage('Invalid interest format'),
   body('travelWillingness').isInt({ min: 1, max: 500 }).withMessage('Travel willingness must be 1-500km'),
   body('riskTolerance').isIn(['chill', 'medium', 'high']).withMessage('Invalid risk tolerance'),
