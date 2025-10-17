@@ -15,22 +15,28 @@ export interface LLMConfig {
 
 /**
  * Load and validate LLM configuration from environment
- * Fails fast if required keys are missing
+ * CRITICAL: This function should ONLY be called after environment is loaded
  */
 function loadLLMConfig(): LLMConfig {
+  // SAFETY CHECK: Ensure environment is loaded
+  if (!process.env.CLAUDE_API_KEY && !process.env.OPENAI_API_KEY) {
+    console.warn('⚠️ LLM config loading but no API keys found - environment may not be loaded yet');
+  }
+
   const provider = (process.env.LLM_PROVIDER || 'claude') as 'claude' | 'openai' | 'mistral';
   const model = process.env.LLM_MODEL || getDefaultModel(provider);
   const timeoutMs = parseInt(process.env.LLM_TIMEOUT_MS || '15000', 10);
 
-  // Debug environment variable loading
-  console.log('🔧 Loading LLM config:', {
+  // Debug environment variable loading - only log when actually loading
+  console.log('🔧 Loading LLM config (runtime):', {
     provider,
     model,
     timeoutMs,
     claudeKeyExists: !!process.env.CLAUDE_API_KEY,
     claudeKeyLength: process.env.CLAUDE_API_KEY?.length || 0,
     openaiKeyExists: !!process.env.OPENAI_API_KEY,
-    openaiKeyLength: process.env.OPENAI_API_KEY?.length || 0
+    openaiKeyLength: process.env.OPENAI_API_KEY?.length || 0,
+    timestamp: new Date().toISOString()
   });
 
   const config: LLMConfig = {

@@ -4,10 +4,7 @@
  */
 
 import express, { Request, Response } from 'express';
-import { getLLMProvider, getLLMProviderInfo, testLLMConnection } from '../services/llm/index.js';
-import { parseVibeToFilterSpec } from '../services/llm/queryUnderstanding.js';
-import { rerankAndSummarize } from '../services/llm/curation.js';
-import { isLLMConfigured } from '../config/llm.js';
+// LAZY IMPORTS: Don't import LLM services at module level to avoid config loading during import
 
 const router = express.Router();
 
@@ -17,6 +14,10 @@ const router = express.Router();
  */
 router.get('/status', async (req: Request, res: Response) => {
   try {
+    // LAZY IMPORT: Load LLM services only when needed
+    const { getLLMProviderInfo, testLLMConnection } = await import('../services/llm/index.js');
+    const { isLLMConfigured } = await import('../config/llm.js');
+    
     const info = getLLMProviderInfo();
     const isConfigured = isLLMConfigured();
     

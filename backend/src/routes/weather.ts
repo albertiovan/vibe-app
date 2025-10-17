@@ -5,8 +5,7 @@
 
 import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { WeatherTravelPipeline } from '../services/pipeline/weatherTravelPipeline.js';
-import { SimpleClaudeRecommender } from '../services/llm/simpleClaudeRecommender.js';
+// LAZY IMPORTS: Don't import LLM services at module level to avoid config loading during import
 
 const router = Router();
 
@@ -40,6 +39,9 @@ router.post('/claude-search', [
       location: location.city || 'Unknown'
     });
 
+    // LAZY IMPORT: Load Claude service only when needed (after environment is loaded)
+    const { SimpleClaudeRecommender } = await import('../services/llm/simpleClaudeRecommender.js');
+    
     // Execute simple Claude recommender
     const claudeRecommender = new SimpleClaudeRecommender();
     const recommendations = await claudeRecommender.getRecommendations(vibe);
@@ -91,6 +93,9 @@ router.post('/vibe-search', [
       maxTravelMinutes
     });
 
+    // LAZY IMPORT: Load weather pipeline only when needed
+    const { WeatherTravelPipeline } = await import('../services/pipeline/weatherTravelPipeline.js');
+    
     // Execute weather/travel pipeline
     const pipeline = new WeatherTravelPipeline();
     const result = await pipeline.execute(vibe, location, {
@@ -177,6 +182,9 @@ router.post('/quick-search', [
     }
 
     const { vibe, lat, lng } = req.body;
+    
+    // LAZY IMPORT: Load weather pipeline only when needed
+    const { WeatherTravelPipeline } = await import('../services/pipeline/weatherTravelPipeline.js');
     
     const pipeline = new WeatherTravelPipeline();
     const result = await pipeline.execute(vibe, { lat, lng }, {
