@@ -20,6 +20,7 @@ import pingRoutes from './routes/ping.js';
 import vibeRoutes from './routes/vibe.js';
 import llmRoutes from './routes/llm.js';
 import weatherRoutes from './routes/weather.js';
+import placesRoutes from './routes/places.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -39,11 +40,12 @@ app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 app.use(sanitizeQuery);
 
 // API Routes
-app.use('/api', healthRoutes);
+app.use('/api/health', healthRoutes);
 app.use('/api/ping', pingRoutes);
 app.use('/api/vibe', vibeRoutes);
 app.use('/api/llm', llmRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/places', placesRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

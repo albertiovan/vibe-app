@@ -23,6 +23,9 @@ export interface VerifiedPlace extends ClaudePlace {
   address?: string;
   coordinates?: { lat: number; lng: number };
   distance?: number;
+  imageUrl?: string;
+  photoAttribution?: string;
+  mapsUrl?: string;
 }
 
 const REAL_CLAUDE_PROMPT = `You are an expert local guide with deep knowledge of Bucharest, Romania. You know hundreds of specific places, venues, attractions, and experiences throughout the city.
@@ -72,8 +75,12 @@ export class RealClaudeRecommender {
       const verifiedPlaces = await this.verifyWithGooglePlaces(claudePlaces);
       console.log('✅ Verified', verifiedPlaces.filter(p => p.verified).length, 'places with Google Places');
 
-      // Step 3: Return diverse, verified results
-      return this.selectDiverseResults(verifiedPlaces, 5);
+      // Step 3: Enrich with photos and maps links
+      const enrichedPlaces = await this.enrichPlacesWithPhotos(verifiedPlaces);
+      console.log('📸 Enriched', enrichedPlaces.filter(p => p.imageUrl).length, 'places with photos');
+
+      // Step 4: Return diverse, verified results
+      return this.selectDiverseResults(enrichedPlaces, 5);
 
     } catch (error) {
       console.error('❌ Real Claude recommender error:', error);
@@ -474,6 +481,66 @@ export class RealClaudeRecommender {
   }
 
   /**
+   * Enrich places with photos and maps links
+   */
+  async enrichPlacesWithPhotos(places: VerifiedPlace[]): Promise<VerifiedPlace[]> {
+    const { GooglePlacesService } = await import('../googlePlacesService.js');
+    const placesService = new GooglePlacesService();
+    
+    const enrichedPlaces: VerifiedPlace[] = [];
+    
+    // Limit concurrency to avoid hitting API limits
+    const concurrencyLimit = 4;
+    for (let i = 0; i < places.length; i += concurrencyLimit) {
+      const batch = places.slice(i, i + concurrencyLimit);
+      
+      const enrichedBatch = await Promise.all(
+        batch.map(async (place) => {
+          if (place.verified && place.placeId) {
+            try {
+              // Create a VibePlace-like object for enrichment
+              const vibePlace = {
+                placeId: place.placeId,
+                name: place.name,
+                types: [place.expectedType],
+                geometry: place.coordinates ? {
+                  location: place.coordinates
+                } : { location: { lat: 44.4268, lng: 26.1025 } },
+                mapsUrl: `https://www.google.com/maps/search/?api=1&query_place_id=${place.placeId}`
+              } as any;
+              
+              const enriched = await placesService.enrichPlaceWithPhotosAndMaps(vibePlace);
+              
+              return {
+                ...place,
+                imageUrl: enriched.imageUrl,
+                photoAttribution: enriched.photoAttribution,
+                mapsUrl: enriched.mapsUrl
+              };
+            } catch (error) {
+              console.warn('Failed to enrich place:', place.name, error);
+              return {
+                ...place,
+                mapsUrl: `https://www.google.com/maps/search/?api=1&query_place_id=${place.placeId}`
+              };
+            }
+          } else {
+            // For unverified places, just add a maps URL
+            return {
+              ...place,
+              mapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.area + ' Bucharest')}`
+            };
+          }
+        })
+      );
+      
+      enrichedPlaces.push(...enrichedBatch);
+    }
+    
+    return enrichedPlaces;
+  }
+
+  /**
    * Format for API response
    */
   formatForAPI(places: VerifiedPlace[], vibe: string) {
@@ -502,9 +569,14 @@ export class RealClaudeRecommender {
           description: place.description,
           reasoning: place.reasoning,
           verified: place.verified,
+          // New: Images & Maps Integration
+          imageUrl: place.imageUrl,
+          photoAttribution: place.photoAttribution,
+          mapsUrl: place.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' Bucharest')}`,
           highlights: [
             ...(place.rating ? [`${place.rating}⭐ rated`] : []),
             ...(place.verified ? ['Verified location'] : ['Claude recommendation']),
+            ...(place.imageUrl ? ['📸 Photo available'] : []),
             `${place.category.charAt(0).toUpperCase() + place.category.slice(1)} experience`
           ]
         })),

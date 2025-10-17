@@ -39,7 +39,8 @@ export function loadEnvironment(): void {
     'NODE_ENV',
     'PORT',
     'LLM_PROVIDER',
-    'CORS_ORIGINS'
+    'CORS_ORIGINS',
+    'PHOTOS_MAX_WIDTH'
   ];
 
   console.log('🔧 Environment variables status:');

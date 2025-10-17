@@ -63,11 +63,17 @@ export interface VibePlace {
     photoReference: string;
     width: number;
     height: number;
+    htmlAttributions?: string[];
   }>;
   openingHours?: {
     openNow?: boolean;
     weekdayText?: string[];
   };
+  
+  // New: Images & Maps Integration
+  imageUrl?: string;        // proxied photo url
+  photoAttribution?: string;// from Places photos[].html_attributions
+  mapsUrl: string;          // Google Maps deep link
   
   // Our vibe-specific enhancements
   vibeScore?: number; // 0-1 compatibility with user's vibe

@@ -27,6 +27,96 @@ export class GooglePlacesService {
   }
 
   /**
+   * Fetch place details with photos and build image/maps URLs
+   */
+  async enrichPlaceWithPhotosAndMaps(place: VibePlace): Promise<VibePlace> {
+    try {
+      console.log('📸 Enriching place with photos:', place.name);
+
+      // Fetch place details with photos
+      const detailsResponse = await this.client.placeDetails({
+        params: {
+          place_id: place.placeId,
+          fields: [
+            'name',
+            'place_id', 
+            'geometry',
+            'types',
+            'photos',
+            'price_level',
+            'rating',
+            'user_ratings_total',
+            'formatted_address',
+            'opening_hours',
+            'website',
+            'editorial_summary'
+          ],
+          key: this.apiKey
+        }
+      });
+
+      const details = detailsResponse.data.result;
+      
+      // Build image URL from first photo
+      let imageUrl: string | undefined;
+      let photoAttribution: string | undefined;
+      
+      if (details.photos && details.photos.length > 0) {
+        const photo = details.photos[0];
+        const maxWidth = parseInt(process.env.PHOTOS_MAX_WIDTH || '800', 10);
+        
+        imageUrl = `/api/places/photo?ref=${encodeURIComponent(photo.photo_reference)}&maxwidth=${maxWidth}`;
+        photoAttribution = photo.html_attributions?.[0] || undefined;
+        
+        console.log('📸 Built image URL for:', place.name);
+      }
+
+      // Build Google Maps deep link
+      const mapsUrl = this.buildMapsUrl(place.placeId, place.name);
+
+      // Return enriched place
+      return {
+        ...place,
+        imageUrl,
+        photoAttribution,
+        mapsUrl,
+        // Update with any additional details from API
+        rating: details.rating || place.rating,
+        userRatingsTotal: details.user_ratings_total || place.userRatingsTotal,
+        vicinity: details.formatted_address || place.vicinity,
+        photos: details.photos?.map(photo => ({
+          photoReference: photo.photo_reference,
+          width: photo.width,
+          height: photo.height,
+          htmlAttributions: photo.html_attributions
+        })) || place.photos
+      };
+
+    } catch (error) {
+      console.warn('📸 Failed to enrich place with photos:', place.name, error);
+      
+      // Return place with maps URL but no photo
+      return {
+        ...place,
+        mapsUrl: this.buildMapsUrl(place.placeId, place.name)
+      };
+    }
+  }
+
+  /**
+   * Build Google Maps deep link URL
+   */
+  private buildMapsUrl(placeId: string, placeName: string): string {
+    if (placeId) {
+      // Preferred: use place_id for definitive links
+      return `https://www.google.com/maps/search/?api=1&query_place_id=${placeId}`;
+    } else {
+      // Fallback: use place name (rare case)
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(placeName)}`;
+    }
+  }
+
+  /**
    * Main method: Find experiences based on user's vibe
    */
   async findExperiencesByVibe(vibe: UserVibe): Promise<VibeMatch> {
@@ -205,7 +295,8 @@ export class GooglePlacesService {
         estimatedDuration: this.estimateDuration(place, vibe),
         energyLevel: this.inferEnergyLevel(place),
         socialLevel: this.inferSocialLevel(place),
-        walkingTime: this.calculateWalkingTime(place.geometry.location, vibe.location)
+        walkingTime: this.calculateWalkingTime(place.geometry.location, vibe.location),
+        mapsUrl: this.buildMapsUrl(place.place_id, place.name)
       };
       
       return vibePlace;
