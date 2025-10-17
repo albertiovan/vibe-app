@@ -19,6 +19,25 @@ type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
+// Helper functions to convert vibe text to mood and energy
+function getVibeToMood(vibe: string): string {
+  const text = vibe.toLowerCase();
+  if (text.includes('adventurous') || text.includes('adventure') || text.includes('exciting')) return 'adventurous';
+  if (text.includes('relax') || text.includes('calm') || text.includes('peaceful') || text.includes('chill')) return 'relaxed';
+  if (text.includes('creative') || text.includes('art') || text.includes('culture')) return 'creative';
+  if (text.includes('social') || text.includes('party') || text.includes('friends')) return 'social';
+  if (text.includes('contemplative') || text.includes('think') || text.includes('quiet')) return 'contemplative';
+  if (text.includes('fun') || text.includes('playful') || text.includes('enjoy')) return 'playful';
+  return 'adventurous'; // Default
+}
+
+function getVibeToEnergy(vibe: string): string {
+  const text = vibe.toLowerCase();
+  if (text.includes('high energy') || text.includes('exciting') || text.includes('intense') || text.includes('adventure')) return 'high';
+  if (text.includes('low energy') || text.includes('relax') || text.includes('calm') || text.includes('chill')) return 'low';
+  return 'medium'; // Default
+}
+
 // Home Screen Component
 function HomeScreen({ navigation }: any) {
   const [vibe, setVibe] = React.useState('');
@@ -32,26 +51,26 @@ function HomeScreen({ navigation }: any) {
 
   const getCurrentLocation = async () => {
     try {
-      // Request permission to access location
+      // Request permission to access location (for future use)
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission denied', 'Location access is needed to find activities near you');
-        // Fallback to London, UK
-        setLocation({ lat: 51.5074, lng: -0.1278 });
-        return;
+        Alert.alert('Permission granted', 'Testing with Bucharest location for better results');
       }
 
-      // Get current position
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation({
-        lat: currentLocation.coords.latitude,
-        lng: currentLocation.coords.longitude
-      });
+      // FOR TESTING: Always use Bucharest coordinates where we have rich data
+      // TODO: Remove this when ready for international deployment
+      setLocation({ lat: 44.4268, lng: 26.1025 });
+      
+      // FUTURE: Uncomment this for real GPS location
+      // let currentLocation = await Location.getCurrentPositionAsync({});
+      // setLocation({
+      //   lat: currentLocation.coords.latitude,
+      //   lng: currentLocation.coords.longitude
+      // });
     } catch (error) {
       console.log('Location error:', error);
-      Alert.alert('Location Error', 'Using default location (London)');
-      // Fallback to London, UK
-      setLocation({ lat: 51.5074, lng: -0.1278 });
+      // Fallback to Bucharest for testing
+      setLocation({ lat: 44.4268, lng: 26.1025 });
     }
   };
 
@@ -69,38 +88,38 @@ function HomeScreen({ navigation }: any) {
     setLoading(true);
     
     try {
-      // Use our NEW weather-aware pipeline API
-      const response = await fetch('http://10.103.30.198:3000/api/weather/vibe-search', {
+      // TEMPORARY: Use working API while we fix the weather pipeline
+      // TODO: Switch back to weather-aware pipeline once fixed
+      const response = await fetch('http://10.103.30.198:3000/api/vibe/quick-match', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          vibe: vibe.trim(),
+          mood: getVibeToMood(vibe.trim()),
+          energy: getVibeToEnergy(vibe.trim()),
           location: {
             lat: location.lat,
             lng: location.lng,
-            city: 'Current Location',
-            country: 'Auto-detected'
+            radius: 10
           },
-          willingToTravel: false, // Local experiences only
-          maxTravelMinutes: 30
+          description: vibe.trim()
         }),
       });
 
       const data = await response.json();
       
-      if (data.success && data.data.topFive && data.data.topFive.length > 0) {
-        // Navigate to results with NEW weather-aware pipeline data
+      if (data.success && data.data.match && data.data.match.places.length > 0) {
+        // Navigate to results with working API data
         navigation.navigate('Results', {
-          places: data.data.topFive,
+          places: data.data.match.places,
           vibeAnalysis: {
             primaryVibe: vibe.trim(),
             confidence: 0.85,
-            weather: data.data.context.weather
+            weather: null // No weather data from old API
           },
           vibe: vibe.trim(),
-          totalFound: data.data.topFive.length
+          totalFound: data.data.match.places.length
         });
       } else {
         Alert.alert(
@@ -126,7 +145,7 @@ function HomeScreen({ navigation }: any) {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>VIBE</Text>
-        <Text style={styles.subtitle}>Weather-aware activity discovery • {location ? 'Your current location' : 'Getting location...'}</Text>
+        <Text style={styles.subtitle}>Weather-aware activity discovery • {location ? 'Bucharest, Romania (Testing)' : 'Getting location...'}</Text>
       </View>
 
       {/* Input Section */}
@@ -220,16 +239,21 @@ function ResultsScreen({ route, navigation }: any) {
             
             {/* Location and Distance */}
             <Text style={styles.activityDescription}>
-              {place.region} • {place.distance ? `${place.distance.toFixed(1)}km` : 'Nearby'}
+              {place.vicinity || place.region || 'Bucharest'} • {place.distance ? `${place.distance.toFixed(1)}km` : 'Nearby'}
             </Text>
             
-            {/* Weather and Bucket Info */}
+            {/* Vibe Reasons and Info */}
             <View style={styles.vibeReasons}>
               {place.weatherHint && (
                 <Text style={styles.vibeReason}>🌤️ {place.weatherHint}</Text>
               )}
               {place.bucket && (
                 <Text style={styles.vibeReason}>🎯 {place.bucket.charAt(0).toUpperCase() + place.bucket.slice(1)} experience</Text>
+              )}
+              {place.vibeReasons && place.vibeReasons.length > 0 && (
+                place.vibeReasons.slice(0, 2).map((reason: string, idx: number) => (
+                  <Text key={idx} style={styles.vibeReason}>• {reason}</Text>
+                ))
               )}
               {place.highlights && place.highlights.length > 0 && (
                 place.highlights.slice(0, 2).map((highlight: string, idx: number) => (
@@ -240,8 +264,11 @@ function ResultsScreen({ route, navigation }: any) {
             
             <View style={styles.activityMeta}>
               <Text style={styles.activityCategory}>
-                {place.travelTime ? `${place.travelTime} min travel` : 'Visit time varies'}
+                {place.estimatedDuration || place.travelTime ? `${place.travelTime} min travel` : 'Visit time varies'}
               </Text>
+              {place.walkingTime && (
+                <Text style={styles.walkingTime}>{place.walkingTime} min walk</Text>
+              )}
               {place.source && (
                 <Text style={styles.walkingTime}>via {place.source}</Text>
               )}

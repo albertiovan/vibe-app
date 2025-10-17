@@ -599,8 +599,9 @@ export class GooglePlacesService {
     
     let filteredPlaces = places;
     
-    // Apply food policy if culinary is not enabled
-    if (!enableCulinary) {
+    // TEMPORARILY DISABLED: Apply food policy if culinary is not enabled
+    // TODO: Re-enable once we have more diverse place types
+    if (false && !enableCulinary) {
       filteredPlaces = places.filter(place => {
         const types = place.types || [];
         const isFood = types.some((type: string) => 
@@ -616,6 +617,8 @@ export class GooglePlacesService {
       });
       
       console.log('🍽️ Food policy applied:', places.length, '→', filteredPlaces.length, 'places');
+    } else {
+      console.log('🍽️ Food policy DISABLED for testing - showing all places');
     }
     
     // Apply sector diversity and cap at 5 results
