@@ -21,6 +21,7 @@ import vibeRoutes from './routes/vibe.js';
 import llmRoutes from './routes/llm.js';
 import weatherRoutes from './routes/weather.js';
 import placesRoutes from './routes/places.js';
+import nearbySearchRoutes from './routes/nearbySearch.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -46,6 +47,7 @@ app.use('/api/vibe', vibeRoutes);
 app.use('/api/llm', llmRoutes);
 app.use('/api/weather', weatherRoutes);
 app.use('/api/places', placesRoutes);
+app.use('/api/nearby', nearbySearchRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

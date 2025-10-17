@@ -43,6 +43,14 @@ export interface UserVibe {
   dayType?: 'weekday' | 'weekend';
 }
 
+// Search filters for place discovery
+export interface SearchFilters {
+  radiusMeters: number;
+  durationHours: number;
+  travelMode?: 'drive' | 'transit' | 'walk';
+  nationwide?: boolean;
+}
+
 // Enhanced place data from Google Places
 export interface VibePlace {
   // Google Places data
@@ -200,4 +208,101 @@ export const VIBE_TO_GOOGLE_TYPES: Record<string, string[]> = {
   'time_moderate': ['restaurant', 'movie_theater', 'museum', 'shopping_mall', 'bowling_alley'],
   'time_extended': ['amusement_park', 'hiking_area', 'beach', 'zoo', 'aquarium'],
   'time_all_day': ['amusement_park', 'beach', 'national_park', 'festival', 'tourist_attraction']
+};
+
+// Duration heuristics per activity bucket (in hours)
+export const BUCKET_DURATION_HEURISTICS: Record<string, { min: number; max: number; typical: number }> = {
+  'trails': { min: 1, max: 8, typical: 3 },
+  'adrenaline': { min: 1, max: 6, typical: 2.5 },
+  'culture': { min: 0.5, max: 4, typical: 1.5 },
+  'nature': { min: 1, max: 6, typical: 2 },
+  'wellness': { min: 0.5, max: 4, typical: 1.5 },
+  'nightlife': { min: 2, max: 8, typical: 4 },
+  'food': { min: 0.5, max: 3, typical: 1.5 },
+  'adventure': { min: 1, max: 8, typical: 3 },
+  'entertainment': { min: 1, max: 4, typical: 2 }
+};
+
+// Regional centers for nationwide search across Romania
+export const ROMANIA_REGIONAL_CENTERS = [
+  { name: 'Bucharest', lat: 44.4268, lng: 26.1025, population: 1883425 },
+  { name: 'Cluj-Napoca', lat: 46.7712, lng: 23.6236, population: 324576 },
+  { name: 'Timișoara', lat: 45.7489, lng: 21.2087, population: 319279 },
+  { name: 'Iași', lat: 47.1585, lng: 27.6014, population: 290422 },
+  { name: 'Constanța', lat: 44.1598, lng: 28.6348, population: 283872 },
+  { name: 'Craiova', lat: 44.3302, lng: 23.7949, population: 269506 },
+  { name: 'Brașov', lat: 45.6427, lng: 25.5887, population: 253200 },
+  { name: 'Galați', lat: 45.4353, lng: 28.0080, population: 249432 }
+];
+
+// Vibe to Google Places types and keywords mapping
+export interface VibeMapping {
+  types: string[];
+  keywords: string[];
+}
+
+export const VIBE_TO_PLACES_MAPPING: Record<string, VibeMapping> = {
+  // Adventure & Adrenaline
+  'adventure': {
+    types: ['amusement_park', 'tourist_attraction', 'park'],
+    keywords: ['adventure park', 'zip line', 'climbing', 'escape room', 'karting']
+  },
+  'adrenaline': {
+    types: ['amusement_park', 'gym', 'tourist_attraction'],
+    keywords: ['extreme sports', 'bungee', 'paragliding', 'rock climbing', 'adventure']
+  },
+  'trails': {
+    types: ['park', 'tourist_attraction', 'natural_feature'],
+    keywords: ['hiking trail', 'nature trail', 'walking path', 'mountain trail']
+  },
+  
+  // Culture & Learning
+  'culture': {
+    types: ['museum', 'art_gallery', 'tourist_attraction', 'church', 'library'],
+    keywords: ['museum', 'gallery', 'cultural center', 'historic site', 'monument']
+  },
+  'art': {
+    types: ['art_gallery', 'museum', 'tourist_attraction'],
+    keywords: ['art gallery', 'contemporary art', 'sculpture', 'exhibition']
+  },
+  
+  // Nature & Outdoor
+  'nature': {
+    types: ['park', 'natural_feature', 'tourist_attraction'],
+    keywords: ['park', 'garden', 'nature reserve', 'botanical garden', 'lake']
+  },
+  'outdoor': {
+    types: ['park', 'campground', 'tourist_attraction'],
+    keywords: ['outdoor activities', 'picnic area', 'recreation area']
+  },
+  
+  // Wellness & Relaxation
+  'wellness': {
+    types: ['spa', 'gym', 'beauty_salon'],
+    keywords: ['spa', 'wellness center', 'massage', 'thermal baths', 'relaxation']
+  },
+  'relaxation': {
+    types: ['spa', 'park', 'tourist_attraction'],
+    keywords: ['peaceful', 'quiet', 'meditation', 'zen garden', 'retreat']
+  },
+  
+  // Entertainment & Nightlife
+  'nightlife': {
+    types: ['night_club', 'bar', 'casino'],
+    keywords: ['nightclub', 'bar', 'pub', 'live music', 'dancing']
+  },
+  'entertainment': {
+    types: ['movie_theater', 'amusement_park', 'bowling_alley', 'tourist_attraction'],
+    keywords: ['entertainment', 'cinema', 'theater', 'concert hall', 'arcade']
+  },
+  
+  // Food (only when culinary flag enabled)
+  'food': {
+    types: ['restaurant', 'cafe', 'meal_takeaway'],
+    keywords: ['restaurant', 'local cuisine', 'traditional food', 'fine dining']
+  },
+  'culinary': {
+    types: ['restaurant', 'food', 'meal_delivery'],
+    keywords: ['culinary experience', 'food tour', 'cooking class', 'wine tasting']
+  }
 };
