@@ -6,6 +6,7 @@
 import { getLLMProvider } from './index.js';
 import { FilterSpec, FilterSpecSchema, DEFAULT_FILTER_SPEC, mergeWithDefaults } from '../../schemas/filterSpec.js';
 import { ACTIVITY_TYPES_ALLOWLIST, FOOD_TYPES_BLOCKLIST } from '../../config/places.types.js';
+import { VIBE_TO_FILTERSPEC_PROMPT } from './prompts.js';
 
 /**
  * System prompt for vibe-to-filter mapping (copied verbatim from requirements)

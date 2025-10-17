@@ -30,24 +30,19 @@ export const SummarySchema = z.object({
 export type Summary = z.infer<typeof SummarySchema>;
 
 /**
- * Complete curation specification - LLM output for exactly 5 picks
+ * Final CurationSpec schema matching exact specification
  */
 export const CurationSpecSchema = z.object({
-  // Exactly 5 items - hard constraint
   topFiveIds: z.array(z.string()).length(5),
-  
-  // Clustering for thematic organization
-  clusters: z.array(ClusterSchema).min(1).max(5),
-  
-  // Rich summaries for each item
-  summaries: z.array(SummarySchema).length(5),
-  
-  // Diversity metrics
-  diversityScore: z.number().min(0).max(1).optional(),
-  bucketsRepresented: z.array(ExperienceBucketSchema).min(1).max(6).optional(),
-  
-  // Reasoning (for debugging/transparency)
-  reasoning: z.string().max(200).optional()
+  clusters: z.array(z.object({
+    label: z.string(), 
+    ids: z.array(z.string())
+  })).optional().default([]),
+  summaries: z.array(z.object({
+    id: z.string(), 
+    blurb: z.string().max(320)
+  })).optional().default([]),
+  rationale: z.string().max(400).optional().default('')
 });
 
 export type CurationSpec = z.infer<typeof CurationSpecSchema>;
@@ -136,12 +131,8 @@ export class CurationValidator {
   } {
     const representedBuckets = new Set<string>();
     
-    // Extract buckets from summaries
-    curation.summaries.forEach(summary => {
-      if (summary.bucket) {
-        representedBuckets.add(summary.bucket);
-      }
-    });
+    // Extract buckets from summaries (simplified - no bucket field in new schema)
+    // Bucket diversity will be calculated differently
 
     const bucketsArray = Array.from(representedBuckets);
     const missing = targetBuckets.filter(bucket => !representedBuckets.has(bucket));
@@ -222,9 +213,7 @@ export const EMPTY_CURATION: CurationSpec = {
   topFiveIds: [],
   clusters: [],
   summaries: [],
-  diversityScore: 0,
-  bucketsRepresented: [],
-  reasoning: 'Fallback: No valid curation available'
+  rationale: 'Fallback: No valid curation available'
 };
 
 /**
@@ -285,8 +274,6 @@ export function createFallbackCuration(
     topFiveIds,
     clusters,
     summaries,
-    diversityScore: 0.5,
-    bucketsRepresented: [...new Set(sortedItems.map(item => item.bucket).filter(Boolean))] as any,
-    reasoning: 'Fallback curation based on ratings'
+    rationale: 'Fallback curation based on ratings'
   };
 }

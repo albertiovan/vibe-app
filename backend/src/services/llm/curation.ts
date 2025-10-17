@@ -282,9 +282,7 @@ function createHeuristicFallback(input: CurationInput): CurationSpec {
     topFiveIds,
     clusters,
     summaries,
-    diversityScore: bucketsRepresented.length / Math.max(input.filterSpec.buckets.length, 5),
-    bucketsRepresented,
-    reasoning: 'Heuristic fallback: Selected top-rated experiences with bucket diversity'
+    rationale: 'Heuristic fallback: Selected top-rated experiences with bucket diversity'
   };
 }
 
