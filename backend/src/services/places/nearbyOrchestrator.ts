@@ -237,7 +237,20 @@ export class NearbyOrchestrator {
     try {
       const params: any = {
         location: { lat: query.center.lat, lng: query.center.lng },
-        key: this.apiKey
+        key: this.apiKey,
+        // Field mask to optimize API usage and reduce billing
+        fields: [
+          'place_id',
+          'name', 
+          'geometry',
+          'types',
+          'rating',
+          'user_ratings_total',
+          'price_level',
+          'vicinity',
+          'opening_hours',
+          'photos'
+        ]
       };
 
       // Configure search parameters based on Google Places API requirements
@@ -249,7 +262,7 @@ export class NearbyOrchestrator {
         params.rankby = 'distance'; // When using rankby=distance, omit radius
       }
 
-      console.log('🔍 Searching', query.center.name, 'for', query.type || query.keyword);
+      console.log('🔍 Searching', query.center.name, 'for', query.type || query.keyword, 'with field mask');
 
       const response = await this.client.placesNearby({ params });
       

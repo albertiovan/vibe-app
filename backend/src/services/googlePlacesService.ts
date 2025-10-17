@@ -33,15 +33,16 @@ export class GooglePlacesService {
     try {
       console.log('📸 Enriching place with photos:', place.name);
 
-      // Fetch place details with photos
+      // Fetch place details with photos using field mask for optimization
       const detailsResponse = await this.client.placeDetails({
         params: {
           place_id: place.placeId,
+          // Field mask to optimize API usage and reduce billing charges
           fields: [
+            'place_id',
             'name',
-            'place_id', 
             'geometry',
-            'types',
+            'types', 
             'photos',
             'price_level',
             'rating',
