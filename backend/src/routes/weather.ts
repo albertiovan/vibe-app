@@ -6,8 +6,56 @@
 import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import { WeatherTravelPipeline } from '../services/pipeline/weatherTravelPipeline.js';
+import { SimpleClaudeRecommender } from '../services/llm/simpleClaudeRecommender.js';
 
 const router = Router();
+
+/**
+ * POST /api/weather/claude-search  
+ * Claude-first recommendation engine with API verification
+ */
+router.post('/claude-search', [
+  body('vibe').isString().isLength({ min: 3, max: 500 }).withMessage('Vibe must be 3-500 characters'),
+  body('location.lat').isFloat({ min: -90, max: 90 }).withMessage('Valid latitude required'),
+  body('location.lng').isFloat({ min: -180, max: 180 }).withMessage('Valid longitude required'),
+  body('location.city').optional().isString(),
+  body('location.country').optional().isString()
+], async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Validate input
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({
+        success: false,
+        error: 'Validation failed',
+        details: errors.array()
+      });
+      return;
+    }
+
+    const { vibe, location } = req.body;
+    
+    console.log('🧠 Claude-first search:', {
+      vibe: vibe.slice(0, 50),
+      location: location.city || 'Unknown'
+    });
+
+    // Execute simple Claude recommender
+    const claudeRecommender = new SimpleClaudeRecommender();
+    const recommendations = await claudeRecommender.getRecommendations(vibe);
+    const apiResponse = claudeRecommender.formatForAPI(recommendations, vibe);
+
+    res.json(apiResponse);
+
+  } catch (error) {
+    console.error('❌ Claude-first search error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Claude-first search failed',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
 
 /**
  * POST /api/weather/vibe-search

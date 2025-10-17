@@ -88,38 +88,36 @@ function HomeScreen({ navigation }: any) {
     setLoading(true);
     
     try {
-      // TEMPORARY: Use working API while we fix the weather pipeline
-      // TODO: Switch back to weather-aware pipeline once fixed
-      const response = await fetch('http://10.103.30.198:3000/api/vibe/quick-match', {
+      // NEW: Use Claude-first recommendation engine
+      const response = await fetch('http://10.103.30.198:3000/api/weather/claude-search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mood: getVibeToMood(vibe.trim()),
-          energy: getVibeToEnergy(vibe.trim()),
+          vibe: vibe.trim(),
           location: {
             lat: location.lat,
             lng: location.lng,
-            radius: 10
-          },
-          description: vibe.trim()
+            city: 'Bucharest',
+            country: 'Romania'
+          }
         }),
       });
 
       const data = await response.json();
       
-      if (data.success && data.data.match && data.data.match.places.length > 0) {
-        // Navigate to results with working API data
+      if (data.success && data.data.topFive && data.data.topFive.length > 0) {
+        // Navigate to results with Claude-first API data
         navigation.navigate('Results', {
-          places: data.data.match.places,
+          places: data.data.topFive,
           vibeAnalysis: {
             primaryVibe: vibe.trim(),
-            confidence: 0.85,
-            weather: null // No weather data from old API
+            confidence: 0.9, // Claude is very confident
+            weather: data.data.context?.weather
           },
           vibe: vibe.trim(),
-          totalFound: data.data.match.places.length
+          totalFound: data.data.topFive.length
         });
       } else {
         Alert.alert(
@@ -184,7 +182,7 @@ function HomeScreen({ navigation }: any) {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>🌤️ Weather-aware • 🎯 5 diverse picks • 🚫 No restaurants by default</Text>
+        <Text style={styles.footerText}>🧠 Claude-powered • 🎯 Real places • ✅ Verified with APIs</Text>
       </View>
     </View>
   );
