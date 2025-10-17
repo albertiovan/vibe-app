@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as Location from 'expo-location';
 
 // Define navigation types
 type RootStackParamList = {
@@ -22,6 +23,37 @@ const Stack = createStackNavigator<RootStackParamList>();
 function HomeScreen({ navigation }: any) {
   const [vibe, setVibe] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [location, setLocation] = React.useState<{lat: number, lng: number} | null>(null);
+
+  // Get user's current location
+  React.useEffect(() => {
+    getCurrentLocation();
+  }, []);
+
+  const getCurrentLocation = async () => {
+    try {
+      // Request permission to access location
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission denied', 'Location access is needed to find activities near you');
+        // Fallback to London, UK
+        setLocation({ lat: 51.5074, lng: -0.1278 });
+        return;
+      }
+
+      // Get current position
+      let currentLocation = await Location.getCurrentPositionAsync({});
+      setLocation({
+        lat: currentLocation.coords.latitude,
+        lng: currentLocation.coords.longitude
+      });
+    } catch (error) {
+      console.log('Location error:', error);
+      Alert.alert('Location Error', 'Using default location (London)');
+      // Fallback to London, UK
+      setLocation({ lat: 51.5074, lng: -0.1278 });
+    }
+  };
 
   const handleSubmit = async () => {
     if (!vibe.trim()) {
@@ -29,41 +61,51 @@ function HomeScreen({ navigation }: any) {
       return;
     }
 
+    if (!location) {
+      Alert.alert('Getting your location...');
+      return;
+    }
+
     setLoading(true);
     
     try {
-      // Make API call to new Google Places vibe endpoint
-      const response = await fetch('http://10.103.30.198:3000/api/vibe/quick-match', {
+      // Use our NEW weather-aware pipeline API
+      const response = await fetch('http://10.103.30.198:3000/api/weather/vibe-search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mood: 'relaxed', // Default mood - we'll make this dynamic later
-          energy: 'medium',
+          vibe: vibe.trim(),
           location: {
-            lat: 44.4268,
-            lng: 26.1025,
-            radius: 10
+            lat: location.lat,
+            lng: location.lng,
+            city: 'Current Location',
+            country: 'Auto-detected'
           },
-          description: vibe.trim()
+          willingToTravel: false, // Local experiences only
+          maxTravelMinutes: 30
         }),
       });
 
       const data = await response.json();
       
-      if (data.success && data.data.match.places.length > 0) {
-        // Navigate to results with Google Places data
+      if (data.success && data.data.topFive && data.data.topFive.length > 0) {
+        // Navigate to results with NEW weather-aware pipeline data
         navigation.navigate('Results', {
-          places: data.data.match.places,
-          vibeAnalysis: data.data.match.vibeAnalysis,
+          places: data.data.topFive,
+          vibeAnalysis: {
+            primaryVibe: vibe.trim(),
+            confidence: 0.85,
+            weather: data.data.context.weather
+          },
           vibe: vibe.trim(),
-          totalFound: data.data.match.totalFound
+          totalFound: data.data.topFive.length
         });
       } else {
         Alert.alert(
           'No Places Found',
-          'We couldn\'t find any places matching your vibe. Try a different description or check back later!'
+          'We couldn\'t find any places matching your vibe in your area. Try a different description!'
         );
       }
     } catch (error) {
@@ -83,8 +125,8 @@ function HomeScreen({ navigation }: any) {
       
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>VIBE DEBUG</Text>
-        <Text style={styles.subtitle}>Discover activities that match your mood</Text>
+        <Text style={styles.title}>VIBE</Text>
+        <Text style={styles.subtitle}>Weather-aware activity discovery • {location ? 'Your current location' : 'Getting location...'}</Text>
       </View>
 
       {/* Input Section */}
@@ -123,7 +165,7 @@ function HomeScreen({ navigation }: any) {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Powered by AI • Discover Romania</Text>
+        <Text style={styles.footerText}>🌤️ Weather-aware • 🎯 5 diverse picks • 🚫 No restaurants by default</Text>
       </View>
     </View>
   );
@@ -163,36 +205,45 @@ function ResultsScreen({ route, navigation }: any) {
       {/* Places List */}
       <ScrollView style={styles.resultsList}>
         {places.map((place: any, index: number) => (
-          <View key={place.placeId || index} style={styles.activityCard}>
+          <View key={place.id || index} style={styles.activityCard}>
             <View style={styles.placeHeader}>
               <Text style={styles.activityName}>{place.name}</Text>
               <View style={styles.placeRating}>
                 {place.rating && (
                   <Text style={styles.activityRating}>★ {place.rating}</Text>
                 )}
-                {place.vibeScore && (
-                  <Text style={styles.vibeScore}>{Math.round(place.vibeScore * 100)}%</Text>
+                {place.weatherSuitability && (
+                  <Text style={styles.vibeScore}>{Math.round(place.weatherSuitability * 100)}%</Text>
                 )}
               </View>
             </View>
             
-            <Text style={styles.activityDescription}>{place.vicinity}</Text>
+            {/* Location and Distance */}
+            <Text style={styles.activityDescription}>
+              {place.region} • {place.distance ? `${place.distance.toFixed(1)}km` : 'Nearby'}
+            </Text>
             
-            {/* Vibe Reasons */}
-            {place.vibeReasons && place.vibeReasons.length > 0 && (
-              <View style={styles.vibeReasons}>
-                {place.vibeReasons.slice(0, 2).map((reason: string, idx: number) => (
-                  <Text key={idx} style={styles.vibeReason}>• {reason}</Text>
-                ))}
-              </View>
-            )}
+            {/* Weather and Bucket Info */}
+            <View style={styles.vibeReasons}>
+              {place.weatherHint && (
+                <Text style={styles.vibeReason}>🌤️ {place.weatherHint}</Text>
+              )}
+              {place.bucket && (
+                <Text style={styles.vibeReason}>🎯 {place.bucket.charAt(0).toUpperCase() + place.bucket.slice(1)} experience</Text>
+              )}
+              {place.highlights && place.highlights.length > 0 && (
+                place.highlights.slice(0, 2).map((highlight: string, idx: number) => (
+                  <Text key={idx} style={styles.vibeReason}>• {highlight}</Text>
+                ))
+              )}
+            </View>
             
             <View style={styles.activityMeta}>
               <Text style={styles.activityCategory}>
-                {place.estimatedDuration || 'Visit time varies'}
+                {place.travelTime ? `${place.travelTime} min travel` : 'Visit time varies'}
               </Text>
-              {place.walkingTime && (
-                <Text style={styles.walkingTime}>{place.walkingTime} min walk</Text>
+              {place.source && (
+                <Text style={styles.walkingTime}>via {place.source}</Text>
               )}
             </View>
           </View>
