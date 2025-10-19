@@ -25,13 +25,13 @@ export type ExperienceBucket = z.infer<typeof ExperienceBucketSchema>;
 export const FilterSpecSchema = z.object({
   buckets: z.array(z.enum(['trails','adrenaline','nature','culture','wellness','nightlife'])).optional(),
   keywords: z.array(z.string()).optional(),
-  radiusKm: z.number().min(1).max(200).nullable().optional(),
+  radiusKm: z.number().min(1).max(250).nullable().optional(), // Extended to 250km for day trips
   timeOfDay: z.enum(['morning','afternoon','evening','late']).nullable().optional(),
   energy: z.enum(['chill','medium','high']).nullable().optional(),
   indoorOutdoor: z.enum(['indoor','outdoor','either']).nullable().optional(),
   minRating: z.number().min(0).max(5).nullable().optional(),
   avoidFood: z.boolean().optional(),
-  maxTravelMinutes: z.number().min(5).max(240).nullable().optional()
+  maxTravelMinutes: z.number().min(5).max(720).nullable().optional() // Extended to 12 hours for day trips
 });
 
 export type FilterSpec = z.infer<typeof FilterSpecSchema>;

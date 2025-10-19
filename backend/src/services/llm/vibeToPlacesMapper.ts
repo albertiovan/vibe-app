@@ -3,6 +3,7 @@
  * Maps user vibes to Google Places types and keywords (never invents places)
  */
 
+import { z } from 'zod';
 import { getLLMProvider } from './index.js';
 import { VIBE_TO_PLACES_MAPPING, VibeMapping } from '../../types/vibe.js';
 import { shouldEnableCulinary } from '../../config/app.experiences.js';
@@ -15,16 +16,33 @@ export interface VibeToPlacesResult {
   confidence: number;
 }
 
-const VIBE_MAPPING_PROMPT = `You are an expert at mapping user vibes to Google Places API search parameters. Your job is to translate a user's mood/vibe into specific place types and keywords that will find real places via Google Places API.
+// Zod schema for LLM response validation
+const VibeToPlacesSchema = z.object({
+  types: z.array(z.string()).min(1).max(6),
+  keywords: z.array(z.string()).min(1).max(6),
+  buckets: z.array(z.string()).min(1).max(4),
+  reasoning: z.string().min(10).max(500),
+  confidence: z.number().min(0).max(1)
+});
+
+const VIBE_MAPPING_PROMPT = `You are an expert at mapping user emotions and vibes to Google Places API search parameters. Your job is to translate a user's emotional state, mood, or desired experience into specific place types and keywords that will find real places via Google Places API.
 
 IMPORTANT CONSTRAINTS:
-- Only use Google Places API types (museum, park, amusement_park, restaurant, etc.)
+- Only use Google Places API types (cafe, library, museum, park, community_center, art_gallery, etc.)
+- Focus on EXPERIENCES and EMOTIONAL NEEDS, not just physical activities
+- For emotional states like "lonely", "sad", "need connection" - suggest social spaces like cafes, libraries, community centers
+- For "adventurous" - suggest adventure parks, outdoor activities, unique attractions
 - Only suggest keywords that describe place categories, not specific venue names
 - Never invent or suggest specific place names
-- Focus on activities and experiences, not food (unless explicitly culinary)
-- Prioritize diverse, interesting experiences over generic options
+- Prioritize places that match the EMOTIONAL INTENT behind the vibe
 
-Available activity buckets: adventure, adrenaline, trails, culture, art, nature, outdoor, wellness, relaxation, nightlife, entertainment, food, culinary
+Available activity buckets: adventure, adrenaline, trails, culture, art, nature, outdoor, wellness, relaxation, nightlife, entertainment, lonely, social, connection, creative, peaceful
+
+EMOTIONAL VIBE EXAMPLES:
+- "I feel lonely" → cafe, library, community_center (social spaces where people gather)
+- "I need adventure" → amusement_park, tourist_attraction, park (exciting experiences)
+- "I want to be creative" → art_gallery, museum, craft_store (inspiring creative spaces)
+- "I need peace" → park, library, spa (calm, quiet environments)
 
 User's vibe: "{vibe}"
 
@@ -33,14 +51,18 @@ Return a JSON object with:
   "types": ["google_place_type1", "google_place_type2"],
   "keywords": ["search_keyword1", "search_keyword2"],
   "buckets": ["bucket1", "bucket2"],
-  "reasoning": "Why these types/keywords match the vibe",
+  "reasoning": "Why these types/keywords match the emotional intent of the vibe",
   "confidence": 0.85
 }
 
-Focus on 2-4 types, 2-4 keywords, and 1-3 buckets that best capture the user's intent.`;
+Focus on 2-4 types, 2-4 keywords, and 1-3 buckets that best capture the user's EMOTIONAL INTENT and desired EXPERIENCE.`;
 
 export class VibeToPlacesMapper {
   private llm = getLLMProvider();
+  private static failureCount = 0;
+  private static lastFailureTime = 0;
+  private static readonly MAX_FAILURES = 3;
+  private static readonly CIRCUIT_BREAKER_TIMEOUT = 60000; // 1 minute
 
   /**
    * Map user vibe to Google Places search parameters
@@ -72,37 +94,86 @@ export class VibeToPlacesMapper {
   }
 
   /**
+   * Check if circuit breaker is open (too many recent failures)
+   */
+  private isCircuitBreakerOpen(): boolean {
+    const now = Date.now();
+    if (VibeToPlacesMapper.failureCount >= VibeToPlacesMapper.MAX_FAILURES) {
+      if (now - VibeToPlacesMapper.lastFailureTime < VibeToPlacesMapper.CIRCUIT_BREAKER_TIMEOUT) {
+        console.warn('🚫 LLM circuit breaker is OPEN - too many recent failures, using fallback');
+        return true;
+      } else {
+        // Reset after timeout
+        console.log('🔄 LLM circuit breaker timeout expired, resetting failure count');
+        VibeToPlacesMapper.failureCount = 0;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Record LLM failure for circuit breaker
+   */
+  private recordFailure(): void {
+    VibeToPlacesMapper.failureCount++;
+    VibeToPlacesMapper.lastFailureTime = Date.now();
+    console.warn(`⚠️ LLM failure recorded (${VibeToPlacesMapper.failureCount}/${VibeToPlacesMapper.MAX_FAILURES})`);
+  }
+
+  /**
+   * Record LLM success for circuit breaker
+   */
+  private recordSuccess(): void {
+    if (VibeToPlacesMapper.failureCount > 0) {
+      console.log('✅ LLM success - resetting failure count');
+      VibeToPlacesMapper.failureCount = 0;
+    }
+  }
+
+  /**
    * Try LLM-powered vibe mapping
    */
   private async tryLLMMapping(vibe: string): Promise<VibeToPlacesResult | null> {
+    // Check circuit breaker
+    if (this.isCircuitBreakerOpen()) {
+      return null;
+    }
+
     try {
       const prompt = VIBE_MAPPING_PROMPT.replace('{vibe}', vibe);
       
+      console.log('🧠 Calling LLM with vibe mapping prompt...');
+      
       const result = await this.llm.completeJSON({
-        system: "You are an expert at mapping user vibes to Google Places search parameters.",
+        system: "You are an expert at mapping user vibes to Google Places search parameters. You MUST respond with valid JSON only.",
         user: prompt,
-        schema: null as any, // Simplified for now
-        maxTokens: 500
+        schema: VibeToPlacesSchema,
+        maxTokens: 800
       });
 
       if (!result.ok) {
         console.warn('🧠 LLM mapping failed:', result.error);
+        this.recordFailure();
         return null;
       }
 
-      const parsed = result.data as any;
+      console.log('✅ LLM mapping successful, validating result...');
+      this.recordSuccess();
       
-      // Validate and sanitize the result
+      // The result is already validated by the schema, but we still sanitize for safety
+      const validated = result.data;
+      
       return {
-        types: this.validateTypes(parsed?.types || []),
-        keywords: this.validateKeywords(parsed?.keywords || []),
-        buckets: this.validateBuckets(parsed?.buckets || []),
-        reasoning: parsed?.reasoning || 'LLM-generated mapping',
-        confidence: Math.max(0, Math.min(1, parsed?.confidence || 0.7))
+        types: this.validateTypes(validated.types),
+        keywords: this.validateKeywords(validated.keywords),
+        buckets: this.validateBuckets(validated.buckets),
+        reasoning: validated.reasoning,
+        confidence: Math.max(0, Math.min(1, validated.confidence))
       };
 
     } catch (error) {
       console.warn('🧠 LLM mapping error:', error);
+      this.recordFailure();
       return null;
     }
   }
@@ -126,8 +197,41 @@ export class VibeToPlacesMapper {
       }
     }
 
-    // If no explicit matches, infer from common words
+    // If no explicit matches, infer from common words and emotional states
     if (matchedBuckets.length === 0) {
+      // Cozy/Comfort vibes (map to social spaces)
+      if (text.includes('cozy') || text.includes('warm') || text.includes('comfortable') || text.includes('inviting')) {
+        matchedBuckets.push('social');
+        allTypes.push(...VIBE_TO_PLACES_MAPPING.social.types);
+        allKeywords.push(...VIBE_TO_PLACES_MAPPING.social.keywords);
+      }
+      
+      // Emotional/Social vibes (prioritize these for better experience matching)
+      if (text.includes('lonely') || text.includes('alone') || text.includes('isolated') || text.includes('need people')) {
+        matchedBuckets.push('lonely');
+        allTypes.push(...VIBE_TO_PLACES_MAPPING.lonely.types);
+        allKeywords.push(...VIBE_TO_PLACES_MAPPING.lonely.keywords);
+      }
+      
+      if (text.includes('social') || text.includes('meet people') || text.includes('connect') || text.includes('friends')) {
+        matchedBuckets.push('social');
+        allTypes.push(...VIBE_TO_PLACES_MAPPING.social.types);
+        allKeywords.push(...VIBE_TO_PLACES_MAPPING.social.keywords);
+      }
+      
+      if (text.includes('creative') || text.includes('artistic') || text.includes('make') || text.includes('craft')) {
+        matchedBuckets.push('creative');
+        allTypes.push(...VIBE_TO_PLACES_MAPPING.creative.types);
+        allKeywords.push(...VIBE_TO_PLACES_MAPPING.creative.keywords);
+      }
+      
+      if (text.includes('peaceful') || text.includes('calm') || text.includes('quiet') || text.includes('meditat')) {
+        matchedBuckets.push('peaceful');
+        allTypes.push(...VIBE_TO_PLACES_MAPPING.peaceful.types);
+        allKeywords.push(...VIBE_TO_PLACES_MAPPING.peaceful.keywords);
+      }
+      
+      // Physical activity vibes
       if (text.includes('adventure') || text.includes('exciting') || text.includes('thrill')) {
         matchedBuckets.push('adventure');
         allTypes.push(...VIBE_TO_PLACES_MAPPING.adventure.types);

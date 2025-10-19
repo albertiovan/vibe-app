@@ -1,0 +1,295 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-18T21:52:03.319Z",
+  "entries": [
+    {
+      "id": "relaxation-seeking",
+      "cues": {
+        "en": [
+          "I need to relax",
+          "I want to unwind",
+          "I need some peace"
+        ],
+        "ro": [
+          "Am nevoie de relaxare",
+          "Vreau să mă relaxez",
+          "Am nevoie de liniște"
+        ]
+      },
+      "preferredCategories": [
+        "wellness",
+        "nature"
+      ]
+    },
+    {
+      "id": "adventure-seeking",
+      "cues": {
+        "en": [
+          "I want adventure",
+          "I need excitement",
+          "I want to explore"
+        ],
+        "ro": [
+          "Vreau aventură",
+          "Am nevoie de emoții",
+          "Vreau să explorez"
+        ]
+      },
+      "preferredCategories": [
+        "adventure",
+        "nature",
+        "sports"
+      ]
+    },
+    {
+      "id": "cultural-immersion",
+      "cues": {
+        "en": [
+          "I want to learn about the local culture",
+          "I'm interested in traditional crafts"
+        ],
+        "ro": [
+          "Vreau să învăț despre cultura locală",
+          "Mă interesează meșteșugurile tradiționale"
+        ]
+      },
+      "preferredCategories": [
+        "culture",
+        "learning"
+      ]
+    },
+    {
+      "id": "creative-expression",
+      "cues": {
+        "en": [
+          "I want to make something",
+          "I feel inspired",
+          "I want to create"
+        ],
+        "ro": [
+          "Vreau să creez ceva",
+          "Mă simt inspirat",
+          "Vreau să fac ceva"
+        ]
+      },
+      "preferredCategories": [
+        "creative",
+        "learning"
+      ]
+    },
+    {
+      "id": "culinary-curious",
+      "cues": {
+        "en": [
+          "I want to try new foods",
+          "I'm interested in local cuisine"
+        ],
+        "ro": [
+          "Vreau să încerc mâncăruri noi",
+          "Sunt interesat de bucătăria locală"
+        ]
+      },
+      "preferredCategories": [
+        "culinary",
+        "culture"
+      ]
+    },
+    {
+      "id": "nature-seeker",
+      "cues": {
+        "en": [
+          "I want to be in nature",
+          "I need to get outdoors"
+        ],
+        "ro": [
+          "Vreau să fiu în natură",
+          "Am nevoie să ies afară"
+        ]
+      },
+      "preferredCategories": [
+        "nature",
+        "water"
+      ]
+    },
+    {
+      "id": "social-connection",
+      "cues": {
+        "en": [
+          "I feel lonely",
+          "I want to meet people",
+          "I need company"
+        ],
+        "ro": [
+          "Vreau să cunosc oameni",
+          "Mă simt singur",
+          "Am nevoie de companie"
+        ]
+      },
+      "preferredCategories": [
+        "social",
+        "community"
+      ]
+    },
+    {
+      "id": "nightlife-seeking",
+      "cues": {
+        "en": [
+          "I want nightlife",
+          "I'm bored tonight",
+          "I want to party"
+        ],
+        "ro": [
+          "Vreau distracție",
+          "Mă plictisesc diseară",
+          "Vreau să ies în oraș"
+        ]
+      },
+      "preferredCategories": [
+        "nightlife",
+        "social"
+      ]
+    },
+    {
+      "id": "fitness-motivation",
+      "cues": {
+        "en": [
+          "I want to exercise",
+          "I need to move",
+          "I want to stay active"
+        ],
+        "ro": [
+          "Vreau să fac mișcare",
+          "Am nevoie de energie",
+          "Vreau să fiu activ"
+        ]
+      },
+      "preferredCategories": [
+        "fitness",
+        "sports"
+      ]
+    },
+    {
+      "id": "seasonal-winter",
+      "cues": {
+        "en": [
+          "I want cozy winter vibes",
+          "I need something warm",
+          "Winter comfort"
+        ],
+        "ro": [
+          "Vreau o atmosferă de iarnă",
+          "Am nevoie de ceva cald",
+          "Confort de iarnă"
+        ]
+      },
+      "preferredCategories": [
+        "seasonal",
+        "wellness"
+      ]
+    },
+    {
+      "id": "seasonal-summer",
+      "cues": {
+        "en": [
+          "I want to enjoy summer",
+          "Summer fun",
+          "Hot weather activities"
+        ],
+        "ro": [
+          "Vreau să mă bucur de vară",
+          "Distracție de vară",
+          "Activități de vară"
+        ]
+      },
+      "preferredCategories": [
+        "seasonal",
+        "adventure"
+      ]
+    },
+    {
+      "id": "romantic-mood",
+      "cues": {
+        "en": [
+          "I feel romantic",
+          "I want a date idea",
+          "Romantic evening"
+        ],
+        "ro": [
+          "Vreau o ieșire romantică",
+          "Seară romantică",
+          "Întâlnire romantică"
+        ]
+      },
+      "preferredCategories": [
+        "romance",
+        "culinary"
+      ]
+    },
+    {
+      "id": "energetic-boost",
+      "cues": {
+        "en": [
+          "I need energy",
+          "I want something lively",
+          "I feel energetic"
+        ],
+        "ro": [
+          "Am nevoie de energie",
+          "Vreau ceva vioi",
+          "Mă simt energic"
+        ]
+      },
+      "preferredCategories": [
+        "active",
+        "social"
+      ]
+    },
+    {
+      "id": "water-activities-seeking",
+      "cues": {
+        "en": [
+          "I want water activities",
+          "I want water sports",
+          "I need water activities"
+        ],
+        "ro": [
+          "Vreau activități nautice",
+          "Vreau sporturi pe apă",
+          "Am nevoie de activități pe apă"
+        ]
+      },
+      "preferredCategories": [
+        "water",
+        "adventure",
+        "nature"
+      ]
+    },
+    {
+      "id": "self-reflection",
+      "cues": {
+        "en": [
+          "I want some alone time",
+          "I need to think",
+          "I need space"
+        ],
+        "ro": [
+          "Am nevoie de timp pentru mine",
+          "Vreau să stau singur",
+          "Am nevoie de spațiu"
+        ]
+      },
+      "preferredCategories": [
+        "wellness",
+        "nature",
+        "mindfulness"
+      ]
+    }
+  ],
+  "stats": {
+    "total": 15,
+    "languages": [
+      "en",
+      "ro"
+    ]
+  }
+}

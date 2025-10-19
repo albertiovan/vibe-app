@@ -1,0 +1,86 @@
+{
+  "newSubtypes": [
+    {
+      "id": "thermal-baths",
+      "label": "Thermal Baths",
+      "category": "wellness",
+      "verbs": ["soak", "relax", "unwind"],
+      "energy": "chill",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "keywords": {
+        "en": ["thermal baths", "hot springs", "spa"],
+        "ro": ["băi termale", "izvoare termale", "spa"]
+      },
+      "synonyms": {
+        "en": ["hot springs", "mineral baths"],
+        "ro": ["izvoare calde", "băi minerale"]
+      },
+      "google": {
+        "types": ["spa", "tourist_attraction"],
+        "keywords": ["thermal baths", "băi termale", "hot springs"]
+      }
+    },
+    {
+      "id": "mountain-hiking",
+      "label": "Mountain Hiking",
+      "category": "nature",
+      "verbs": ["hike", "climb", "explore"],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": ["mountain hiking", "trail hiking", "alpine hiking"],
+        "ro": ["drumeție montană", "hiking", "trasee montane"]
+      },
+      "synonyms": {
+        "en": ["mountain trekking", "alpine walking"],
+        "ro": ["trekking montan", "plimbări alpine"]
+      },
+      "google": {
+        "types": ["park", "natural_feature", "tourist_attraction"],
+        "keywords": ["hiking trail", "mountain trail", "drumeție"]
+      }
+    },
+    {
+      "id": "castle-tours",
+      "label": "Castle Tours",
+      "category": "culture",
+      "verbs": ["explore", "visit", "discover"],
+      "energy": "medium",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "keywords": {
+        "en": ["castle tour", "fortress visit", "medieval castle"],
+        "ro": ["tur castel", "vizită cetate", "castel medieval"]
+      },
+      "synonyms": {
+        "en": ["fortress exploration", "palace tour"],
+        "ro": ["explorare cetate", "tur palat"]
+      },
+      "google": {
+        "types": ["tourist_attraction", "museum", "establishment"],
+        "keywords": ["castle", "fortress", "castel", "cetate"]
+      }
+    }
+  ],
+  "vibeLexiconAdditions": [
+    {
+      "id": "relaxation-seeking",
+      "cues": {
+        "en": ["I need to relax", "I want to unwind", "I need some peace"],
+        "ro": ["Am nevoie de relaxare", "Vreau să mă relaxez", "Am nevoie de liniște"]
+      },
+      "preferredCategories": ["wellness", "nature"]
+    },
+    {
+      "id": "adventure-seeking",
+      "cues": {
+        "en": ["I want adventure", "I need excitement", "I want to explore"],
+        "ro": ["Vreau aventură", "Am nevoie de emoții", "Vreau să explorez"]
+      },
+      "preferredCategories": ["adventure", "nature", "sports"]
+    }
+  ],
+  "rationale": "Added Romania-specific activities: thermal baths (famous resorts like Băile Felix), mountain hiking (Carpathians), and castle tours (Bran, Peleș). These fill gaps in wellness, nature, and culture categories."
+}

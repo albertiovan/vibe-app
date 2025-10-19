@@ -49,6 +49,7 @@ export interface SearchFilters {
   durationHours: number;
   travelMode?: 'drive' | 'transit' | 'walk';
   nationwide?: boolean;
+  willingToTravel?: boolean; // Enable multi-region search for day trips
 }
 
 // Enhanced place data from Google Places
@@ -290,6 +291,28 @@ export const VIBE_TO_PLACES_MAPPING: Record<string, VibeMapping> = {
   'nightlife': {
     types: ['night_club', 'bar', 'casino'],
     keywords: ['nightclub', 'bar', 'pub', 'live music', 'dancing']
+  },
+  
+  // Social & Emotional Vibes
+  'lonely': {
+    types: ['cafe', 'library', 'community_center', 'book_store', 'art_gallery', 'museum'],
+    keywords: ['coffee shop', 'bookstore', 'community events', 'art class', 'workshop', 'social space']
+  },
+  'social': {
+    types: ['cafe', 'restaurant', 'bar', 'bowling_alley', 'movie_theater', 'shopping_mall'],
+    keywords: ['social dining', 'group activities', 'meetup space', 'interactive', 'community']
+  },
+  'connection': {
+    types: ['community_center', 'library', 'cafe', 'park', 'church'],
+    keywords: ['community center', 'social events', 'group activities', 'volunteer', 'classes']
+  },
+  'creative': {
+    types: ['art_gallery', 'museum', 'craft_store', 'library'],
+    keywords: ['art studio', 'craft workshop', 'creative space', 'maker space', 'pottery']
+  },
+  'peaceful': {
+    types: ['park', 'library', 'church', 'spa', 'garden'],
+    keywords: ['quiet space', 'meditation', 'peaceful garden', 'sanctuary', 'contemplation']
   },
   'entertainment': {
     types: ['movie_theater', 'amusement_park', 'bowling_alley', 'tourist_attraction'],

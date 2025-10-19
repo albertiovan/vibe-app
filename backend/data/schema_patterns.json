@@ -1,0 +1,61 @@
+{
+  "think": {
+    "stage": "think",
+    "commonFields": {},
+    "alternativeNames": {},
+    "typicalStructure": {
+      "reasoning": "The user's vibe of wanting to try a new sport indicates a desire for an exciting, adventurous experience. Based on the location in Romania, I have selected a mix of outdoor adventure activities that are suitable for beginners and offer a good balance of thrill, skill development, and scenic beauty. Rock climbing, paragliding, and whitewater rafting were chosen as they provide a diverse set of new physical challenges and sensations. The search strategy prioritizes finding high-quality providers within a reasonable travel radius, while also ensuring a diverse set of options. This plan should give the user several compelling new sports to explore and enjoy.",
+      "activities": [
+        {
+          "id": "rock_climbing",
+          "bucket": "adventure",
+          "keywords": [
+            "rock_climbing",
+            "sport_climbing",
+            "outdoor_adventure"
+          ],
+          "priority": 0.8,
+          "reasoning": "Rock climbing is an exciting new sport to try that aligns well with the user's desire to experience something new. The Cheile Turzii area near Cluj-Napoca offers excellent sport climbing routes suitable for beginners."
+        },
+        {
+          "id": "paragliding",
+          "bucket": "adventure",
+          "keywords": [
+            "paragliding",
+            "aerial_sports",
+            "outdoor_adventure"
+          ],
+          "priority": 0.7,
+          "reasoning": "Paragliding is a thrilling aerial sport that would provide a unique new experience for the user. The launch site at Postăvaru near Brașov offers scenic mountain views and reliable conditions for first-time flyers."
+        },
+        {
+          "id": "whitewater_rafting",
+          "bucket": "adventure",
+          "keywords": [
+            "rafting",
+            "whitewater",
+            "water_sports",
+            "outdoor_adventure"
+          ],
+          "priority": 0.6,
+          "reasoning": "Whitewater rafting on the Tisa River in Maramureș County is an adrenaline-filled new sport to try. It requires teamwork and coordination, providing a fun group activity for the user."
+        }
+      ],
+      "dataSources": [
+        "places",
+        "openTripMap",
+        "weather"
+      ],
+      "verificationRules": [
+        "ensure quality",
+        "verify diversity"
+      ],
+      "searchStrategy": {
+        "radius": 150,
+        "diversityWeight": 0.7,
+        "qualityThreshold": 4
+      }
+    },
+    "successRate": 0
+  }
+}

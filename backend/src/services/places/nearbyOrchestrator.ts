@@ -13,6 +13,11 @@ import {
   VibeMapping
 } from '../../types/vibe.js';
 import { ChallengeSelector, ChallengePlace } from './challengeSelector.js';
+import { 
+  findNearbyRegions, 
+  isRegionFeasibleForDuration,
+  Region 
+} from '../../utils/regionCalculator.js';
 
 export interface NearbySearchParams {
   origin: { lat: number; lng: number };
@@ -89,12 +94,15 @@ export class NearbyOrchestrator {
     }
 
     try {
-      // Determine search centers
-      const searchCenters = filters.nationwide 
-        ? this.getRegionalCenters(origin, filters.radiusMeters)
-        : [{ name: 'Origin', lat: origin.lat, lng: origin.lng, population: 0 }];
+      // Determine search centers with multi-region fan-out for travel
+      const searchCenters = this.determineSearchCenters(origin, filters);
 
-      console.log('🔍 Searching', searchCenters.length, 'centers:', searchCenters.map(c => c.name));
+      console.log('🔍 Multi-region search:', {
+        centers: searchCenters.length,
+        names: searchCenters.map(c => c.name),
+        willingToTravel: filters.willingToTravel || filters.nationwide,
+        maxRadius: `${filters.radiusMeters / 1000}km`
+      });
 
       // Fan out searches across centers and types/keywords
       const allResults = await this.fanOutSearches(searchCenters, filters, types, keywords);
@@ -509,6 +517,62 @@ export class NearbyOrchestrator {
     } catch (error) {
       console.warn('🔍 Place details failed for:', place.name, error);
       return place;
+    }
+  }
+
+  /**
+   * Determine search centers for multi-region fan-out
+   */
+  private determineSearchCenters(
+    origin: { lat: number; lng: number },
+    filters: SearchFilters
+  ): Array<{ name: string; lat: number; lng: number; population: number }> {
+    // If not willing to travel, just search locally
+    if (!filters.willingToTravel && !filters.nationwide) {
+      return [{ name: 'Origin', lat: origin.lat, lng: origin.lng, population: 0 }];
+    }
+
+    try {
+      // Find nearby regions within travel distance
+      const maxDistance = Math.min(filters.radiusMeters / 1000, 250); // Cap at 250km
+      const nearbyRegions = findNearbyRegions(origin, maxDistance);
+      
+      // Filter regions that are feasible for the given duration
+      const feasibleRegions = nearbyRegions.filter(region => 
+        isRegionFeasibleForDuration(origin, region, filters.durationHours)
+      );
+
+      console.log('🗺️  Multi-region analysis:', {
+        maxDistance: `${maxDistance}km`,
+        duration: `${filters.durationHours}h`,
+        nearbyRegions: nearbyRegions.length,
+        feasibleRegions: feasibleRegions.length,
+        regions: feasibleRegions.map(r => `${r.name} (${Math.round(r.distance)}km)`)
+      });
+
+      // Convert to search center format
+      const searchCenters = feasibleRegions.map(region => ({
+        name: region.name,
+        lat: region.coordinates.lat,
+        lng: region.coordinates.lng,
+        population: region.population
+      }));
+
+      // Always include origin as first search center
+      if (!searchCenters.some(center => center.name === 'Origin')) {
+        searchCenters.unshift({ 
+          name: 'Origin', 
+          lat: origin.lat, 
+          lng: origin.lng, 
+          population: 0 
+        });
+      }
+
+      return searchCenters;
+
+    } catch (error) {
+      console.warn('🗺️  Multi-region search failed, falling back to origin:', error);
+      return [{ name: 'Origin', lat: origin.lat, lng: origin.lng, population: 0 }];
     }
   }
 

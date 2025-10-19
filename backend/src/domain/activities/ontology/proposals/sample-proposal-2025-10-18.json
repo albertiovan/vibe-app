@@ -1,0 +1,342 @@
+{
+  "newSubtypes": [
+    {
+      "id": "thermal-baths",
+      "label": "Thermal Baths",
+      "category": "wellness",
+      "verbs": ["soak", "relax", "unwind", "bathe"],
+      "examples": ["Băile Felix", "Băile Herculane", "Geoagiu Băi"],
+      "energy": "chill",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "durationHintHrs": [2, 6],
+      "keywords": {
+        "en": ["thermal baths", "hot springs", "spa", "mineral water"],
+        "ro": ["băi termale", "izvoare termale", "spa", "apă minerală"]
+      },
+      "synonyms": {
+        "en": ["hot springs", "thermal springs", "mineral baths"],
+        "ro": ["izvoare calde", "băi minerale", "ape termale"]
+      },
+      "google": {
+        "types": ["spa", "tourist_attraction"],
+        "keywords": ["thermal baths", "hot springs", "băi termale"]
+      },
+      "osm": {
+        "tags": {
+          "amenity": "spa",
+          "spa": "thermal"
+        }
+      },
+      "otm": {
+        "kinds": ["thermal_springs", "spa"]
+      },
+      "experimental": false,
+      "notes": "Popular in Romania with many established thermal resorts"
+    },
+    {
+      "id": "mountain-hiking",
+      "label": "Mountain Hiking",
+      "category": "nature",
+      "verbs": ["hike", "climb", "trek", "explore"],
+      "examples": ["Carpathian trails", "Bucegi Mountains", "Piatra Craiului"],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "all",
+      "durationHintHrs": [2, 8],
+      "keywords": {
+        "en": ["hiking", "mountain trail", "trekking", "nature walk"],
+        "ro": ["drumeție", "traseu montan", "plimbare în natură", "hiking"]
+      },
+      "synonyms": {
+        "en": ["trail walking", "mountain walking", "nature hiking"],
+        "ro": ["plimbare pe munte", "drumeție montană", "trasee turistice"]
+      },
+      "google": {
+        "types": ["park", "natural_feature", "tourist_attraction"],
+        "keywords": ["hiking trail", "mountain trail", "drumeție"]
+      },
+      "osm": {
+        "tags": {
+          "highway": "path",
+          "foot": "yes",
+          "sac_scale": ["hiking", "mountain_hiking"]
+        }
+      },
+      "otm": {
+        "kinds": ["mountain", "natural", "hiking"]
+      },
+      "experimental": false,
+      "notes": "Romania has extensive mountain hiking opportunities"
+    },
+    {
+      "id": "fortress-exploration",
+      "label": "Medieval Fortress Exploration",
+      "category": "culture",
+      "verbs": ["explore", "discover", "visit", "tour"],
+      "examples": ["Bran Castle", "Corvin Castle", "Râșnov Fortress"],
+      "energy": "medium",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "durationHintHrs": [1, 4],
+      "keywords": {
+        "en": ["castle", "fortress", "medieval", "historical site"],
+        "ro": ["castel", "cetate", "medieval", "sit istoric"]
+      },
+      "synonyms": {
+        "en": ["castle tour", "historical exploration", "medieval sites"],
+        "ro": ["vizită castel", "explorare istorică", "situri medievale"]
+      },
+      "google": {
+        "types": ["tourist_attraction", "museum"],
+        "keywords": ["castle", "fortress", "castel", "cetate"]
+      },
+      "osm": {
+        "tags": {
+          "historic": ["castle", "fortress"],
+          "tourism": "attraction"
+        }
+      },
+      "otm": {
+        "kinds": ["historic", "castle", "fortifications"]
+      },
+      "experimental": false,
+      "notes": "Romania is famous for its medieval castles and fortresses"
+    },
+    {
+      "id": "traditional-craft-workshop",
+      "label": "Traditional Craft Workshop",
+      "category": "creative",
+      "verbs": ["create", "craft", "make", "learn"],
+      "examples": ["pottery", "wood carving", "weaving", "ceramics"],
+      "energy": "medium",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "durationHintHrs": [2, 6],
+      "keywords": {
+        "en": ["craft workshop", "pottery", "traditional arts", "handmade"],
+        "ro": ["atelier meșteșuguri", "olărit", "arte tradiționale", "lucrat manual"]
+      },
+      "synonyms": {
+        "en": ["artisan workshop", "handicraft", "traditional skills"],
+        "ro": ["atelier artizanal", "meșteșuguri", "abilități tradiționale"]
+      },
+      "google": {
+        "types": ["art_gallery", "store"],
+        "keywords": ["craft workshop", "pottery", "atelier"]
+      },
+      "osm": {
+        "tags": {
+          "craft": ["pottery", "carpenter", "artist"],
+          "shop": "craft"
+        }
+      },
+      "otm": {
+        "kinds": ["cultural", "workshop"]
+      },
+      "experimental": false,
+      "notes": "Traditional Romanian crafts are popular tourist activities"
+    },
+    {
+      "id": "danube-delta-birdwatching",
+      "label": "Danube Delta Birdwatching",
+      "category": "nature",
+      "verbs": ["observe", "watch", "spot", "photograph"],
+      "examples": ["pelican colonies", "migratory birds", "wetland species"],
+      "energy": "chill",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "all",
+      "durationHintHrs": [3, 8],
+      "keywords": {
+        "en": ["birdwatching", "bird watching", "wildlife", "nature observation"],
+        "ro": ["observarea păsărilor", "ornitologie", "fauna sălbatică", "observare natură"]
+      },
+      "synonyms": {
+        "en": ["birding", "wildlife watching", "nature photography"],
+        "ro": ["observare păsări", "fotografie natură", "turism ornitologic"]
+      },
+      "google": {
+        "types": ["natural_feature", "tourist_attraction"],
+        "keywords": ["birdwatching", "danube delta", "wildlife"]
+      },
+      "osm": {
+        "tags": {
+          "natural": "wetland",
+          "tourism": "attraction",
+          "leisure": "nature_reserve"
+        }
+      },
+      "otm": {
+        "kinds": ["natural", "wetlands", "birdwatching"]
+      },
+      "experimental": false,
+      "notes": "Danube Delta is a UNESCO World Heritage site famous for birdwatching"
+    },
+    {
+      "id": "bucharest-street-art-tour",
+      "label": "Bucharest Street Art Tour",
+      "category": "culture",
+      "verbs": ["explore", "discover", "photograph", "walk"],
+      "examples": ["Old Town murals", "Amzei neighborhood", "street art districts"],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "all",
+      "durationHintHrs": [2, 4],
+      "keywords": {
+        "en": ["street art", "graffiti", "urban art", "mural tour"],
+        "ro": ["artă stradală", "graffiti", "artă urbană", "tur murale"]
+      },
+      "synonyms": {
+        "en": ["urban exploration", "art walk", "graffiti tour"],
+        "ro": ["explorare urbană", "plimbare artistică", "tur graffiti"]
+      },
+      "google": {
+        "types": ["tourist_attraction"],
+        "keywords": ["street art", "walking tour", "artă stradală"]
+      },
+      "osm": {
+        "tags": {
+          "tourism": "attraction",
+          "artwork_type": "mural"
+        }
+      },
+      "experimental": false,
+      "notes": "Bucharest has a vibrant street art scene"
+    },
+    {
+      "id": "carpathian-via-ferrata",
+      "label": "Carpathian Via Ferrata",
+      "category": "adventure",
+      "verbs": ["climb", "traverse", "navigate", "ascend"],
+      "examples": ["Omu Peak route", "Piatra Craiului", "Bucegi Mountains"],
+      "energy": "high",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "durationHintHrs": [4, 8],
+      "keywords": {
+        "en": ["via ferrata", "rock climbing", "mountain climbing", "adventure"],
+        "ro": ["via ferrata", "cățărare", "alpinism", "aventură"]
+      },
+      "synonyms": {
+        "en": ["iron path", "assisted climbing", "mountain adventure"],
+        "ro": ["cale ferată", "cățărare asistată", "aventură montană"]
+      },
+      "google": {
+        "types": ["tourist_attraction", "natural_feature"],
+        "keywords": ["via ferrata", "climbing", "adventure"]
+      },
+      "osm": {
+        "tags": {
+          "highway": "via_ferrata",
+          "sport": "climbing"
+        }
+      },
+      "otm": {
+        "kinds": ["climbing", "adventure", "mountain"]
+      },
+      "experimental": false,
+      "notes": "Several via ferrata routes exist in Romanian Carpathians"
+    },
+    {
+      "id": "romanian-wine-tasting",
+      "label": "Romanian Wine Tasting",
+      "category": "culinary",
+      "verbs": ["taste", "sample", "discover", "learn"],
+      "examples": ["Dealu Mare wines", "Cotnari region", "Murfatlar vineyard"],
+      "energy": "chill",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "durationHintHrs": [2, 4],
+      "keywords": {
+        "en": ["wine tasting", "vineyard", "winery", "wine tour"],
+        "ro": ["degustare vin", "cramă", "podgorie", "tur vinicol"]
+      },
+      "synonyms": {
+        "en": ["wine sampling", "vineyard tour", "wine experience"],
+        "ro": ["experiență vinicola", "tur cramă", "degustare vinuri"]
+      },
+      "google": {
+        "types": ["tourist_attraction", "store"],
+        "keywords": ["wine tasting", "winery", "cramă"]
+      },
+      "osm": {
+        "tags": {
+          "craft": "winery",
+          "tourism": "attraction"
+        }
+      },
+      "otm": {
+        "kinds": ["cultural", "winery"]
+      },
+      "experimental": false,
+      "notes": "Romania has ancient winemaking traditions and quality vineyards"
+    }
+  ],
+  "updatedSubtypes": [],
+  "vibeLexiconAdditions": [
+    {
+      "id": "relaxation-seeking",
+      "cues": {
+        "en": ["I need to relax", "I want to unwind", "I need stress relief", "I want something peaceful"],
+        "ro": ["Am nevoie de relaxare", "Vreau să mă relaxez", "Am nevoie să mă destind", "Vreau ceva liniștit"]
+      },
+      "preferredCategories": ["wellness", "nature"],
+      "disallowedCategories": ["adventure", "nightlife"]
+    },
+    {
+      "id": "adventure-craving",
+      "cues": {
+        "en": ["I want adventure", "I need thrills", "I want excitement", "I crave adrenaline"],
+        "ro": ["Vreau aventură", "Am nevoie de emoții", "Vreau emoții tari", "Îmi doresc adrenalină"]
+      },
+      "preferredCategories": ["adventure", "sports"],
+      "disallowedCategories": ["wellness"]
+    },
+    {
+      "id": "cultural-exploration",
+      "cues": {
+        "en": ["I want culture", "I want to learn history", "I want heritage sites", "I want museums"],
+        "ro": ["Vreau cultură", "Vreau să învăț istorie", "Vreau situri istorice", "Vreau muzee"]
+      },
+      "preferredCategories": ["culture", "learning"],
+      "disallowedCategories": ["nightlife"]
+    },
+    {
+      "id": "nature-connection",
+      "cues": {
+        "en": ["I need nature", "I want outdoors", "I want fresh air", "I want wilderness"],
+        "ro": ["Am nevoie de natură", "Vreau să fiu afară", "Vreau aer curat", "Vreau sălbăticie"]
+      },
+      "preferredCategories": ["nature", "adventure"],
+      "disallowedCategories": ["nightlife"]
+    },
+    {
+      "id": "creative-expression",
+      "cues": {
+        "en": ["I want to be creative", "I want to make something", "I want art", "I want to craft"],
+        "ro": ["Vreau să fiu creativ", "Vreau să creez ceva", "Vreau artă", "Vreau să lucrez manual"]
+      },
+      "preferredCategories": ["creative", "culture"],
+      "disallowedCategories": ["sports"]
+    },
+    {
+      "id": "social-connection",
+      "cues": {
+        "en": ["I feel lonely", "I want to meet people", "I need social interaction", "I want company"],
+        "ro": ["Mă simt singur", "Vreau să cunosc oameni", "Am nevoie de interacțiune socială", "Vreau companie"]
+      },
+      "preferredCategories": ["social", "culture", "nightlife"],
+      "disallowedCategories": ["nature"]
+    },
+    {
+      "id": "culinary-adventure",
+      "cues": {
+        "en": ["I want food experiences", "I want to taste local food", "I want culinary adventure", "I want wine"],
+        "ro": ["Vreau experiențe culinare", "Vreau să gust mâncare locală", "Vreau aventură culinară", "Vreau vin"]
+      },
+      "preferredCategories": ["culinary", "culture"],
+      "disallowedCategories": ["sports"]
+    }
+  ],
+  "rationale": "This proposal focuses on Romania-specific activities that are culturally significant and have strong provider mappings. The activities span all major categories and include both traditional Romanian experiences (thermal baths, castles, crafts) and modern adventure activities (via ferrata, street art tours). Each activity has been designed with realistic Google Places mappings that should return results in Romania, along with comprehensive Romanian translations to support local users. The vibe lexicon additions cover the most common emotional states users express when seeking activities, with clear category preferences to improve matching accuracy."
+}

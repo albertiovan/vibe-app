@@ -1,0 +1,113 @@
+{
+  "newSubtypes": [
+    {
+      "id": "romanian-cooking-class",
+      "label": "Romanian Cooking Class",
+      "category": "culinary",
+      "verbs": [
+        "cook",
+        "prepare",
+        "learn"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "romanian cooking class",
+          "traditional romanian cuisine"
+        ],
+        "ro": [
+          "curs de gătit românesc",
+          "bucătărie tradițională românească"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "romanian food workshop",
+          "learn to cook romanian dishes"
+        ],
+        "ro": [
+          "atelier de gătit românesc",
+          "învață să gătești mâncăruri românești"
+        ]
+      },
+      "google": {
+        "types": [
+          "cooking_school",
+          "food"
+        ],
+        "keywords": [
+          "romanian cooking class",
+          "traditional romanian food"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "wine-tasting-tour",
+      "label": "Wine Tasting Tour",
+      "category": "culinary",
+      "verbs": [
+        "taste",
+        "explore",
+        "discover"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "wine tasting",
+          "romanian wine tour"
+        ],
+        "ro": [
+          "degustare de vinuri",
+          "tur de vinuri românești"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "wine tour",
+          "visit wineries"
+        ],
+        "ro": [
+          "tur de vinării",
+          "vizitare cramerii"
+        ]
+      },
+      "google": {
+        "types": [
+          "food",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "wine tasting",
+          "romanian wine"
+        ]
+      },
+      "experimental": false
+    }
+  ],
+  "updatedSubtypes": [],
+  "vibeLexiconAdditions": [
+    {
+      "id": "culinary-curious",
+      "cues": {
+        "en": [
+          "I want to try new foods",
+          "I'm interested in local cuisine"
+        ],
+        "ro": [
+          "Vreau să încerc mâncăruri noi",
+          "Sunt interesat de bucătăria locală"
+        ]
+      },
+      "preferredCategories": [
+        "culinary",
+        "culture"
+      ]
+    }
+  ],
+  "rationale": "Added two new culinary activities focused on Romanian cooking classes and wine tasting tours, which are popular experiences in Romania. Also added a new vibe lexicon entry for 'culinary-curious' to match these new activities."
+}

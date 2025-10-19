@@ -70,7 +70,7 @@ router.post('/vibe-search', [
   body('location.city').optional().isString(),
   body('location.country').optional().isString(),
   body('willingToTravel').optional().isBoolean(),
-  body('maxTravelMinutes').optional().isInt({ min: 5, max: 240 })
+  body('maxTravelMinutes').optional().isInt({ min: 5, max: 720 }) // Extended to 12 hours for day trips
 ], async (req: Request, res: Response): Promise<void> => {
   try {
     // Validate input

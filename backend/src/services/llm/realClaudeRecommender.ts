@@ -61,6 +61,46 @@ export class RealClaudeRecommender {
   private placesService = new GooglePlacesService();
 
   /**
+   * Call Claude with system and user prompts (for activitiesAgent compatibility)
+   */
+  async callClaude(systemPrompt: string, userPrompt: string, options: any): Promise<string> {
+    try {
+      console.log('🧠 Calling Claude LLM with prompt:', userPrompt.slice(0, 100) + '...');
+      
+      // Use the LLM provider to make the actual call
+      const response = await this.llm.completeJSON({
+        system: systemPrompt,
+        user: userPrompt,
+        schema: options.schema || null, // Use schema if provided
+        maxTokens: options.maxTokens || 4000
+      });
+
+      if (response.ok) {
+        console.log('✅ Claude LLM call successful');
+        return JSON.stringify(response.data);
+      } else {
+        console.error('❌ Claude LLM call failed:', response.error);
+        
+        // Return a fallback response that matches expected schema
+        const fallbackResponse = {
+          intents: [],
+          selectionRationale: `LLM call failed: ${response.error}. Using fallback.`
+        };
+        return JSON.stringify(fallbackResponse);
+      }
+    } catch (error) {
+      console.error('❌ Claude call error:', error);
+      
+      // Return a fallback response
+      const fallbackResponse = {
+        intents: [],
+        selectionRationale: `Error calling LLM: ${error}. Using fallback.`
+      };
+      return JSON.stringify(fallbackResponse);
+    }
+  }
+
+  /**
    * Get real Claude recommendations and verify with Google Places
    */
   async getRecommendations(vibe: string): Promise<VerifiedPlace[]> {

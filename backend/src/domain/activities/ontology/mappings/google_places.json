@@ -1,0 +1,112 @@
+{
+  "mappings": {
+    "thermal-baths": {
+      "types": [
+        "spa",
+        "tourist_attraction"
+      ],
+      "keywords": [
+        "thermal baths",
+        "băi termale",
+        "hot springs"
+      ]
+    },
+    "mountain-hiking": {
+      "types": [
+        "park",
+        "natural_feature",
+        "tourist_attraction"
+      ],
+      "keywords": [
+        "hiking trail",
+        "mountain trail",
+        "drumeție"
+      ]
+    },
+    "castle-tours": {
+      "types": [
+        "tourist_attraction",
+        "museum",
+        "establishment"
+      ],
+      "keywords": [
+        "castle",
+        "fortress",
+        "castel",
+        "cetate"
+      ]
+    },
+    "via-ferrata-beginner": {
+      "types": [
+        "tourist_attraction",
+        "point_of_interest"
+      ],
+      "keywords": [
+        "via ferrata",
+        "via ferată"
+      ]
+    },
+    "traditional-craft-workshop": {
+      "types": [
+        "point_of_interest",
+        "store"
+      ],
+      "keywords": [
+        "traditional crafts",
+        "meșteșuguri tradiționale"
+      ]
+    },
+    "photography-workshop": {
+      "types": [
+        "point_of_interest",
+        "school"
+      ],
+      "keywords": [
+        "photography workshop",
+        "camera class",
+        "curs fotografie"
+      ]
+    },
+    "romanian-cooking-class": {
+      "types": [
+        "cooking_school",
+        "food"
+      ],
+      "keywords": [
+        "romanian cooking class",
+        "traditional romanian food"
+      ]
+    },
+    "wine-tasting-tour": {
+      "types": [
+        "food",
+        "tourist_attraction"
+      ],
+      "keywords": [
+        "wine tasting",
+        "romanian wine"
+      ]
+    },
+    "danube-delta-tour": {
+      "types": [
+        "tourist_attraction",
+        "travel_agency"
+      ],
+      "keywords": [
+        "danube delta",
+        "delta dunării"
+      ]
+    },
+    "carpathian-lake-kayak": {
+      "types": [
+        "outdoor_recreation_area",
+        "water_sports"
+      ],
+      "keywords": [
+        "carpathian lake",
+        "lac carpați"
+      ]
+    }
+  },
+  "lastUpdated": "2025-10-18T21:10:26.570Z"
+}

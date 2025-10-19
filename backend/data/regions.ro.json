@@ -1,0 +1,160 @@
+{
+  "regions": [
+    {
+      "id": "bucharest",
+      "name": "Bucharest",
+      "nameRo": "București", 
+      "coordinates": {
+        "lat": 44.4268,
+        "lng": 26.1025
+      },
+      "population": 1883425,
+      "type": "capital",
+      "description": "Romania's capital and largest city",
+      "keywords": ["capital", "urban", "culture", "nightlife", "business"],
+      "specialties": ["museums", "parks", "restaurants", "nightlife", "shopping"]
+    },
+    {
+      "id": "brasov",
+      "name": "Brașov",
+      "nameRo": "Brașov",
+      "coordinates": {
+        "lat": 45.6427,
+        "lng": 25.5887
+      },
+      "population": 253200,
+      "type": "mountain_city",
+      "description": "Medieval city in the Carpathian Mountains",
+      "keywords": ["mountains", "medieval", "skiing", "hiking", "castles"],
+      "specialties": ["castles", "mountain_activities", "medieval_architecture", "skiing", "hiking"],
+      "distanceFromBucharest": 166
+    },
+    {
+      "id": "sinaia",
+      "name": "Sinaia",
+      "nameRo": "Sinaia",
+      "coordinates": {
+        "lat": 45.3500,
+        "lng": 25.5500
+      },
+      "population": 10410,
+      "type": "mountain_resort",
+      "description": "Mountain resort town famous for Peleș Castle and skiing",
+      "keywords": ["skiing", "castle", "mountain_resort", "royal", "winter_sports"],
+      "specialties": ["skiing", "royal_castles", "mountain_hiking", "winter_sports", "luxury_resorts"],
+      "distanceFromBucharest": 140
+    },
+    {
+      "id": "sibiu",
+      "name": "Sibiu",
+      "nameRo": "Sibiu",
+      "coordinates": {
+        "lat": 45.7983,
+        "lng": 24.1256
+      },
+      "population": 147245,
+      "type": "historic_city",
+      "description": "Historic Saxon city and European Capital of Culture",
+      "keywords": ["historic", "saxon", "culture", "festivals", "architecture"],
+      "specialties": ["historic_center", "museums", "festivals", "saxon_architecture", "cultural_events"],
+      "distanceFromBucharest": 275
+    },
+    {
+      "id": "constanta",
+      "name": "Constanța",
+      "nameRo": "Constanța",
+      "coordinates": {
+        "lat": 44.1598,
+        "lng": 28.6348
+      },
+      "population": 263688,
+      "type": "coastal_city",
+      "description": "Major port city on the Black Sea coast",
+      "keywords": ["beach", "sea", "port", "summer", "coastal"],
+      "specialties": ["beaches", "water_sports", "seafood", "maritime_museums", "summer_resorts"],
+      "distanceFromBucharest": 225
+    },
+    {
+      "id": "cluj_napoca",
+      "name": "Cluj-Napoca",
+      "nameRo": "Cluj-Napoca",
+      "coordinates": {
+        "lat": 46.7712,
+        "lng": 23.6236
+      },
+      "population": 324576,
+      "type": "university_city",
+      "description": "Major university city and tech hub in Transylvania",
+      "keywords": ["university", "tech", "students", "innovation", "transylvania"],
+      "specialties": ["universities", "tech_scene", "student_life", "innovation_hubs", "cultural_diversity"],
+      "distanceFromBucharest": 445
+    },
+    {
+      "id": "timisoara",
+      "name": "Timișoara",
+      "nameRo": "Timișoara",
+      "coordinates": {
+        "lat": 45.7489,
+        "lng": 21.2087
+      },
+      "population": 319279,
+      "type": "historic_city",
+      "description": "Historic city known as 'Little Vienna' and European Capital of Culture 2023",
+      "keywords": ["historic", "vienna", "revolution", "culture", "architecture"],
+      "specialties": ["historic_architecture", "cultural_events", "parks", "revolution_sites", "austro_hungarian_heritage"],
+      "distanceFromBucharest": 550
+    },
+    {
+      "id": "predeal",
+      "name": "Predeal",
+      "nameRo": "Predeal",
+      "coordinates": {
+        "lat": 45.5047,
+        "lng": 25.5781
+      },
+      "population": 4755,
+      "type": "mountain_resort",
+      "description": "Highest altitude resort town in Romania, popular for skiing",
+      "keywords": ["skiing", "mountain", "resort", "winter", "altitude"],
+      "specialties": ["skiing", "mountain_hiking", "winter_sports", "mountain_resorts", "fresh_air"],
+      "distanceFromBucharest": 145
+    },
+    {
+      "id": "busteni",
+      "name": "Bușteni",
+      "nameRo": "Bușteni",
+      "coordinates": {
+        "lat": 45.4167,
+        "lng": 25.5333
+      },
+      "population": 8894,
+      "type": "mountain_town",
+      "description": "Mountain town at the foot of Omu Peak, gateway to Bucegi Mountains",
+      "keywords": ["mountains", "hiking", "cable_car", "omu_peak", "bucegi"],
+      "specialties": ["mountain_hiking", "cable_car", "mountain_climbing", "nature_trails", "mountain_views"],
+      "distanceFromBucharest": 135
+    },
+    {
+      "id": "mamaia",
+      "name": "Mamaia",
+      "nameRo": "Mamaia",
+      "coordinates": {
+        "lat": 44.2519,
+        "lng": 28.6139
+      },
+      "population": 0,
+      "type": "beach_resort",
+      "description": "Premier beach resort on the Black Sea, Romania's Riviera",
+      "keywords": ["beach", "resort", "summer", "nightlife", "riviera"],
+      "specialties": ["beaches", "beach_clubs", "water_sports", "summer_nightlife", "luxury_resorts"],
+      "distanceFromBucharest": 230
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-10-19",
+    "description": "Major Romanian cities and regions for multi-region search fan-out",
+    "maxTravelDistance": 250,
+    "coordinateSystem": "WGS84"
+  }
+}

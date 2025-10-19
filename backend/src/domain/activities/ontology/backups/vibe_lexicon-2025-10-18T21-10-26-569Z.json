@@ -1,0 +1,94 @@
+[
+  {
+    "id": "relaxation-seeking",
+    "cues": {
+      "en": [
+        "I need to relax",
+        "I want to unwind",
+        "I need some peace"
+      ],
+      "ro": [
+        "Am nevoie de relaxare",
+        "Vreau să mă relaxez",
+        "Am nevoie de liniște"
+      ]
+    },
+    "preferredCategories": [
+      "wellness",
+      "nature"
+    ]
+  },
+  {
+    "id": "adventure-seeking",
+    "cues": {
+      "en": [
+        "I want adventure",
+        "I need excitement",
+        "I want to explore"
+      ],
+      "ro": [
+        "Vreau aventură",
+        "Am nevoie de emoții",
+        "Vreau să explorez"
+      ]
+    },
+    "preferredCategories": [
+      "adventure",
+      "nature",
+      "sports"
+    ]
+  },
+  {
+    "id": "cultural-immersion",
+    "cues": {
+      "en": [
+        "I want to learn about the local culture",
+        "I'm interested in traditional crafts"
+      ],
+      "ro": [
+        "Vreau să învăț despre cultura locală",
+        "Mă interesează meșteșugurile tradiționale"
+      ]
+    },
+    "preferredCategories": [
+      "culture",
+      "learning"
+    ]
+  },
+  {
+    "id": "creative-expression",
+    "cues": {
+      "en": [
+        "I want to make something",
+        "I feel inspired",
+        "I want to create"
+      ],
+      "ro": [
+        "Vreau să creez ceva",
+        "Mă simt inspirat",
+        "Vreau să fac ceva"
+      ]
+    },
+    "preferredCategories": [
+      "creative",
+      "learning"
+    ]
+  },
+  {
+    "id": "culinary-curious",
+    "cues": {
+      "en": [
+        "I want to try new foods",
+        "I'm interested in local cuisine"
+      ],
+      "ro": [
+        "Vreau să încerc mâncăruri noi",
+        "Sunt interesat de bucătăria locală"
+      ]
+    },
+    "preferredCategories": [
+      "culinary",
+      "culture"
+    ]
+  }
+]

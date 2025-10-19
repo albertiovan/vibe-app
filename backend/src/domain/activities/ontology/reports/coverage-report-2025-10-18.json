@@ -1,0 +1,1101 @@
+{
+  "totalVibes": 33,
+  "mappedVibes": 33,
+  "verifiableVibes": 25,
+  "coveragePercentage": 100,
+  "verifiabilityPercentage": 76,
+  "results": [
+    {
+      "vibe": {
+        "id": "adventure-seeking",
+        "text": "I want adventure",
+        "language": "en",
+        "expectedCategories": [
+          "adventure"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "amusement_park",
+          "park",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "adventure",
+          "thrilling",
+          "outdoor"
+        ],
+        "buckets": [
+          "adventure",
+          "adrenaline",
+          "outdoor"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "cozy-comfort",
+        "text": "I want something cozy",
+        "language": "en",
+        "expectedCategories": [
+          "social",
+          "wellness"
+        ],
+        "minConfidence": 0.6
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "library"
+        ],
+        "keywords": [
+          "cozy",
+          "warm",
+          "inviting"
+        ],
+        "buckets": [
+          "relaxation",
+          "social",
+          "connection"
+        ],
+        "confidence": 0.85
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "lonely-social",
+        "text": "I feel lonely",
+        "language": "en",
+        "expectedCategories": [
+          "social",
+          "connection"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "library"
+        ],
+        "keywords": [
+          "social",
+          "gathering",
+          "community"
+        ],
+        "buckets": [
+          "social",
+          "connection",
+          "lonely"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "creative-expression",
+        "text": "I want to be creative",
+        "language": "en",
+        "expectedCategories": [
+          "creative",
+          "art"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "art_gallery",
+          "museum",
+          "library"
+        ],
+        "keywords": [
+          "art",
+          "culture",
+          "creativity"
+        ],
+        "buckets": [
+          "art",
+          "culture",
+          "creative"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "nature-escape",
+        "text": "I need nature",
+        "language": "en",
+        "expectedCategories": [
+          "nature",
+          "outdoor"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park"
+        ],
+        "keywords": [
+          "nature",
+          "outdoors",
+          "scenery"
+        ],
+        "buckets": [
+          "nature",
+          "outdoor",
+          "wellness"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "relaxation-wellness",
+        "text": "I need to relax",
+        "language": "en",
+        "expectedCategories": [
+          "wellness",
+          "relaxation"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park",
+          "spa",
+          "library"
+        ],
+        "keywords": [
+          "relaxation",
+          "wellness",
+          "quiet"
+        ],
+        "buckets": [
+          "relaxation",
+          "wellness",
+          "peaceful"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "cultural-exploration",
+        "text": "I want culture",
+        "language": "en",
+        "expectedCategories": [
+          "culture"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "museum",
+          "art_gallery",
+          "library"
+        ],
+        "keywords": [
+          "cultural",
+          "historical",
+          "educational"
+        ],
+        "buckets": [
+          "culture",
+          "art",
+          "creative"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "nightlife-energy",
+        "text": "I want nightlife",
+        "language": "en",
+        "expectedCategories": [
+          "nightlife"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "bar",
+          "night_club",
+          "restaurant"
+        ],
+        "keywords": [
+          "nightlife",
+          "entertainment",
+          "social"
+        ],
+        "buckets": [
+          "nightlife",
+          "entertainment"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "fitness-active",
+        "text": "I want to exercise",
+        "language": "en",
+        "expectedCategories": [
+          "sports",
+          "wellness"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park",
+          "gym"
+        ],
+        "keywords": [
+          "outdoor_recreation",
+          "fitness",
+          "wellness"
+        ],
+        "buckets": [
+          "adventure",
+          "outdoor",
+          "wellness"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "learning-growth",
+        "text": "I want to learn something new",
+        "language": "en",
+        "expectedCategories": [
+          "learning"
+        ],
+        "minConfidence": 0.6
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "library",
+          "museum",
+          "university"
+        ],
+        "keywords": [
+          "learning",
+          "education",
+          "knowledge"
+        ],
+        "buckets": [
+          "culture",
+          "creative"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": false
+    },
+    {
+      "vibe": {
+        "id": "water-activities",
+        "text": "I want water activities",
+        "language": "en",
+        "expectedCategories": [
+          "water"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park"
+        ],
+        "keywords": [
+          "water sports",
+          "boating",
+          "swimming"
+        ],
+        "buckets": [
+          "adventure",
+          "outdoor",
+          "nature"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": false
+    },
+    {
+      "vibe": {
+        "id": "food-experience",
+        "text": "I want a food experience",
+        "language": "en",
+        "expectedCategories": [
+          "culinary"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "restaurant",
+          "cafe"
+        ],
+        "keywords": [
+          "dining",
+          "cuisine",
+          "culinary"
+        ],
+        "buckets": [],
+        "confidence": 0.9
+      },
+      "verifiable": false
+    },
+    {
+      "vibe": {
+        "id": "thrills-adrenaline",
+        "text": "I need thrills",
+        "language": "en",
+        "expectedCategories": [
+          "adventure",
+          "adrenaline"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "amusement_park",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "thrilling",
+          "adrenaline",
+          "adventure"
+        ],
+        "buckets": [
+          "adventure",
+          "adrenaline",
+          "entertainment"
+        ],
+        "confidence": 0.95
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "peaceful-quiet",
+        "text": "I want peace and quiet",
+        "language": "en",
+        "expectedCategories": [
+          "wellness",
+          "nature"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park",
+          "library",
+          "spa"
+        ],
+        "keywords": [
+          "nature",
+          "quiet",
+          "relaxation"
+        ],
+        "buckets": [
+          "nature",
+          "wellness",
+          "relaxation"
+        ],
+        "confidence": 0.85
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "social-meetup",
+        "text": "I want to meet people",
+        "language": "en",
+        "expectedCategories": [
+          "social"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "library"
+        ],
+        "keywords": [
+          "social",
+          "gathering",
+          "connection"
+        ],
+        "buckets": [
+          "social",
+          "connection"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "aventura-ro",
+        "text": "Vreau aventură",
+        "language": "ro",
+        "expectedCategories": [
+          "adventure"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "amusement_park",
+          "park",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "adventure",
+          "excitement",
+          "outdoor"
+        ],
+        "buckets": [
+          "adventure",
+          "adrenaline",
+          "outdoor"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "confortabil-ro",
+        "text": "Vreau ceva confortabil",
+        "language": "ro",
+        "expectedCategories": [
+          "social",
+          "wellness"
+        ],
+        "minConfidence": 0.6
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "library"
+        ],
+        "keywords": [
+          "cozy",
+          "quiet",
+          "relaxing"
+        ],
+        "buckets": [
+          "relaxation",
+          "social",
+          "connection"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "singur-ro",
+        "text": "Mă simt singur",
+        "language": "ro",
+        "expectedCategories": [
+          "social"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "library"
+        ],
+        "keywords": [
+          "social",
+          "gathering",
+          "connection"
+        ],
+        "buckets": [
+          "social",
+          "lonely",
+          "connection"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "creativ-ro",
+        "text": "Vreau să fiu creativ",
+        "language": "ro",
+        "expectedCategories": [
+          "creative"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "art_gallery",
+          "museum",
+          "library"
+        ],
+        "keywords": [
+          "creative",
+          "art",
+          "culture"
+        ],
+        "buckets": [
+          "art",
+          "culture",
+          "creative"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "natura-ro",
+        "text": "Am nevoie de natură",
+        "language": "ro",
+        "expectedCategories": [
+          "nature"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park"
+        ],
+        "keywords": [
+          "nature",
+          "outdoors",
+          "green_space"
+        ],
+        "buckets": [
+          "nature",
+          "outdoor",
+          "relaxation"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "relaxare-ro",
+        "text": "Am nevoie de relaxare",
+        "language": "ro",
+        "expectedCategories": [
+          "wellness"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "spa",
+          "park",
+          "library"
+        ],
+        "keywords": [
+          "relaxation",
+          "nature",
+          "quiet"
+        ],
+        "buckets": [
+          "relaxation",
+          "nature",
+          "peaceful"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": false
+    },
+    {
+      "vibe": {
+        "id": "cultura-ro",
+        "text": "Vreau cultură",
+        "language": "ro",
+        "expectedCategories": [
+          "culture"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "museum",
+          "art_gallery",
+          "library"
+        ],
+        "keywords": [
+          "culture",
+          "art",
+          "history"
+        ],
+        "buckets": [
+          "culture",
+          "art",
+          "creative"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "viata-de-noapte-ro",
+        "text": "Vreau viață de noapte",
+        "language": "ro",
+        "expectedCategories": [
+          "nightlife"
+        ],
+        "minConfidence": 0.8
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "night_club",
+          "bar",
+          "restaurant"
+        ],
+        "keywords": [
+          "nightlife",
+          "entertainment",
+          "social"
+        ],
+        "buckets": [
+          "nightlife",
+          "entertainment",
+          "social"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "sport-ro",
+        "text": "Vreau să fac sport",
+        "language": "ro",
+        "expectedCategories": [
+          "sports"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park",
+          "gym"
+        ],
+        "keywords": [
+          "outdoor_recreation",
+          "fitness",
+          "exercise"
+        ],
+        "buckets": [
+          "adventure",
+          "outdoor",
+          "wellness"
+        ],
+        "confidence": 0.85
+      },
+      "verifiable": false
+    },
+    {
+      "vibe": {
+        "id": "invatare-ro",
+        "text": "Vreau să învăț ceva nou",
+        "language": "ro",
+        "expectedCategories": [
+          "learning"
+        ],
+        "minConfidence": 0.6
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "library",
+          "museum",
+          "art_gallery"
+        ],
+        "keywords": [
+          "learning",
+          "education",
+          "culture",
+          "creativity"
+        ],
+        "buckets": [
+          "culture",
+          "art",
+          "creative"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": false
+    },
+    {
+      "vibe": {
+        "id": "winter-cozy",
+        "text": "I want something warm and cozy for winter",
+        "language": "en",
+        "expectedCategories": [
+          "social",
+          "wellness"
+        ],
+        "minConfidence": 0.6
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "restaurant"
+        ],
+        "keywords": [
+          "cozy",
+          "warm",
+          "fireplace"
+        ],
+        "buckets": [
+          "relaxation",
+          "social",
+          "wellness"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "summer-outdoor",
+        "text": "I want outdoor summer activities",
+        "language": "en",
+        "expectedCategories": [
+          "nature",
+          "adventure",
+          "water"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park",
+          "amusement_park"
+        ],
+        "keywords": [
+          "outdoor activities",
+          "summer fun",
+          "adventure"
+        ],
+        "buckets": [
+          "adventure",
+          "outdoor",
+          "nature"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "rainy-day",
+        "text": "What can I do on a rainy day?",
+        "language": "en",
+        "expectedCategories": [
+          "culture",
+          "creative",
+          "learning"
+        ],
+        "minConfidence": 0.5
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "library"
+        ],
+        "keywords": [
+          "indoor activities",
+          "social spaces",
+          "rainy day"
+        ],
+        "buckets": [
+          "social",
+          "connection",
+          "relaxation"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": false
+    },
+    {
+      "vibe": {
+        "id": "date-night",
+        "text": "I need ideas for a romantic date",
+        "language": "en",
+        "expectedCategories": [
+          "culture",
+          "culinary",
+          "nightlife"
+        ],
+        "minConfidence": 0.6
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "restaurant",
+          "cafe",
+          "park"
+        ],
+        "keywords": [
+          "romantic",
+          "date",
+          "scenic"
+        ],
+        "buckets": [
+          "relaxation",
+          "nature",
+          "social"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": false
+    },
+    {
+      "vibe": {
+        "id": "family-fun",
+        "text": "I want family-friendly activities",
+        "language": "en",
+        "expectedCategories": [
+          "nature",
+          "culture",
+          "learning"
+        ],
+        "minConfidence": 0.6
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "park",
+          "library"
+        ],
+        "keywords": [
+          "family-friendly",
+          "kids",
+          "activities"
+        ],
+        "buckets": [
+          "nature",
+          "social",
+          "culture"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "stress-relief",
+        "text": "I need to relieve stress",
+        "language": "en",
+        "expectedCategories": [
+          "wellness",
+          "nature"
+        ],
+        "minConfidence": 0.7
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "spa",
+          "park",
+          "library"
+        ],
+        "keywords": [
+          "relaxation",
+          "wellness",
+          "quiet"
+        ],
+        "buckets": [
+          "relaxation",
+          "wellness",
+          "peaceful"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "weekend-plans",
+        "text": "I need weekend plans",
+        "language": "en",
+        "minConfidence": 0.4
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "library"
+        ],
+        "keywords": [
+          "social",
+          "gathering",
+          "connection"
+        ],
+        "buckets": [
+          "social",
+          "connection"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    },
+    {
+      "vibe": {
+        "id": "bored-evening",
+        "text": "I'm bored this evening",
+        "language": "en",
+        "minConfidence": 0.4
+      },
+      "mapped": true,
+      "mapping": {
+        "types": [
+          "cafe",
+          "bar"
+        ],
+        "keywords": [
+          "nightlife",
+          "entertainment",
+          "social"
+        ],
+        "buckets": [
+          "nightlife",
+          "entertainment"
+        ],
+        "confidence": 0.9
+      },
+      "verifiable": true
+    }
+  ],
+  "uncoveredVibes": [
+    {
+      "id": "learning-growth",
+      "text": "I want to learn something new",
+      "language": "en",
+      "expectedCategories": [
+        "learning"
+      ],
+      "minConfidence": 0.6
+    },
+    {
+      "id": "water-activities",
+      "text": "I want water activities",
+      "language": "en",
+      "expectedCategories": [
+        "water"
+      ],
+      "minConfidence": 0.8
+    },
+    {
+      "id": "food-experience",
+      "text": "I want a food experience",
+      "language": "en",
+      "expectedCategories": [
+        "culinary"
+      ],
+      "minConfidence": 0.7
+    },
+    {
+      "id": "relaxare-ro",
+      "text": "Am nevoie de relaxare",
+      "language": "ro",
+      "expectedCategories": [
+        "wellness"
+      ],
+      "minConfidence": 0.7
+    },
+    {
+      "id": "sport-ro",
+      "text": "Vreau să fac sport",
+      "language": "ro",
+      "expectedCategories": [
+        "sports"
+      ],
+      "minConfidence": 0.7
+    },
+    {
+      "id": "invatare-ro",
+      "text": "Vreau să învăț ceva nou",
+      "language": "ro",
+      "expectedCategories": [
+        "learning"
+      ],
+      "minConfidence": 0.6
+    },
+    {
+      "id": "rainy-day",
+      "text": "What can I do on a rainy day?",
+      "language": "en",
+      "expectedCategories": [
+        "culture",
+        "creative",
+        "learning"
+      ],
+      "minConfidence": 0.5
+    },
+    {
+      "id": "date-night",
+      "text": "I need ideas for a romantic date",
+      "language": "en",
+      "expectedCategories": [
+        "culture",
+        "culinary",
+        "nightlife"
+      ],
+      "minConfidence": 0.6
+    }
+  ],
+  "recommendations": [
+    "3 Romanian vibes failed - expand Romanian synonyms and keywords",
+    "Multiple failures in learning category - add more learning activities",
+    "Multiple failures in culinary category - add more culinary activities",
+    "Multiple failures in culture category - add more culture activities",
+    "Complex/contextual vibes failing - improve LLM prompt for nuanced understanding"
+  ]
+}

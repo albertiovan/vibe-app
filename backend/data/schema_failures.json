@@ -1,0 +1,68 @@
+[
+  {
+    "timestamp": 1760890683416,
+    "stage": "think",
+    "vibe": "I want to try a new sport",
+    "rawResponse": {},
+    "validationErrors": [
+      {
+        "code": "too_big",
+        "maximum": 1,
+        "type": "number",
+        "inclusive": true,
+        "exact": false,
+        "message": "Number must be less than or equal to 1",
+        "path": [
+          "activities",
+          0,
+          "priority"
+        ]
+      },
+      {
+        "code": "too_big",
+        "maximum": 1,
+        "type": "number",
+        "inclusive": true,
+        "exact": false,
+        "message": "Number must be less than or equal to 1",
+        "path": [
+          "activities",
+          1,
+          "priority"
+        ]
+      },
+      {
+        "code": "too_big",
+        "maximum": 1,
+        "type": "number",
+        "inclusive": true,
+        "exact": false,
+        "message": "Number must be less than or equal to 1",
+        "path": [
+          "activities",
+          2,
+          "priority"
+        ]
+      }
+    ],
+    "fallbackUsed": false
+  },
+  {
+    "timestamp": 1760890807861,
+    "stage": "curate",
+    "vibe": "I want to try a new sport",
+    "rawResponse": {},
+    "validationErrors": [
+      {
+        "code": "invalid_type",
+        "expected": "array",
+        "received": "undefined",
+        "path": [
+          "finalActivities"
+        ],
+        "message": "Required"
+      }
+    ],
+    "fallbackUsed": false
+  }
+]

@@ -1,0 +1,156 @@
+{
+  "totalSubtypes": 2,
+  "productionReady": 1,
+  "experimental": 1,
+  "needsWork": 0,
+  "checks": [
+    {
+      "subtype": {
+        "id": "danube-delta-tour",
+        "label": "Danube Delta Tour",
+        "category": "nature",
+        "verbs": [
+          "explore",
+          "discover",
+          "cruise"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "outdoor",
+        "seasonality": "summer",
+        "keywords": {
+          "en": [
+            "danube delta",
+            "river cruise",
+            "nature reserve"
+          ],
+          "ro": [
+            "delta dunării",
+            "croazieră pe râu",
+            "rezervație naturală"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "wetlands tour",
+            "eco-cruise"
+          ],
+          "ro": [
+            "tur zone umede",
+            "croazieră eco"
+          ]
+        },
+        "google": {
+          "types": [
+            "tourist_attraction",
+            "travel_agency"
+          ],
+          "keywords": [
+            "danube delta",
+            "delta dunării"
+          ]
+        },
+        "experimental": false
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "tourist_attraction",
+          "travel_agency"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "otm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "carpathian-lake-kayak",
+        "label": "Carpathian Lake Kayaking",
+        "category": "water",
+        "verbs": [
+          "paddle",
+          "glide",
+          "explore"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "outdoor",
+        "seasonality": "summer",
+        "keywords": {
+          "en": [
+            "kayaking",
+            "lake",
+            "mountains"
+          ],
+          "ro": [
+            "caiac",
+            "lac",
+            "munți"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "canoeing",
+            "paddling"
+          ],
+          "ro": [
+            "canoe",
+            "pagaie"
+          ]
+        },
+        "google": {
+          "types": [
+            "outdoor_recreation_area",
+            "water_sports"
+          ],
+          "keywords": [
+            "carpathian lake",
+            "lac carpați"
+          ]
+        },
+        "experimental": false
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [],
+        "invalidTypes": [
+          "outdoor_recreation_area",
+          "water_sports"
+        ],
+        "confidence": "medium"
+      },
+      "osm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "otm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "medium",
+        "recommendation": "experimental"
+      }
+    }
+  ],
+  "summary": {
+    "googleCoverage": 100,
+    "osmCoverage": 0,
+    "otmCoverage": 0,
+    "overallVerifiable": 100
+  }
+}

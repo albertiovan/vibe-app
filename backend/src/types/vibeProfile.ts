@@ -35,6 +35,14 @@ export interface UserMLProfile {
   // Exploration vs exploitation balance
   explorationBias: number; // 0-1 controls how often to push "new" ideas
   
+  // Challenge acceptance learning
+  challengeHistory: {
+    totalChallengesOffered: number;
+    totalChallengesAccepted: number;
+    recentAcceptanceRate: number; // Last 10 challenges
+    lastChallengeDate?: Date;
+  };
+  
   // Behavioral patterns
   feedbackHistory: {
     liked: string[]; // Place IDs or activity types
@@ -64,7 +72,7 @@ export interface UserMLProfile {
 export interface UserEvent {
   id: string;
   userId: string;
-  eventType: 'activity_view' | 'feedback' | 'challenge_accept' | 'map_open' | 'search' | 'dismiss' | 'onboarding_complete';
+  eventType: 'activity_view' | 'feedback' | 'challenge_accept' | 'challenge_decline' | 'challenge_offered' | 'map_open' | 'search' | 'dismiss' | 'onboarding_complete';
   timestamp: Date;
   
   // Event data
@@ -82,6 +90,12 @@ export interface UserEvent {
     interests?: string[]; // For onboarding events
     energyLevel?: string;
     opennessScore?: number;
+    
+    // Challenge-specific data
+    challengeId?: string;
+    challengeLevel?: number; // 1-5 difficulty
+    destinationCity?: string;
+    travelDistanceKm?: number;
   };
   
   // Context
@@ -320,6 +334,12 @@ export function initializeMLProfile(coreProfile: CorePersonalityProfile): UserML
     userId: coreProfile.userId,
     interestWeights,
     explorationBias,
+    challengeHistory: {
+      totalChallengesOffered: 0,
+      totalChallengesAccepted: 0,
+      recentAcceptanceRate: 0.5, // Start neutral
+      lastChallengeDate: undefined
+    },
     feedbackHistory: {
       liked: [],
       disliked: [],

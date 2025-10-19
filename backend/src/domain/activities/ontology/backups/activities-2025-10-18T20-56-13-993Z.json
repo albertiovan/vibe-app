@@ -1,0 +1,231 @@
+[
+  {
+    "id": "thermal-baths",
+    "label": "Thermal Baths",
+    "category": "wellness",
+    "verbs": [
+      "soak",
+      "relax",
+      "unwind"
+    ],
+    "energy": "chill",
+    "indoorOutdoor": "either",
+    "seasonality": "all",
+    "keywords": {
+      "en": [
+        "thermal baths",
+        "hot springs",
+        "spa"
+      ],
+      "ro": [
+        "băi termale",
+        "izvoare termale",
+        "spa"
+      ]
+    },
+    "synonyms": {
+      "en": [
+        "hot springs",
+        "mineral baths"
+      ],
+      "ro": [
+        "izvoare calde",
+        "băi minerale"
+      ]
+    },
+    "google": {
+      "types": [
+        "spa",
+        "tourist_attraction"
+      ],
+      "keywords": [
+        "thermal baths",
+        "băi termale",
+        "hot springs"
+      ]
+    }
+  },
+  {
+    "id": "mountain-hiking",
+    "label": "Mountain Hiking",
+    "category": "nature",
+    "verbs": [
+      "hike",
+      "climb",
+      "explore"
+    ],
+    "energy": "medium",
+    "indoorOutdoor": "outdoor",
+    "seasonality": "summer",
+    "keywords": {
+      "en": [
+        "mountain hiking",
+        "trail hiking",
+        "alpine hiking"
+      ],
+      "ro": [
+        "drumeție montană",
+        "hiking",
+        "trasee montane"
+      ]
+    },
+    "synonyms": {
+      "en": [
+        "mountain trekking",
+        "alpine walking"
+      ],
+      "ro": [
+        "trekking montan",
+        "plimbări alpine"
+      ]
+    },
+    "google": {
+      "types": [
+        "park",
+        "natural_feature",
+        "tourist_attraction"
+      ],
+      "keywords": [
+        "hiking trail",
+        "mountain trail",
+        "drumeție"
+      ]
+    }
+  },
+  {
+    "id": "castle-tours",
+    "label": "Castle Tours",
+    "category": "culture",
+    "verbs": [
+      "explore",
+      "visit",
+      "discover"
+    ],
+    "energy": "medium",
+    "indoorOutdoor": "either",
+    "seasonality": "all",
+    "keywords": {
+      "en": [
+        "castle tour",
+        "fortress visit",
+        "medieval castle"
+      ],
+      "ro": [
+        "tur castel",
+        "vizită cetate",
+        "castel medieval"
+      ]
+    },
+    "synonyms": {
+      "en": [
+        "fortress exploration",
+        "palace tour"
+      ],
+      "ro": [
+        "explorare cetate",
+        "tur palat"
+      ]
+    },
+    "google": {
+      "types": [
+        "tourist_attraction",
+        "museum",
+        "establishment"
+      ],
+      "keywords": [
+        "castle",
+        "fortress",
+        "castel",
+        "cetate"
+      ]
+    }
+  },
+  {
+    "id": "via-ferrata-beginner",
+    "label": "Via Ferrata Beginner",
+    "category": "adventure",
+    "verbs": [
+      "climb",
+      "ascend",
+      "explore"
+    ],
+    "energy": "medium",
+    "indoorOutdoor": "outdoor",
+    "seasonality": "summer",
+    "keywords": {
+      "en": [
+        "via ferrata",
+        "fixed-cable climbing"
+      ],
+      "ro": [
+        "via ferată",
+        "escaladă pe cablu"
+      ]
+    },
+    "synonyms": {
+      "en": [
+        "assisted climbing",
+        "protected climbing"
+      ],
+      "ro": [
+        "escaladă asistată",
+        "escaladă protejată"
+      ]
+    },
+    "google": {
+      "types": [
+        "tourist_attraction",
+        "point_of_interest"
+      ],
+      "keywords": [
+        "via ferrata",
+        "via ferată"
+      ]
+    },
+    "experimental": false
+  },
+  {
+    "id": "traditional-craft-workshop",
+    "label": "Traditional Craft Workshop",
+    "category": "culture",
+    "verbs": [
+      "learn",
+      "create",
+      "make"
+    ],
+    "energy": "medium",
+    "indoorOutdoor": "indoor",
+    "seasonality": "all",
+    "keywords": {
+      "en": [
+        "traditional crafts",
+        "artisan workshop"
+      ],
+      "ro": [
+        "meșteșuguri tradiționale",
+        "atelier de artizanat"
+      ]
+    },
+    "synonyms": {
+      "en": [
+        "folk art",
+        "handmade"
+      ],
+      "ro": [
+        "artă populară",
+        "făcut manual"
+      ]
+    },
+    "google": {
+      "types": [
+        "point_of_interest",
+        "store"
+      ],
+      "keywords": [
+        "traditional crafts",
+        "meșteșuguri tradiționale"
+      ]
+    },
+    "experimental": false
+  }
+]

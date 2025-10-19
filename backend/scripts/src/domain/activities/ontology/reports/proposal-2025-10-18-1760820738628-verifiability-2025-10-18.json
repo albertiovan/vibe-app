@@ -1,0 +1,160 @@
+{
+  "totalSubtypes": 2,
+  "productionReady": 2,
+  "experimental": 0,
+  "needsWork": 0,
+  "checks": [
+    {
+      "subtype": {
+        "id": "traditional-craft-workshop",
+        "label": "Traditional Craft Workshop",
+        "category": "creative",
+        "verbs": [
+          "learn",
+          "create",
+          "make"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "indoor",
+        "seasonality": "all",
+        "keywords": {
+          "en": [
+            "traditional crafts",
+            "artisan workshop",
+            "handmade"
+          ],
+          "ro": [
+            "meșteșuguri tradiționale",
+            "atelier de artizanat",
+            "făcut manual"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "artisanal workshop",
+            "handicraft class"
+          ],
+          "ro": [
+            "atelier de artizanat",
+            "curs de meșteșuguri"
+          ]
+        },
+        "google": {
+          "types": [
+            "point_of_interest",
+            "store"
+          ],
+          "keywords": [
+            "traditional crafts",
+            "artisan workshop",
+            "meșteșuguri tradiționale"
+          ]
+        },
+        "experimental": false
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "store"
+        ],
+        "invalidTypes": [
+          "point_of_interest"
+        ],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "otm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "foraging-workshop",
+        "label": "Foraging Workshop",
+        "category": "learning",
+        "verbs": [
+          "forage",
+          "gather",
+          "identify"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "outdoor",
+        "seasonality": "summer",
+        "keywords": {
+          "en": [
+            "wild edibles",
+            "mushroom foraging",
+            "plant identification"
+          ],
+          "ro": [
+            "plante comestibile",
+            "culegere de ciuperci",
+            "identificare plante"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "wild food gathering",
+            "edible plants"
+          ],
+          "ro": [
+            "culegere de alimente sălbatice",
+            "plante comestibile"
+          ]
+        },
+        "google": {
+          "types": [
+            "point_of_interest",
+            "park"
+          ],
+          "keywords": [
+            "foraging workshop",
+            "wild edibles",
+            "culegere plante"
+          ]
+        },
+        "experimental": true
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "park"
+        ],
+        "invalidTypes": [
+          "point_of_interest"
+        ],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "otm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    }
+  ],
+  "summary": {
+    "googleCoverage": 100,
+    "osmCoverage": 0,
+    "otmCoverage": 0,
+    "overallVerifiable": 100
+  }
+}

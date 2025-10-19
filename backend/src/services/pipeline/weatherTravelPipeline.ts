@@ -264,8 +264,11 @@ export class WeatherTravelPipeline {
         }
       }
 
-      // Travel filter: respect maxTravelMinutes
-      if (annotatedCandidate.travelMinutes > context.maxTravelMinutes) {
+      // Travel filter: respect maxTravelMinutes (extended for day trips)
+      const isDayTrip = context.maxTravelMinutes >= 480; // 8+ hours
+      const maxAllowedTravel = isDayTrip ? 720 : context.maxTravelMinutes; // Allow up to 12h for day trips
+      
+      if (annotatedCandidate.travelMinutes > maxAllowedTravel) {
         continue; // Skip this candidate
       }
 

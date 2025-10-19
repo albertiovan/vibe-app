@@ -1,0 +1,154 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-18T21:52:03.319Z",
+  "entries": [
+    {
+      "id": "post-work-unwind",
+      "description": "Decompress gently after a busy day.",
+      "commonTriggers": [
+        "evening fatigue",
+        "weekday stress",
+        "need to relax"
+      ],
+      "baseVibes": [
+        "relaxation-seeking",
+        "social-connection"
+      ],
+      "context": {
+        "timeOfDay": [
+          "evening"
+        ],
+        "dayType": [
+          "workday"
+        ],
+        "energy": [
+          "low"
+        ],
+        "socialState": [
+          "alone",
+          "any"
+        ],
+        "season": [
+          "all"
+        ]
+      }
+    },
+    {
+      "id": "rainy-day-creativity",
+      "description": "Cozy, indoors creative mood when it rains.",
+      "commonTriggers": [
+        "rain",
+        "stay inside",
+        "creative mood"
+      ],
+      "baseVibes": [
+        "creative-expression",
+        "self-reflection"
+      ],
+      "context": {
+        "timeOfDay": [
+          "afternoon",
+          "evening"
+        ],
+        "energy": [
+          "low",
+          "medium"
+        ],
+        "weather": [
+          "rainy"
+        ],
+        "season": [
+          "all"
+        ]
+      }
+    },
+    {
+      "id": "weekend-energy-burst",
+      "description": "High-energy social or active plans on weekends.",
+      "commonTriggers": [
+        "free time",
+        "good weather",
+        "weekend vibes"
+      ],
+      "baseVibes": [
+        "adventure-seeking",
+        "nightlife-seeking",
+        "social-connection"
+      ],
+      "context": {
+        "dayType": [
+          "weekend"
+        ],
+        "energy": [
+          "high"
+        ],
+        "socialState": [
+          "friends"
+        ],
+        "duration": [
+          "medium",
+          "long"
+        ]
+      }
+    },
+    {
+      "id": "morning-reset",
+      "description": "Gentle self-care start to the day.",
+      "commonTriggers": [
+        "new day",
+        "need a reset",
+        "morning routine"
+      ],
+      "baseVibes": [
+        "self-reflection",
+        "fitness-motivation"
+      ],
+      "context": {
+        "timeOfDay": [
+          "morning"
+        ],
+        "energy": [
+          "low",
+          "medium"
+        ],
+        "socialState": [
+          "alone"
+        ],
+        "duration": [
+          "short"
+        ]
+      }
+    },
+    {
+      "id": "romantic-evening",
+      "description": "Couple-oriented cozy or elegant experience.",
+      "commonTriggers": [
+        "date night",
+        "anniversary",
+        "romantic mood"
+      ],
+      "baseVibes": [
+        "romantic-mood",
+        "culinary-curious"
+      ],
+      "context": {
+        "timeOfDay": [
+          "evening"
+        ],
+        "socialState": [
+          "date"
+        ],
+        "budget": [
+          "medium",
+          "premium"
+        ],
+        "season": [
+          "all"
+        ]
+      }
+    }
+  ],
+  "stats": {
+    "total": 5
+  }
+}

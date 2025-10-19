@@ -1,0 +1,41 @@
+[
+  {
+    "id": "relaxation-seeking",
+    "cues": {
+      "en": [
+        "I need to relax",
+        "I want to unwind",
+        "I need some peace"
+      ],
+      "ro": [
+        "Am nevoie de relaxare",
+        "Vreau să mă relaxez",
+        "Am nevoie de liniște"
+      ]
+    },
+    "preferredCategories": [
+      "wellness",
+      "nature"
+    ]
+  },
+  {
+    "id": "adventure-seeking",
+    "cues": {
+      "en": [
+        "I want adventure",
+        "I need excitement",
+        "I want to explore"
+      ],
+      "ro": [
+        "Vreau aventură",
+        "Am nevoie de emoții",
+        "Vreau să explorez"
+      ]
+    },
+    "preferredCategories": [
+      "adventure",
+      "nature",
+      "sports"
+    ]
+  }
+]

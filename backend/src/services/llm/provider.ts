@@ -91,7 +91,17 @@ export class JSONValidator {
     schema: ZodSchema<T>
   ): { ok: true; data: T } | { ok: false; error: string } {
     try {
+      // Check if schema is provided
+      if (!schema) {
+        return { ok: false, error: 'JSON validation failed: No schema provided' };
+      }
+
       const extracted = this.extractJSON(jsonString);
+      
+      if (!extracted.trim()) {
+        return { ok: false, error: 'JSON validation failed: Empty JSON string after extraction' };
+      }
+
       const parsed = JSON.parse(extracted);
       const validated = schema.parse(parsed);
       

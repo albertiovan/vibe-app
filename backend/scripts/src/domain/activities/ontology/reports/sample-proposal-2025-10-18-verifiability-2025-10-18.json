@@ -1,0 +1,818 @@
+{
+  "totalSubtypes": 8,
+  "productionReady": 8,
+  "experimental": 0,
+  "needsWork": 0,
+  "checks": [
+    {
+      "subtype": {
+        "id": "thermal-baths",
+        "label": "Thermal Baths",
+        "category": "wellness",
+        "verbs": [
+          "soak",
+          "relax",
+          "unwind",
+          "bathe"
+        ],
+        "examples": [
+          "Băile Felix",
+          "Băile Herculane",
+          "Geoagiu Băi"
+        ],
+        "energy": "chill",
+        "indoorOutdoor": "either",
+        "seasonality": "all",
+        "durationHintHrs": [
+          2,
+          6
+        ],
+        "keywords": {
+          "en": [
+            "thermal baths",
+            "hot springs",
+            "spa",
+            "mineral water"
+          ],
+          "ro": [
+            "băi termale",
+            "izvoare termale",
+            "spa",
+            "apă minerală"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "hot springs",
+            "thermal springs",
+            "mineral baths"
+          ],
+          "ro": [
+            "izvoare calde",
+            "băi minerale",
+            "ape termale"
+          ]
+        },
+        "google": {
+          "types": [
+            "spa",
+            "tourist_attraction"
+          ],
+          "keywords": [
+            "thermal baths",
+            "hot springs",
+            "băi termale"
+          ]
+        },
+        "osm": {
+          "tags": {
+            "amenity": "spa",
+            "spa": "thermal"
+          }
+        },
+        "otm": {
+          "kinds": [
+            "thermal_springs",
+            "spa"
+          ]
+        },
+        "experimental": false,
+        "notes": "Popular in Romania with many established thermal resorts"
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "spa",
+          "tourist_attraction"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "otm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "mountain-hiking",
+        "label": "Mountain Hiking",
+        "category": "nature",
+        "verbs": [
+          "hike",
+          "climb",
+          "trek",
+          "explore"
+        ],
+        "examples": [
+          "Carpathian trails",
+          "Bucegi Mountains",
+          "Piatra Craiului"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "outdoor",
+        "seasonality": "all",
+        "durationHintHrs": [
+          2,
+          8
+        ],
+        "keywords": {
+          "en": [
+            "hiking",
+            "mountain trail",
+            "trekking",
+            "nature walk"
+          ],
+          "ro": [
+            "drumeție",
+            "traseu montan",
+            "plimbare în natură",
+            "hiking"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "trail walking",
+            "mountain walking",
+            "nature hiking"
+          ],
+          "ro": [
+            "plimbare pe munte",
+            "drumeție montană",
+            "trasee turistice"
+          ]
+        },
+        "google": {
+          "types": [
+            "park",
+            "natural_feature",
+            "tourist_attraction"
+          ],
+          "keywords": [
+            "hiking trail",
+            "mountain trail",
+            "drumeție"
+          ]
+        },
+        "osm": {
+          "tags": {
+            "highway": "path",
+            "foot": "yes",
+            "sac_scale": [
+              "hiking",
+              "mountain_hiking"
+            ]
+          }
+        },
+        "otm": {
+          "kinds": [
+            "mountain",
+            "natural",
+            "hiking"
+          ]
+        },
+        "experimental": false,
+        "notes": "Romania has extensive mountain hiking opportunities"
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "park",
+          "natural_feature",
+          "tourist_attraction"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": true,
+        "confidence": "medium"
+      },
+      "otm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "fortress-exploration",
+        "label": "Medieval Fortress Exploration",
+        "category": "culture",
+        "verbs": [
+          "explore",
+          "discover",
+          "visit",
+          "tour"
+        ],
+        "examples": [
+          "Bran Castle",
+          "Corvin Castle",
+          "Râșnov Fortress"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "either",
+        "seasonality": "all",
+        "durationHintHrs": [
+          1,
+          4
+        ],
+        "keywords": {
+          "en": [
+            "castle",
+            "fortress",
+            "medieval",
+            "historical site"
+          ],
+          "ro": [
+            "castel",
+            "cetate",
+            "medieval",
+            "sit istoric"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "castle tour",
+            "historical exploration",
+            "medieval sites"
+          ],
+          "ro": [
+            "vizită castel",
+            "explorare istorică",
+            "situri medievale"
+          ]
+        },
+        "google": {
+          "types": [
+            "tourist_attraction",
+            "museum"
+          ],
+          "keywords": [
+            "castle",
+            "fortress",
+            "castel",
+            "cetate"
+          ]
+        },
+        "osm": {
+          "tags": {
+            "historic": [
+              "castle",
+              "fortress"
+            ],
+            "tourism": "attraction"
+          }
+        },
+        "otm": {
+          "kinds": [
+            "historic",
+            "castle",
+            "fortifications"
+          ]
+        },
+        "experimental": false,
+        "notes": "Romania is famous for its medieval castles and fortresses"
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "tourist_attraction",
+          "museum"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "otm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "traditional-craft-workshop",
+        "label": "Traditional Craft Workshop",
+        "category": "creative",
+        "verbs": [
+          "create",
+          "craft",
+          "make",
+          "learn"
+        ],
+        "examples": [
+          "pottery",
+          "wood carving",
+          "weaving",
+          "ceramics"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "indoor",
+        "seasonality": "all",
+        "durationHintHrs": [
+          2,
+          6
+        ],
+        "keywords": {
+          "en": [
+            "craft workshop",
+            "pottery",
+            "traditional arts",
+            "handmade"
+          ],
+          "ro": [
+            "atelier meșteșuguri",
+            "olărit",
+            "arte tradiționale",
+            "lucrat manual"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "artisan workshop",
+            "handicraft",
+            "traditional skills"
+          ],
+          "ro": [
+            "atelier artizanal",
+            "meșteșuguri",
+            "abilități tradiționale"
+          ]
+        },
+        "google": {
+          "types": [
+            "art_gallery",
+            "store"
+          ],
+          "keywords": [
+            "craft workshop",
+            "pottery",
+            "atelier"
+          ]
+        },
+        "osm": {
+          "tags": {
+            "craft": [
+              "pottery",
+              "carpenter",
+              "artist"
+            ],
+            "shop": "craft"
+          }
+        },
+        "otm": {
+          "kinds": [
+            "cultural",
+            "workshop"
+          ]
+        },
+        "experimental": false,
+        "notes": "Traditional Romanian crafts are popular tourist activities"
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "art_gallery",
+          "store"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": true,
+        "confidence": "medium"
+      },
+      "otm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "danube-delta-birdwatching",
+        "label": "Danube Delta Birdwatching",
+        "category": "nature",
+        "verbs": [
+          "observe",
+          "watch",
+          "spot",
+          "photograph"
+        ],
+        "examples": [
+          "pelican colonies",
+          "migratory birds",
+          "wetland species"
+        ],
+        "energy": "chill",
+        "indoorOutdoor": "outdoor",
+        "seasonality": "all",
+        "durationHintHrs": [
+          3,
+          8
+        ],
+        "keywords": {
+          "en": [
+            "birdwatching",
+            "bird watching",
+            "wildlife",
+            "nature observation"
+          ],
+          "ro": [
+            "observarea păsărilor",
+            "ornitologie",
+            "fauna sălbatică",
+            "observare natură"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "birding",
+            "wildlife watching",
+            "nature photography"
+          ],
+          "ro": [
+            "observare păsări",
+            "fotografie natură",
+            "turism ornitologic"
+          ]
+        },
+        "google": {
+          "types": [
+            "natural_feature",
+            "tourist_attraction"
+          ],
+          "keywords": [
+            "birdwatching",
+            "danube delta",
+            "wildlife"
+          ]
+        },
+        "osm": {
+          "tags": {
+            "natural": "wetland",
+            "tourism": "attraction",
+            "leisure": "nature_reserve"
+          }
+        },
+        "otm": {
+          "kinds": [
+            "natural",
+            "wetlands",
+            "birdwatching"
+          ]
+        },
+        "experimental": false,
+        "notes": "Danube Delta is a UNESCO World Heritage site famous for birdwatching"
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "natural_feature",
+          "tourist_attraction"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "otm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "bucharest-street-art-tour",
+        "label": "Bucharest Street Art Tour",
+        "category": "culture",
+        "verbs": [
+          "explore",
+          "discover",
+          "photograph",
+          "walk"
+        ],
+        "examples": [
+          "Old Town murals",
+          "Amzei neighborhood",
+          "street art districts"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "outdoor",
+        "seasonality": "all",
+        "durationHintHrs": [
+          2,
+          4
+        ],
+        "keywords": {
+          "en": [
+            "street art",
+            "graffiti",
+            "urban art",
+            "mural tour"
+          ],
+          "ro": [
+            "artă stradală",
+            "graffiti",
+            "artă urbană",
+            "tur murale"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "urban exploration",
+            "art walk",
+            "graffiti tour"
+          ],
+          "ro": [
+            "explorare urbană",
+            "plimbare artistică",
+            "tur graffiti"
+          ]
+        },
+        "google": {
+          "types": [
+            "tourist_attraction"
+          ],
+          "keywords": [
+            "street art",
+            "walking tour",
+            "artă stradală"
+          ]
+        },
+        "osm": {
+          "tags": {
+            "tourism": "attraction",
+            "artwork_type": "mural"
+          }
+        },
+        "experimental": false,
+        "notes": "Bucharest has a vibrant street art scene"
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "tourist_attraction"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "otm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "carpathian-via-ferrata",
+        "label": "Carpathian Via Ferrata",
+        "category": "adventure",
+        "verbs": [
+          "climb",
+          "traverse",
+          "navigate",
+          "ascend"
+        ],
+        "examples": [
+          "Omu Peak route",
+          "Piatra Craiului",
+          "Bucegi Mountains"
+        ],
+        "energy": "high",
+        "indoorOutdoor": "outdoor",
+        "seasonality": "summer",
+        "durationHintHrs": [
+          4,
+          8
+        ],
+        "keywords": {
+          "en": [
+            "via ferrata",
+            "rock climbing",
+            "mountain climbing",
+            "adventure"
+          ],
+          "ro": [
+            "via ferrata",
+            "cățărare",
+            "alpinism",
+            "aventură"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "iron path",
+            "assisted climbing",
+            "mountain adventure"
+          ],
+          "ro": [
+            "cale ferată",
+            "cățărare asistată",
+            "aventură montană"
+          ]
+        },
+        "google": {
+          "types": [
+            "tourist_attraction",
+            "natural_feature"
+          ],
+          "keywords": [
+            "via ferrata",
+            "climbing",
+            "adventure"
+          ]
+        },
+        "osm": {
+          "tags": {
+            "highway": "via_ferrata",
+            "sport": "climbing"
+          }
+        },
+        "otm": {
+          "kinds": [
+            "climbing",
+            "adventure",
+            "mountain"
+          ]
+        },
+        "experimental": false,
+        "notes": "Several via ferrata routes exist in Romanian Carpathians"
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "tourist_attraction",
+          "natural_feature"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "otm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    },
+    {
+      "subtype": {
+        "id": "romanian-wine-tasting",
+        "label": "Romanian Wine Tasting",
+        "category": "culinary",
+        "verbs": [
+          "taste",
+          "sample",
+          "discover",
+          "learn"
+        ],
+        "examples": [
+          "Dealu Mare wines",
+          "Cotnari region",
+          "Murfatlar vineyard"
+        ],
+        "energy": "chill",
+        "indoorOutdoor": "either",
+        "seasonality": "all",
+        "durationHintHrs": [
+          2,
+          4
+        ],
+        "keywords": {
+          "en": [
+            "wine tasting",
+            "vineyard",
+            "winery",
+            "wine tour"
+          ],
+          "ro": [
+            "degustare vin",
+            "cramă",
+            "podgorie",
+            "tur vinicol"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "wine sampling",
+            "vineyard tour",
+            "wine experience"
+          ],
+          "ro": [
+            "experiență vinicola",
+            "tur cramă",
+            "degustare vinuri"
+          ]
+        },
+        "google": {
+          "types": [
+            "tourist_attraction",
+            "store"
+          ],
+          "keywords": [
+            "wine tasting",
+            "winery",
+            "cramă"
+          ]
+        },
+        "osm": {
+          "tags": {
+            "craft": "winery",
+            "tourism": "attraction"
+          }
+        },
+        "otm": {
+          "kinds": [
+            "cultural",
+            "winery"
+          ]
+        },
+        "experimental": false,
+        "notes": "Romania has ancient winemaking traditions and quality vineyards"
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "tourist_attraction",
+          "store"
+        ],
+        "invalidTypes": [],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "otm": {
+        "hasMapping": true,
+        "confidence": "high"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    }
+  ],
+  "summary": {
+    "googleCoverage": 100,
+    "osmCoverage": 100,
+    "otmCoverage": 88,
+    "overallVerifiable": 100
+  }
+}

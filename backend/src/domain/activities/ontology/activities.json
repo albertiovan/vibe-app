@@ -1,0 +1,1055 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-10-18T21:52:03.319Z",
+  "subtypes": [
+    {
+      "id": "thermal-baths",
+      "label": "Thermal Baths",
+      "category": "wellness",
+      "verbs": [
+        "soak",
+        "relax",
+        "unwind"
+      ],
+      "energy": "chill",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "thermal baths",
+          "hot springs",
+          "spa"
+        ],
+        "ro": [
+          "băi termale",
+          "izvoare termale",
+          "spa"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "hot springs",
+          "mineral baths"
+        ],
+        "ro": [
+          "izvoare calde",
+          "băi minerale"
+        ]
+      },
+      "google": {
+        "types": [
+          "spa",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "thermal baths",
+          "băi termale",
+          "hot springs"
+        ]
+      }
+    },
+    {
+      "id": "mountain-hiking",
+      "label": "Mountain Hiking",
+      "category": "nature",
+      "verbs": [
+        "hike",
+        "climb",
+        "explore"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": [
+          "mountain hiking",
+          "trail hiking",
+          "alpine hiking"
+        ],
+        "ro": [
+          "drumeție montană",
+          "hiking",
+          "trasee montane"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "mountain trekking",
+          "alpine walking"
+        ],
+        "ro": [
+          "trekking montan",
+          "plimbări alpine"
+        ]
+      },
+      "google": {
+        "types": [
+          "park",
+          "natural_feature",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "hiking trail",
+          "mountain trail",
+          "drumeție"
+        ]
+      }
+    },
+    {
+      "id": "castle-tours",
+      "label": "Castle Tours",
+      "category": "culture",
+      "verbs": [
+        "explore",
+        "visit",
+        "discover"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "castle tour",
+          "fortress visit",
+          "medieval castle"
+        ],
+        "ro": [
+          "tur castel",
+          "vizită cetate",
+          "castel medieval"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "fortress exploration",
+          "palace tour"
+        ],
+        "ro": [
+          "explorare cetate",
+          "tur palat"
+        ]
+      },
+      "google": {
+        "types": [
+          "tourist_attraction",
+          "museum",
+          "establishment"
+        ],
+        "keywords": [
+          "castle",
+          "fortress",
+          "castel",
+          "cetate"
+        ]
+      }
+    },
+    {
+      "id": "via-ferrata-beginner",
+      "label": "Via Ferrata Beginner",
+      "category": "adventure",
+      "verbs": [
+        "climb",
+        "ascend",
+        "explore"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": [
+          "via ferrata",
+          "fixed-cable climbing"
+        ],
+        "ro": [
+          "via ferată",
+          "escaladă pe cablu"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "assisted climbing",
+          "protected climbing"
+        ],
+        "ro": [
+          "escaladă asistată",
+          "escaladă protejată"
+        ]
+      },
+      "google": {
+        "types": [
+          "tourist_attraction",
+          "point_of_interest"
+        ],
+        "keywords": [
+          "via ferrata",
+          "via ferată"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "traditional-craft-workshop",
+      "label": "Traditional Craft Workshop",
+      "category": "culture",
+      "verbs": [
+        "learn",
+        "create",
+        "make"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "traditional crafts",
+          "artisan workshop",
+          "creative workshop",
+          "make something",
+          "creative",
+          "be creative"
+        ],
+        "ro": [
+          "meșteșuguri tradiționale",
+          "atelier de artizanat"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "folk art",
+          "handmade"
+        ],
+        "ro": [
+          "artă populară",
+          "făcut manual"
+        ]
+      },
+      "google": {
+        "types": [
+          "point_of_interest",
+          "store"
+        ],
+        "keywords": [
+          "traditional crafts",
+          "meșteșuguri tradiționale"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "photography-workshop",
+      "label": "Photography Workshop",
+      "category": "learning",
+      "verbs": [
+        "photograph",
+        "capture",
+        "learn"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "photography class",
+          "camera workshop",
+          "photo tutorial"
+        ],
+        "ro": [
+          "curs de fotografie",
+          "atelier foto",
+          "tutorial foto"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "photo class",
+          "camera course"
+        ],
+        "ro": [
+          "curs foto",
+          "școală de fotografie"
+        ]
+      },
+      "google": {
+        "types": [
+          "point_of_interest",
+          "school"
+        ],
+        "keywords": [
+          "photography workshop",
+          "camera class",
+          "curs fotografie"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "romanian-cooking-class",
+      "label": "Romanian Cooking Class",
+      "category": "culinary",
+      "verbs": [
+        "cook",
+        "prepare",
+        "learn"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "romanian cooking class",
+          "traditional romanian cuisine"
+        ],
+        "ro": [
+          "curs de gătit românesc",
+          "bucătărie tradițională românească"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "romanian food workshop",
+          "learn to cook romanian dishes"
+        ],
+        "ro": [
+          "atelier de gătit românesc",
+          "învață să gătești mâncăruri românești"
+        ]
+      },
+      "google": {
+        "types": [
+          "cooking_school",
+          "food"
+        ],
+        "keywords": [
+          "romanian cooking class",
+          "traditional romanian food"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "wine-tasting-tour",
+      "label": "Wine Tasting Tour",
+      "category": "culinary",
+      "verbs": [
+        "taste",
+        "explore",
+        "discover"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "wine tasting",
+          "romanian wine tour"
+        ],
+        "ro": [
+          "degustare de vinuri",
+          "tur de vinuri românești"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "wine tour",
+          "visit wineries"
+        ],
+        "ro": [
+          "tur de vinării",
+          "vizitare cramerii"
+        ]
+      },
+      "google": {
+        "types": [
+          "food",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "wine tasting",
+          "romanian wine"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "danube-delta-tour",
+      "label": "Danube Delta Tour",
+      "category": "nature",
+      "verbs": [
+        "explore",
+        "discover",
+        "cruise"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": [
+          "danube delta",
+          "river cruise",
+          "nature reserve",
+          "water activities",
+          "water"
+        ],
+        "ro": [
+          "delta dunării",
+          "croazieră pe râu",
+          "rezervație naturală"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "wetlands tour",
+          "eco-cruise"
+        ],
+        "ro": [
+          "tur zone umede",
+          "croazieră eco"
+        ]
+      },
+      "google": {
+        "types": [
+          "tourist_attraction",
+          "travel_agency"
+        ],
+        "keywords": [
+          "danube delta",
+          "delta dunării"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "carpathian-lake-kayak",
+      "label": "Carpathian Lake Kayaking",
+      "category": "water",
+      "verbs": [
+        "paddle",
+        "glide",
+        "explore"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": [
+          "kayaking",
+          "lake",
+          "mountains"
+        ],
+        "ro": [
+          "caiac",
+          "lac",
+          "munți"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "canoeing",
+          "paddling"
+        ],
+        "ro": [
+          "canoe",
+          "pagaie"
+        ]
+      },
+      "google": {
+        "types": [
+          "outdoor_recreation_area",
+          "water_sports"
+        ],
+        "keywords": [
+          "carpathian lake",
+          "lac carpați"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "live-music-night",
+      "label": "Live Music Night",
+      "category": "nightlife",
+      "verbs": [
+        "listen",
+        "enjoy",
+        "dance"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "live music",
+          "concert",
+          "band performance"
+        ],
+        "ro": [
+          "muzică live",
+          "concert",
+          "spectacol muzical"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "music venue",
+          "concert hall"
+        ],
+        "ro": [
+          "sală de concerte",
+          "club muzical"
+        ]
+      },
+      "google": {
+        "types": [
+          "night_club",
+          "bar",
+          "entertainment"
+        ],
+        "keywords": [
+          "live music",
+          "concert venue",
+          "muzică live"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "rooftop-bar-evening",
+      "label": "Rooftop Bar Evening",
+      "category": "nightlife",
+      "verbs": [
+        "drink",
+        "socialize",
+        "enjoy"
+      ],
+      "energy": "chill",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": [
+          "rooftop bar",
+          "skyline views",
+          "cocktails"
+        ],
+        "ro": [
+          "bar pe acoperiș",
+          "vedere panoramică",
+          "cocktailuri"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "sky bar",
+          "terrace bar"
+        ],
+        "ro": [
+          "bar terasă",
+          "bar panoramic"
+        ]
+      },
+      "google": {
+        "types": [
+          "bar",
+          "restaurant",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "rooftop bar",
+          "sky bar",
+          "bar terasă"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "dance-class-social",
+      "label": "Dance Class (Salsa/Kizomba)",
+      "category": "social",
+      "verbs": [
+        "dance",
+        "learn",
+        "socialize"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "dance class",
+          "salsa",
+          "kizomba",
+          "social dancing"
+        ],
+        "ro": [
+          "curs de dans",
+          "salsa",
+          "kizomba",
+          "dans social"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "dance studio",
+          "dance lessons"
+        ],
+        "ro": [
+          "studio de dans",
+          "lecții de dans"
+        ]
+      },
+      "google": {
+        "types": [
+          "gym",
+          "school",
+          "community_center"
+        ],
+        "keywords": [
+          "dance class",
+          "salsa",
+          "curs de dans"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "community-meetup",
+      "label": "Community Meetup / Language Exchange",
+      "category": "social",
+      "verbs": [
+        "meet",
+        "chat",
+        "connect"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "meetup",
+          "language exchange",
+          "community event"
+        ],
+        "ro": [
+          "întâlnire comunitară",
+          "schimb de limbi",
+          "eveniment comunitar"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "networking event",
+          "social gathering"
+        ],
+        "ro": [
+          "eveniment de networking",
+          "întâlnire socială"
+        ]
+      },
+      "google": {
+        "types": [
+          "community_center",
+          "library",
+          "cafe"
+        ],
+        "keywords": [
+          "meetup",
+          "language exchange",
+          "întâlnire comunitară"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "group-hike-meetup",
+      "label": "Group Hike / Outdoor Meetup",
+      "category": "social",
+      "verbs": [
+        "hike",
+        "explore",
+        "socialize"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": [
+          "group hike",
+          "hiking meetup",
+          "outdoor group"
+        ],
+        "ro": [
+          "drumeție în grup",
+          "întâlnire în natură",
+          "grup outdoor"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "hiking club",
+          "nature meetup"
+        ],
+        "ro": [
+          "club de drumeție",
+          "întâlnire în natură"
+        ]
+      },
+      "google": {
+        "types": [
+          "park",
+          "tourist_attraction",
+          "hiking_area"
+        ],
+        "keywords": [
+          "hiking group",
+          "outdoor meetup",
+          "drumeție grup"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "gym-session",
+      "label": "Gym Session (Local Fitness Centers)",
+      "category": "fitness",
+      "verbs": [
+        "workout",
+        "train",
+        "exercise"
+      ],
+      "energy": "high",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "gym",
+          "fitness center",
+          "workout"
+        ],
+        "ro": [
+          "sală de fitness",
+          "antrenament",
+          "exerciții"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "fitness club",
+          "health club"
+        ],
+        "ro": [
+          "club de fitness",
+          "centru de sănătate"
+        ]
+      },
+      "google": {
+        "types": [
+          "gym",
+          "health",
+          "sports_complex"
+        ],
+        "keywords": [
+          "gym",
+          "fitness center",
+          "sală de fitness"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "cycling-route",
+      "label": "Cycling Route (Nature or Urban)",
+      "category": "sports",
+      "verbs": [
+        "cycle",
+        "ride",
+        "explore"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": [
+          "cycling",
+          "bike route",
+          "bicycle tour",
+          "sports activities",
+          "sports"
+        ],
+        "ro": [
+          "ciclism",
+          "traseu cu bicicleta",
+          "tur cu bicicleta"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "bike path",
+          "cycling trail"
+        ],
+        "ro": [
+          "pistă de biciclete",
+          "traseu ciclist"
+        ]
+      },
+      "google": {
+        "types": [
+          "park",
+          "tourist_attraction",
+          "bicycle_store"
+        ],
+        "keywords": [
+          "cycling route",
+          "bike path",
+          "traseu ciclist"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "winter-sports",
+      "label": "Ski Trip / Ice Skating",
+      "category": "seasonal",
+      "verbs": [
+        "ski",
+        "skate",
+        "glide"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "winter",
+      "keywords": {
+        "en": [
+          "skiing",
+          "ice skating",
+          "winter sports"
+        ],
+        "ro": [
+          "schi",
+          "patinaj pe gheață",
+          "sporturi de iarnă"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "snow sports",
+          "winter activities"
+        ],
+        "ro": [
+          "sporturi pe zăpadă",
+          "activități de iarnă"
+        ]
+      },
+      "google": {
+        "types": [
+          "tourist_attraction",
+          "sports_complex",
+          "amusement_park"
+        ],
+        "keywords": [
+          "ski resort",
+          "ice rink",
+          "pârtie de schi"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "summer-water-sports",
+      "label": "Beach Volleyball / Water Sports",
+      "category": "seasonal",
+      "verbs": [
+        "play",
+        "swim",
+        "splash"
+      ],
+      "energy": "high",
+      "indoorOutdoor": "outdoor",
+      "seasonality": "summer",
+      "keywords": {
+        "en": [
+          "beach volleyball",
+          "water sports",
+          "summer activities"
+        ],
+        "ro": [
+          "volei pe plajă",
+          "sporturi nautice",
+          "activități de vară"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "beach games",
+          "water activities"
+        ],
+        "ro": [
+          "jocuri pe plajă",
+          "activități nautice"
+        ]
+      },
+      "google": {
+        "types": [
+          "park",
+          "sports_complex",
+          "tourist_attraction"
+        ],
+        "keywords": [
+          "beach volleyball",
+          "water sports",
+          "volei pe plajă"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "romantic-dinner",
+      "label": "Romantic Dinner / Wine Pairing",
+      "category": "romance",
+      "verbs": [
+        "dine",
+        "taste",
+        "enjoy"
+      ],
+      "energy": "chill",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "romantic dinner",
+          "fine dining",
+          "wine pairing"
+        ],
+        "ro": [
+          "cină romantică",
+          "restaurant elegant",
+          "acordare vinuri"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "intimate dining",
+          "date restaurant"
+        ],
+        "ro": [
+          "restaurant intim",
+          "restaurant pentru întâlniri"
+        ]
+      },
+      "google": {
+        "types": [
+          "restaurant",
+          "bar",
+          "food"
+        ],
+        "keywords": [
+          "romantic restaurant",
+          "fine dining",
+          "restaurant romantic"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "meditation-yoga",
+      "label": "Meditation / Yoga Retreat",
+      "category": "mindfulness",
+      "verbs": [
+        "meditate",
+        "stretch",
+        "breathe"
+      ],
+      "energy": "chill",
+      "indoorOutdoor": "either",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "meditation",
+          "yoga",
+          "mindfulness",
+          "meditate",
+          "to meditate"
+        ],
+        "ro": [
+          "meditație",
+          "yoga",
+          "mindfulness"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "wellness retreat",
+          "spiritual practice"
+        ],
+        "ro": [
+          "retreat de wellness",
+          "practică spirituală"
+        ]
+      },
+      "google": {
+        "types": [
+          "gym",
+          "spa",
+          "health"
+        ],
+        "keywords": [
+          "yoga studio",
+          "meditation center",
+          "studio yoga"
+        ]
+      },
+      "experimental": false
+    },
+    {
+      "id": "art-jam-music",
+      "label": "Art Jam / Music Open Mic",
+      "category": "creative",
+      "verbs": [
+        "create",
+        "perform",
+        "express"
+      ],
+      "energy": "medium",
+      "indoorOutdoor": "indoor",
+      "seasonality": "all",
+      "keywords": {
+        "en": [
+          "art jam",
+          "open mic",
+          "creative workshop"
+        ],
+        "ro": [
+          "atelier de artă",
+          "microfon deschis",
+          "atelier creativ"
+        ]
+      },
+      "synonyms": {
+        "en": [
+          "creative session",
+          "artistic gathering"
+        ],
+        "ro": [
+          "sesiune creativă",
+          "întâlnire artistică"
+        ]
+      },
+      "google": {
+        "types": [
+          "art_gallery",
+          "bar",
+          "community_center"
+        ],
+        "keywords": [
+          "art workshop",
+          "open mic",
+          "atelier de artă"
+        ]
+      },
+      "experimental": false
+    }
+  ],
+  "stats": {
+    "total": 22,
+    "categories": 15,
+    "experimental": 0
+  }
+}

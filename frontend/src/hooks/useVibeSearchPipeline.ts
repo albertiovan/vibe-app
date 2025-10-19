@@ -142,11 +142,16 @@ export function useVibeSearchPipeline() {
 
       // Step 3: Parse vibe to filter spec
       console.log('🧠 Step 3: Parsing vibe...');
+      // Auto-extend radius and travel time for day trips
+      const isDayTrip = (options.maxTravelMinutes || 60) >= 480; // 8+ hours = 480+ minutes
+      const effectiveRadius = isDayTrip ? 250 : (options.radiusKm || 15);
+      const effectiveMaxTravel = isDayTrip ? 720 : (options.maxTravelMinutes || 60); // 12 hours max for day trips
+
       const filterSpec = await parseVibeToFilterSpec(vibe, {
         location,
         weather,
-        radiusKm: options.radiusKm || 15,
-        maxTravelMinutes: options.maxTravelMinutes || 60
+        radiusKm: effectiveRadius,
+        maxTravelMinutes: effectiveMaxTravel
       });
 
       if (abortController.signal.aborted) return;
@@ -487,8 +492,18 @@ function extractPreferencesFromVibe(vibe: string): string[] {
 
 function estimateTravelTime(distance?: number): number | undefined {
   if (!distance) return undefined;
-  // Rough estimate: 30 km/h average speed in city
-  return Math.round(distance * 2);
+  
+  // Dynamic speed estimation based on distance
+  let avgSpeed: number;
+  if (distance <= 10) {
+    avgSpeed = 30; // City traffic: 30 km/h
+  } else if (distance <= 50) {
+    avgSpeed = 50; // Suburban/mixed: 50 km/h  
+  } else {
+    avgSpeed = 70; // Highway/long-distance: 70 km/h
+  }
+  
+  return Math.round((distance / avgSpeed) * 60); // Convert to minutes
 }
 
 function calculateWeatherSuitability(item: any, weather: any): number {

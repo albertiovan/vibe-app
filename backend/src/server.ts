@@ -24,6 +24,9 @@ import placesRoutes from './routes/places.js';
 import nearbySearchRoutes from './routes/nearbySearch.js';
 import personalizationRoutes from './routes/personalization.js';
 import vibeProfileRoutes from './routes/vibeProfile.js';
+import activitiesSearchRoutes from './routes/activitiesSearch.js';
+import autonomousSearchRoutes from './routes/autonomousSearch.js';
+import mediaEnrichmentRoutes from './routes/mediaEnrichment.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -52,6 +55,9 @@ app.use('/api/places', placesRoutes);
 app.use('/api/nearby', nearbySearchRoutes);
 app.use('/api/personalization', personalizationRoutes);
 app.use('/api/vibe-profile', vibeProfileRoutes);
+app.use('/api/activities', activitiesSearchRoutes);
+app.use('/api/autonomous', autonomousSearchRoutes);
+app.use('/api/enrichment', mediaEnrichmentRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

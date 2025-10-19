@@ -1,19 +1,14 @@
-import Constants from 'expo-constants';
 import { RecommendationRequest, RecommendationResponse, ApiError } from '../types';
 
 // Get API base URL - detect environment properly
 const getApiBaseUrl = () => {
-  // Check if we have explicit configuration
-  if (Constants.expoConfig?.extra?.apiBaseUrl) {
-    return Constants.expoConfig.extra.apiBaseUrl;
-  }
-  
+  // Check for explicit environment variable
   if (process.env.EXPO_PUBLIC_API_BASE_URL) {
     return process.env.EXPO_PUBLIC_API_BASE_URL;
   }
   
-  // Auto-detect based on environment
-  if (typeof window !== 'undefined') {
+  // Check if we're in a web environment
+  if (typeof window !== 'undefined' && window.location) {
     const hostname = window.location.hostname;
     
     // If accessing from localhost, use proxy
@@ -38,8 +33,8 @@ const API_BASE_URL = getApiBaseUrl();
 
 // Debug logging
 console.log('=== API Configuration Debug ===');
-console.log('Window hostname:', typeof window !== 'undefined' ? window.location.hostname : 'N/A');
-console.log('Window href:', typeof window !== 'undefined' ? window.location.href : 'N/A');
+console.log('Platform:', typeof window !== 'undefined' ? 'Web' : 'Mobile');
+console.log('Window available:', typeof window !== 'undefined' && !!window.location);
 console.log('Detected API_BASE_URL:', API_BASE_URL);
 console.log('================================');
 

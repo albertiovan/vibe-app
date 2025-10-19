@@ -1,0 +1,153 @@
+{
+  "totalSubtypes": 2,
+  "productionReady": 1,
+  "experimental": 1,
+  "needsWork": 0,
+  "checks": [
+    {
+      "subtype": {
+        "id": "romanian-cooking-class",
+        "label": "Romanian Cooking Class",
+        "category": "culinary",
+        "verbs": [
+          "cook",
+          "prepare",
+          "learn"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "indoor",
+        "seasonality": "all",
+        "keywords": {
+          "en": [
+            "romanian cooking class",
+            "traditional romanian cuisine"
+          ],
+          "ro": [
+            "curs de gătit românesc",
+            "bucătărie tradițională românească"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "romanian food workshop",
+            "learn to cook romanian dishes"
+          ],
+          "ro": [
+            "atelier de gătit românesc",
+            "învață să gătești mâncăruri românești"
+          ]
+        },
+        "google": {
+          "types": [
+            "cooking_school",
+            "food"
+          ],
+          "keywords": [
+            "romanian cooking class",
+            "traditional romanian food"
+          ]
+        },
+        "experimental": false
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [],
+        "invalidTypes": [
+          "cooking_school",
+          "food"
+        ],
+        "confidence": "medium"
+      },
+      "osm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "otm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "medium",
+        "recommendation": "experimental"
+      }
+    },
+    {
+      "subtype": {
+        "id": "wine-tasting-tour",
+        "label": "Wine Tasting Tour",
+        "category": "culinary",
+        "verbs": [
+          "taste",
+          "explore",
+          "discover"
+        ],
+        "energy": "medium",
+        "indoorOutdoor": "either",
+        "seasonality": "all",
+        "keywords": {
+          "en": [
+            "wine tasting",
+            "romanian wine tour"
+          ],
+          "ro": [
+            "degustare de vinuri",
+            "tur de vinuri românești"
+          ]
+        },
+        "synonyms": {
+          "en": [
+            "wine tour",
+            "visit wineries"
+          ],
+          "ro": [
+            "tur de vinării",
+            "vizitare cramerii"
+          ]
+        },
+        "google": {
+          "types": [
+            "food",
+            "tourist_attraction"
+          ],
+          "keywords": [
+            "wine tasting",
+            "romanian wine"
+          ]
+        },
+        "experimental": false
+      },
+      "google": {
+        "hasTypes": true,
+        "hasKeywords": true,
+        "validTypes": [
+          "tourist_attraction"
+        ],
+        "invalidTypes": [
+          "food"
+        ],
+        "confidence": "high"
+      },
+      "osm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "otm": {
+        "hasMapping": false,
+        "confidence": "low"
+      },
+      "overall": {
+        "verifiable": true,
+        "confidence": "high",
+        "recommendation": "production"
+      }
+    }
+  ],
+  "summary": {
+    "googleCoverage": 100,
+    "osmCoverage": 0,
+    "otmCoverage": 0,
+    "overallVerifiable": 100
+  }
+}

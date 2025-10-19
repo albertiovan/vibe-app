@@ -15,12 +15,15 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ExperienceDetailScreen from './ExperienceDetailScreen';
+import EnrichedActivityCard from './components/EnrichedActivityCard';
 import * as Location from 'expo-location';
 
 // Define navigation types
 type RootStackParamList = {
+  Onboarding: undefined;
   Home: undefined;
   Results: {
     places: any[];
@@ -28,9 +31,12 @@ type RootStackParamList = {
     vibe: string;
     totalFound: number;
   };
+  ExperienceDetail: {
+    place: any;
+  };
 };
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 // Helper functions to convert vibe text to mood and energy
 function getVibeToMood(vibe: string): string {
@@ -68,7 +74,8 @@ const DISTANCE_PRESETS = [
 const DURATION_PRESETS = [
   { label: '1-2h', value: 1.5, description: 'Quick experience' },
   { label: '2-4h', value: 3, description: 'Half day activity' },
-  { label: '4-6h', value: 5, description: 'Full day adventure' }
+  { label: '4-6h', value: 5, description: 'Full day adventure' },
+  { label: '8-12h', value: 10, description: 'Day trip with travel', travel: true }
 ];
 
 // Help suggestions based on context
@@ -99,6 +106,128 @@ const HELP_SUGGESTIONS = [
   }
 ];
 
+// Simple Onboarding Screen
+function OnboardingScreen({ navigation }: { navigation: any }) {
+  const [loading, setLoading] = useState(false);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  
+  const interests = [
+    { id: 'adventure', label: 'Adventure & Thrills', emoji: '🎢' },
+    { id: 'nature', label: 'Nature & Outdoors', emoji: '🌲' },
+    { id: 'culture', label: 'Culture & Arts', emoji: '🎨' },
+    { id: 'wellness', label: 'Wellness & Relaxation', emoji: '🧘' },
+    { id: 'food', label: 'Food & Culinary', emoji: '🍽️' },
+    { id: 'nightlife', label: 'Nightlife & Social', emoji: '🌃' },
+    { id: 'shopping', label: 'Shopping & Markets', emoji: '🛍️' },
+    { id: 'photography', label: 'Photography & Views', emoji: '📸' }
+  ];
+
+  const toggleInterest = (interestId: string) => {
+    setSelectedInterests(prev => {
+      if (prev.includes(interestId)) {
+        return prev.filter(id => id !== interestId);
+      } else if (prev.length < 7) {
+        return [...prev, interestId];
+      }
+      return prev;
+    });
+  };
+
+  const completeOnboarding = async () => {
+    if (selectedInterests.length < 3) {
+      Alert.alert('Please select at least 3 interests');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const userId = `user_${Date.now()}`;
+      const response = await fetch('http://10.103.30.198:3000/api/vibe-profile/onboarding', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          interests: selectedInterests,
+          energyLevel: 'medium',
+          indoorOutdoor: 'either',
+          socialStyle: 'either',
+          opennessScore: 3
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Store user ID for future use
+        console.log('✅ Profile created for user:', userId);
+        navigation.navigate('Home');
+      } else {
+        Alert.alert('Setup Error', data.error || 'Failed to complete setup');
+      }
+    } catch (error) {
+      console.error('❌ Onboarding error:', error);
+      Alert.alert('Network Error', 'Please check your connection and try again');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar style="dark" />
+      <View style={styles.header}>
+        <Text style={styles.title}>Build Your Vibe Profile</Text>
+        <Text style={styles.subtitle}>Select 3-7 interests to get personalized recommendations</Text>
+      </View>
+
+      <ScrollView style={styles.interestsContainer}>
+        <View style={styles.interestsGrid}>
+          {interests.map(interest => (
+            <TouchableOpacity
+              key={interest.id}
+              style={[
+                styles.interestTile,
+                selectedInterests.includes(interest.id) && styles.interestTileSelected
+              ]}
+              onPress={() => toggleInterest(interest.id)}
+            >
+              <Text style={styles.interestEmoji}>{interest.emoji}</Text>
+              <Text style={[
+                styles.interestLabel,
+                selectedInterests.includes(interest.id) && styles.interestLabelSelected
+              ]}>
+                {interest.label}
+              </Text>
+              {selectedInterests.includes(interest.id) && (
+                <Text style={styles.selectedCheck}>✓</Text>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+
+      <View style={styles.onboardingFooter}>
+        <Text style={styles.selectionCount}>
+          {selectedInterests.length} of 3-7 selected
+        </Text>
+        <TouchableOpacity
+          style={[
+            styles.completeButton,
+            selectedInterests.length < 3 && styles.completeButtonDisabled
+          ]}
+          onPress={completeOnboarding}
+          disabled={selectedInterests.length < 3 || loading}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Text style={styles.completeButtonText}>Complete Setup</Text>
+          )}
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
 function HomeScreen({ navigation }: { navigation: any }) {
   const [vibe, setVibe] = useState('');
   const [filters, setFilters] = useState<SearchFilters>({ distanceKm: 10, durationHours: 3 });
@@ -107,6 +236,15 @@ function HomeScreen({ navigation }: { navigation: any }) {
   const [showHelp, setShowHelp] = useState(false);
   const [selectedDistancePreset, setSelectedDistancePreset] = useState(1); // Default to "In the city"
   const [selectedDurationPreset, setSelectedDurationPreset] = useState(1); // Default to "2-4h"
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Get user ID from storage or generate one
+  React.useEffect(() => {
+    // For now, use a simple user ID - in production, this would come from authentication
+    const storedUserId = `user_${Date.now()}`;
+    setUserId(storedUserId);
+    console.log('👤 Using user ID for search:', storedUserId);
+  }, []);
 
   // Sample vibe suggestions
   const vibeChips = [
@@ -161,8 +299,15 @@ function HomeScreen({ navigation }: { navigation: any }) {
     setLoading(true);
     
     try {
-      // NEW: Use enhanced nearby search with mandatory filters
-      const response = await fetch('http://10.103.30.198:3000/api/nearby/search', {
+      console.log('🔍 Starting search with:', {
+        vibe: vibe.trim(),
+        location,
+        filters,
+        distanceMeters: filters.distanceKm * 1000
+      });
+
+      // Use activities-first search with fallback to GooglePlaces
+      const response = await fetch('http://10.103.30.198:3000/api/activities/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,26 +319,204 @@ function HomeScreen({ navigation }: { navigation: any }) {
             lng: location.longitude
           },
           filters: {
-            radiusMeters: filters.distanceKm * 1000, // Convert km to meters
+            radiusMeters: filters.durationHours >= 8 ? 250000 : filters.distanceKm * 1000, // 250km for 8+ hours, else use preset
             durationHours: filters.durationHours,
-            nationwide: filters.distanceKm > 50 // Auto-enable nationwide for long distances
-          }
+            nationwide: filters.distanceKm > 50 || filters.durationHours >= 8, // Auto-enable for long distances or day trips
+            willingToTravel: filters.durationHours >= 8 // Auto-enable travel for 8+ hour durations
+          },
+          userId: userId, // Add user ID for personalization
+          timeOfDay: 'afternoon', // Could be dynamic
+          weatherConditions: 'clear' // Could be from weather API
         }),
       });
 
+      console.log('🌐 API Response status:', response.status);
+
       const data = await response.json();
+      console.log('📊 API Response data:', {
+        success: data.success,
+        hasTopFive: !!(data.data?.topFive),
+        topFiveLength: data.data?.topFive?.length || 0,
+        hasPlaces: !!(data.data?.places),
+        placesLength: data.data?.places?.length || 0,
+        error: data.error,
+        fullData: data
+      });
       
-      if (data.success && data.data.topFive && data.data.topFive.length > 0) {
-        // Navigate to results with Claude-first API data
+      // Check both topFive and places arrays
+      const places = data.data?.topFive || data.data?.places || [];
+      
+      if (data.success && places.length > 0) {
+        // Generate contextual challenges based on user's vibe
+        const generateContextualChallenges = (userVibe: string) => {
+          const vibe = userVibe.toLowerCase();
+          
+          if (vibe.includes('lonely') || vibe.includes('social') || vibe.includes('connect')) {
+            return [{
+              intent: {
+                id: 'challenge_social_event',
+                label: 'Join a Community Art Workshop',
+                category: 'social'
+              },
+              verifiedVenues: [{
+                placeId: 'mock_art_center',
+                name: 'Bucharest Art Center',
+                rating: 4.4,
+                coords: { lat: 44.4378, lng: 26.0969 },
+                provider: 'google',
+                mapsUrl: 'https://maps.google.com/search/?api=1&query=Bucharest+Art+Center',
+                vicinity: 'Old Town, Bucharest'
+              }],
+              weatherSuitability: 'good',
+              rationale: 'Perfect way to meet like-minded creative people in a welcoming environment',
+              confidence: 0.85,
+              challenge: {
+                destinationCity: 'Bucharest',
+                travelEstimate: {
+                  distanceKm: 5,
+                  drivingTimeHours: 0.3,
+                  feasible: true,
+                  transportMode: 'transit'
+                },
+                forecastBadge: {
+                  condition: 'Indoor Event',
+                  suitability: 'perfect'
+                },
+                safetyHint: 'Bring an open mind and willingness to try something new!',
+                whyNow: 'Evening workshops are perfect for meeting people after work',
+                challengeLevel: 2,
+                comfortZoneStretch: ['Meeting new people', 'Trying art/creativity', 'Group activities']
+              }
+            }];
+          } else if (vibe.includes('adventure') || vibe.includes('exciting') || vibe.includes('thrill')) {
+            return [{
+              intent: {
+                id: 'challenge_hiking_bucegi',
+                label: 'Hiking in Bucegi Mountains',
+                category: 'nature'
+              },
+              verifiedVenues: [{
+                placeId: 'mock_bucegi_trail',
+                name: 'Omu Peak Trail',
+                rating: 4.6,
+                coords: { lat: 45.4108, lng: 25.4458 },
+                provider: 'google',
+                mapsUrl: 'https://maps.google.com/search/?api=1&query=Omu+Peak+Trail',
+                vicinity: 'Bucegi Mountains'
+              }],
+              weatherSuitability: 'good',
+              rationale: 'Perfect mountain adventure with stunning views',
+              confidence: 0.9,
+              challenge: {
+                destinationCity: 'Brașov',
+                travelEstimate: {
+                  distanceKm: 150,
+                  drivingTimeHours: 2.5,
+                  feasible: true,
+                  transportMode: 'drive'
+                },
+                forecastBadge: {
+                  condition: 'Sunny 18°C',
+                  suitability: 'perfect'
+                },
+                safetyHint: 'Bring proper hiking boots and water. Trail difficulty: 4/5',
+                whyNow: 'Perfect weather conditions and autumn colors are at their peak',
+                challengeLevel: 4,
+                comfortZoneStretch: ['Higher altitude hiking', 'Mountain terrain', '6+ hour commitment']
+              }
+            }];
+          } else if (vibe.includes('creative') || vibe.includes('art') || vibe.includes('make')) {
+            return [{
+              intent: {
+                id: 'challenge_pottery_class',
+                label: 'Try Pottery Making',
+                category: 'creative'
+              },
+              verifiedVenues: [{
+                placeId: 'mock_pottery_studio',
+                name: 'Clay & Fire Studio',
+                rating: 4.7,
+                coords: { lat: 44.4501, lng: 26.0875 },
+                provider: 'google',
+                mapsUrl: 'https://maps.google.com/search/?api=1&query=Clay+Fire+Studio+Bucharest',
+                vicinity: 'Amzei, Bucharest'
+              }],
+              weatherSuitability: 'good',
+              rationale: 'Hands-on creative experience that produces something tangible',
+              confidence: 0.8,
+              challenge: {
+                destinationCity: 'Bucharest',
+                travelEstimate: {
+                  distanceKm: 8,
+                  drivingTimeHours: 0.4,
+                  feasible: true,
+                  transportMode: 'drive'
+                },
+                forecastBadge: {
+                  condition: 'Indoor Activity',
+                  suitability: 'perfect'
+                },
+                safetyHint: 'Wear clothes you don\'t mind getting clay on!',
+                whyNow: 'Weekend pottery classes are relaxing and fulfilling',
+                challengeLevel: 2,
+                comfortZoneStretch: ['Working with hands', 'Artistic expression', 'Learning new skill']
+              }
+            }];
+          } else {
+            // Default challenge for other vibes
+            return [{
+              intent: {
+                id: 'challenge_local_exploration',
+                label: 'Explore Hidden Local Gems',
+                category: 'culture'
+              },
+              verifiedVenues: [{
+                placeId: 'mock_old_town',
+                name: 'Old Town Walking Tour',
+                rating: 4.5,
+                coords: { lat: 44.4302, lng: 26.1026 },
+                provider: 'google',
+                mapsUrl: 'https://maps.google.com/search/?api=1&query=Bucharest+Old+Town',
+                vicinity: 'Old Town, Bucharest'
+              }],
+              weatherSuitability: 'good',
+              rationale: 'Discover the hidden stories and culture of your city',
+              confidence: 0.75,
+              challenge: {
+                destinationCity: 'Bucharest',
+                travelEstimate: {
+                  distanceKm: 3,
+                  drivingTimeHours: 0.2,
+                  feasible: true,
+                  transportMode: 'walk'
+                },
+                forecastBadge: {
+                  condition: 'Partly Cloudy 16°C',
+                  suitability: 'good'
+                },
+                safetyHint: 'Comfortable walking shoes recommended',
+                whyNow: 'Perfect time to rediscover your city with fresh eyes',
+                challengeLevel: 1,
+                comfortZoneStretch: ['Urban exploration', 'Historical learning', 'Solo adventure']
+              }
+            }];
+          }
+        };
+
+        const contextualChallenges = generateContextualChallenges(vibe.trim());
+
+        // Navigate to results with activities-first API data
         navigation.navigate('Results', {
-          places: data.data.topFive,
+          places: places,
+          challenges: contextualChallenges, // Use contextual challenges based on vibe
           vibeAnalysis: {
             primaryVibe: vibe.trim(),
-            confidence: 0.9, // Claude is very confident
+            confidence: 0.9, // LLM orchestrator confidence
             weather: data.data.context?.weather
           },
           vibe: vibe.trim(),
-          totalFound: data.data.topFive.length
+          totalFound: places.length,
+          orchestration: data.data?.orchestration // Pass orchestration debug info
         });
       } else {
         Alert.alert(
@@ -387,6 +710,109 @@ function HomeScreen({ navigation }: { navigation: any }) {
 // Results Screen Component
 function ResultsScreen({ route, navigation }: any) {
   const { places, vibeAnalysis, vibe, totalFound } = route.params;
+  const [feedback, setFeedback] = useState<Record<string, 'like' | 'dislike' | null>>({});
+  const [showChallenges, setShowChallenges] = useState(false);
+  // Use the user ID from the onboarding (in production, get from auth/storage)
+  const [userId] = useState('user_1760744332206'); // Should match the onboarding user
+
+  const handleFeedback = async (place: any, result: 'like' | 'dislike') => {
+    try {
+      console.log(`${result === 'like' ? '👍' : '👎'} Feedback for:`, place.name);
+      
+      // Update local state immediately
+      setFeedback(prev => ({ ...prev, [place.id]: result }));
+      
+      // Send to ML system
+      const response = await fetch('http://10.103.30.198:3000/api/vibe-profile/track-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId,
+          eventType: 'feedback',
+          data: {
+            itemId: place.id,
+            itemName: place.name,
+            bucket: place.bucket || 'general',
+            result: result,
+            location: place.location,
+            searchVibe: vibe
+          },
+          context: {
+            deviceType: 'mobile',
+            appVersion: '1.0.0'
+          }
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log('✅ Feedback recorded successfully');
+      } else {
+        console.error('❌ Feedback failed:', data.error);
+      }
+    } catch (error) {
+      console.error('❌ Feedback error:', error);
+    }
+  };
+
+  const handleChallengeAction = async (challenge: any, action: 'accept' | 'decline') => {
+    try {
+      console.log(`${action === 'accept' ? '✅' : '❌'} Challenge ${action}:`, challenge.intent.label);
+      
+      // Track challenge outcome for ML learning
+      const response = await fetch('http://10.103.30.198:3000/api/vibe-profile/track-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId,
+          eventType: action === 'accept' ? 'challenge_accept' : 'challenge_decline',
+          data: {
+            challengeId: challenge.intent.id,
+            challengeLevel: challenge.challenge.challengeLevel,
+            destinationCity: challenge.challenge.destinationCity,
+            travelDistanceKm: challenge.challenge.travelEstimate.distanceKm,
+            itemName: challenge.intent.label,
+            bucket: challenge.intent.category
+          },
+          context: {
+            deviceType: 'mobile',
+            appVersion: '1.0.0'
+          }
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log('✅ Challenge outcome recorded successfully');
+        
+        if (action === 'accept') {
+          // Open the first venue in maps
+          const firstVenue = challenge.verifiedVenues[0];
+          if (firstVenue?.mapsUrl) {
+            Linking.openURL(firstVenue.mapsUrl).catch(err => {
+              console.error('Failed to open maps:', err);
+            });
+          }
+          
+          Alert.alert(
+            'Challenge Accepted! 🎯',
+            `Great choice! ${challenge.challenge.whyNow} Have an amazing adventure!`,
+            [{ text: 'Let\'s Go!', style: 'default' }]
+          );
+        } else {
+          Alert.alert(
+            'Maybe Next Time 😊',
+            'No worries! We\'ll keep learning your preferences and suggest better challenges.',
+            [{ text: 'Sounds Good', style: 'default' }]
+          );
+        }
+      } else {
+        console.error('❌ Challenge tracking failed:', data.error);
+      }
+    } catch (error) {
+      console.error('❌ Challenge action error:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -415,116 +841,125 @@ function ResultsScreen({ route, navigation }: any) {
         </View>
       )}
 
+      {/* Challenge Me Section */}
+      {route.params.challenges && route.params.challenges.length > 0 && (
+        <View style={styles.challengeSection}>
+          <TouchableOpacity 
+            style={styles.challengeHeader}
+            onPress={() => setShowChallenges(!showChallenges)}
+          >
+            <Text style={styles.challengeTitle}>🎯 Challenge Me</Text>
+            <Text style={styles.challengeSubtitle}>Push beyond your comfort zone</Text>
+            <Text style={styles.challengeToggle}>{showChallenges ? '▼' : '▶'}</Text>
+          </TouchableOpacity>
+          
+          {showChallenges && (
+            <View style={styles.challengeList}>
+              {route.params.challenges.map((challenge: any, index: number) => (
+                <View key={challenge.intent.id} style={styles.challengeCard}>
+                  {/* Challenge Image */}
+                  <View style={styles.challengeImageContainer}>
+                    <Image
+                      source={{
+                        uri: challenge.verifiedVenues[0]?.imageUrl 
+                          ? `http://10.103.30.198:3000${challenge.verifiedVenues[0].imageUrl}`
+                          : 'https://via.placeholder.com/300x150/E5E7EB/9CA3AF?text=Adventure+Awaits'
+                      }}
+                      style={styles.challengeImage}
+                      resizeMode="cover"
+                    />
+                    
+                    {/* Challenge Level Badge */}
+                    <View style={styles.challengeLevelBadge}>
+                      <Text style={styles.challengeLevelText}>
+                        Level {challenge.challenge.challengeLevel}
+                      </Text>
+                    </View>
+                    
+                    {/* Weather Badge */}
+                    <View style={[
+                      styles.weatherBadge,
+                      challenge.challenge.forecastBadge.suitability === 'perfect' && styles.weatherPerfect,
+                      challenge.challenge.forecastBadge.suitability === 'good' && styles.weatherGood,
+                      challenge.challenge.forecastBadge.suitability === 'challenging' && styles.weatherChallenging
+                    ]}>
+                      <Text style={styles.weatherBadgeText}>
+                        {challenge.challenge.forecastBadge.condition}
+                      </Text>
+                    </View>
+                  </View>
+                  
+                  {/* Challenge Content */}
+                  <View style={styles.challengeContent}>
+                    <Text style={styles.challengeName}>{challenge.intent.label}</Text>
+                    
+                    {/* Destination & Travel */}
+                    <View style={styles.challengeTravel}>
+                      <Text style={styles.challengeDestination}>
+                        📍 {challenge.challenge.destinationCity}
+                      </Text>
+                      <Text style={styles.challengeDistance}>
+                        🚗 {Math.round(challenge.challenge.travelEstimate.distanceKm)}km • 
+                        {Math.round(challenge.challenge.travelEstimate.drivingTimeHours * 60)}min
+                      </Text>
+                    </View>
+                    
+                    {/* Why Now */}
+                    <Text style={styles.challengeWhyNow}>
+                      ⏰ {challenge.challenge.whyNow}
+                    </Text>
+                    
+                    {/* Comfort Zone Stretch */}
+                    <View style={styles.challengeStretch}>
+                      <Text style={styles.challengeStretchTitle}>This challenges you with:</Text>
+                      {challenge.challenge.comfortZoneStretch.map((stretch: string, idx: number) => (
+                        <Text key={idx} style={styles.challengeStretchItem}>
+                          • {stretch}
+                        </Text>
+                      ))}
+                    </View>
+                    
+                    {/* Safety Hint */}
+                    {challenge.challenge.safetyHint && (
+                      <Text style={styles.challengeSafety}>
+                        ⚠️ {challenge.challenge.safetyHint}
+                      </Text>
+                    )}
+                    
+                    {/* Challenge Actions */}
+                    <View style={styles.challengeActions}>
+                      <TouchableOpacity
+                        style={styles.challengeAcceptButton}
+                        onPress={() => handleChallengeAction(challenge, 'accept')}
+                      >
+                        <Text style={styles.challengeAcceptText}>Accept Challenge</Text>
+                      </TouchableOpacity>
+                      
+                      <TouchableOpacity
+                        style={styles.challengeDeclineButton}
+                        onPress={() => handleChallengeAction(challenge, 'decline')}
+                      >
+                        <Text style={styles.challengeDeclineText}>Maybe Later</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      )}
+
       {/* Places List */}
       <ScrollView style={styles.resultsList}>
         {places.map((place: any, index: number) => (
-          <View key={place.id || index} style={styles.activityCard}>
-            {/* Place Image with 16:9 Aspect Ratio */}
-            <View style={styles.imageContainer}>
-              {/* Loading indicator for images */}
-              {place.imageUrl && (
-                <View style={styles.imageLoadingIndicator}>
-                  <ActivityIndicator size="small" color="#0EA5E9" />
-                </View>
-              )}
-              
-              <Image
-                source={{
-                  uri: place.imageUrl 
-                    ? `http://10.103.30.198:3000${place.imageUrl}`
-                    : 'https://via.placeholder.com/400x225/E5E7EB/9CA3AF?text=No+Photo'
-                }}
-                style={styles.placeImage}
-                resizeMode="cover"
-                onLoad={() => {
-                  console.log('✅ Image loaded successfully for:', place.name);
-                }}
-                onError={(error) => {
-                  console.log('❌ Image failed to load for:', place.name, error.nativeEvent.error);
-                }}
-                onLoadStart={() => {
-                  console.log('🔄 Image loading started for:', place.name);
-                }}
-              />
-              
-              {/* Photo Attribution Overlay */}
-              {place.photoAttribution && (
-                <View style={styles.attributionOverlay}>
-                  <Text style={styles.attributionText}>📷 Google</Text>
-                </View>
-              )}
-              
-              {/* Rating Badge Overlay */}
-              {place.rating && (
-                <View style={styles.ratingBadge}>
-                  <Text style={styles.ratingBadgeText}>★ {place.rating}</Text>
-                </View>
-              )}
-            </View>
-
-            <View style={styles.cardContent}>
-              <View style={styles.placeHeader}>
-                <Text style={styles.activityName}>{place.name}</Text>
-                <View style={styles.placeRating}>
-                  {place.weatherSuitability && (
-                    <Text style={styles.vibeScore}>{Math.round(place.weatherSuitability * 100)}%</Text>
-                  )}
-                </View>
-              </View>
-            
-            {/* Location and Distance */}
-            <Text style={styles.activityDescription}>
-              {place.vicinity || place.region || 'Bucharest'} • {place.distance ? `${place.distance.toFixed(1)}km` : 'Nearby'}
-            </Text>
-            
-            {/* Vibe Reasons and Info */}
-            <View style={styles.vibeReasons}>
-              {place.weatherHint && (
-                <Text style={styles.vibeReason}>🌤️ {place.weatherHint}</Text>
-              )}
-              {place.bucket && (
-                <Text style={styles.vibeReason}>🎯 {place.bucket.charAt(0).toUpperCase() + place.bucket.slice(1)} experience</Text>
-              )}
-              {place.vibeReasons && place.vibeReasons.length > 0 && (
-                place.vibeReasons.slice(0, 2).map((reason: string, idx: number) => (
-                  <Text key={idx} style={styles.vibeReason}>• {reason}</Text>
-                ))
-              )}
-              {place.highlights && place.highlights.length > 0 && (
-                place.highlights.slice(0, 2).map((highlight: string, idx: number) => (
-                  <Text key={idx} style={styles.vibeReason}>• {highlight}</Text>
-                ))
-              )}
-            </View>
-            
-            <View style={styles.activityMeta}>
-              <Text style={styles.activityCategory}>
-                {place.estimatedDuration || place.travelTime ? `${place.travelTime} min travel` : 'Visit time varies'}
-              </Text>
-              {place.walkingTime && (
-                <Text style={styles.walkingTime}>{place.walkingTime} min walk</Text>
-              )}
-              {place.source && (
-                <Text style={styles.walkingTime}>via {place.source}</Text>
-              )}
-            </View>
-
-            {/* Google Maps Button */}
-            {place.mapsUrl && (
-              <TouchableOpacity
-                style={styles.mapsButton}
-                onPress={() => {
-                  Linking.openURL(place.mapsUrl).catch(err => {
-                    console.error('Failed to open Google Maps:', err);
-                    Alert.alert('Error', 'Could not open Google Maps');
-                  });
-                }}
-              >
-                <Text style={styles.mapsButtonText}>🗺️ Open in Google Maps</Text>
-              </TouchableOpacity>
-            )}
-            </View>
-          </View>
+          <EnrichedActivityCard
+            key={place.id || index}
+            place={place}
+            onPress={() => navigation.navigate('ExperienceDetail', { place })}
+            feedback={feedback}
+            onFeedback={handleFeedback}
+          />
         ))}
       </ScrollView>
     </View>
@@ -537,13 +972,15 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Home"
+          initialRouteName="Onboarding"
           screenOptions={{
             headerShown: false,
           }}
         >
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Results" component={ResultsScreen} />
+          <Stack.Screen name="ExperienceDetail" component={ExperienceDetailScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>
@@ -689,7 +1126,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#1F2937',
+    marginBottom: 4,
+  },
+  activityBlurb: {
+    fontSize: 14,
+    color: '#4B5563',
+    fontStyle: 'italic',
+    lineHeight: 20,
     marginBottom: 8,
+    paddingHorizontal: 2,
   },
   activityDescription: {
     fontSize: 14,
@@ -980,6 +1425,276 @@ const styles = StyleSheet.create({
   helpCloseButtonText: {
     color: 'white',
     fontSize: 16,
+    fontWeight: '600',
+  },
+  // Onboarding styles
+  interestsContainer: {
+    flex: 1,
+    marginBottom: 20,
+  },
+  interestsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  interestTile: {
+    width: '48%',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+  },
+  interestTileSelected: {
+    borderColor: '#0EA5E9',
+    backgroundColor: '#EFF6FF',
+  },
+  interestEmoji: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  interestLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    textAlign: 'center',
+  },
+  interestLabelSelected: {
+    color: '#0EA5E9',
+  },
+  selectedCheck: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    color: '#0EA5E9',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  onboardingFooter: {
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  selectionCount: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  completeButton: {
+    backgroundColor: '#0EA5E9',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  completeButtonDisabled: {
+    backgroundColor: '#9CA3AF',
+  },
+  completeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  // Feedback buttons styles
+  feedbackButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    marginBottom: 8,
+    gap: 12,
+  },
+  feedbackButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  likeButton: {
+    backgroundColor: '#F0FDF4',
+    borderColor: '#22C55E',
+  },
+  dislikeButton: {
+    backgroundColor: '#FEF2F2',
+    borderColor: '#EF4444',
+  },
+  feedbackButtonActive: {
+    backgroundColor: '#0EA5E9',
+    borderColor: '#0EA5E9',
+  },
+  feedbackButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  feedbackButtonTextActive: {
+    color: 'white',
+  },
+  
+  // Challenge Me Section Styles
+  challengeSection: {
+    marginTop: 16,
+    marginBottom: 16,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  challengeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#0EA5E9',
+  },
+  challengeTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+  },
+  challengeSubtitle: {
+    fontSize: 14,
+    color: '#E0F2FE',
+    marginTop: 2,
+  },
+  challengeToggle: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  challengeList: {
+    padding: 16,
+  },
+  challengeCard: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  challengeImageContainer: {
+    position: 'relative',
+    height: 150,
+  },
+  challengeImage: {
+    width: '100%',
+    height: '100%',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  challengeLevelBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: '#EF4444',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  challengeLevelText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  weatherBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  weatherPerfect: {
+    backgroundColor: '#10B981',
+  },
+  weatherGood: {
+    backgroundColor: '#F59E0B',
+  },
+  weatherChallenging: {
+    backgroundColor: '#6B7280',
+  },
+  weatherBadgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  challengeContent: {
+    padding: 16,
+  },
+  challengeName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 8,
+  },
+  challengeTravel: {
+    marginBottom: 8,
+  },
+  challengeDestination: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  challengeDistance: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  challengeWhyNow: {
+    fontSize: 14,
+    color: '#059669',
+    fontWeight: '500',
+    marginBottom: 12,
+  },
+  challengeStretch: {
+    marginBottom: 12,
+  },
+  challengeStretchTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 4,
+  },
+  challengeStretchItem: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginLeft: 8,
+  },
+  challengeSafety: {
+    fontSize: 14,
+    color: '#DC2626',
+    fontStyle: 'italic',
+    marginBottom: 12,
+  },
+  challengeActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  challengeAcceptButton: {
+    flex: 1,
+    backgroundColor: '#0EA5E9',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  challengeAcceptText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  challengeDeclineButton: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  challengeDeclineText: {
+    color: '#6B7280',
+    fontSize: 14,
     fontWeight: '600',
   },
 });

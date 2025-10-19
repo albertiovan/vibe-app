@@ -118,6 +118,185 @@ export class GooglePlacesService {
   }
 
   /**
+   * Public method for text search (for provider executor)
+   */
+  async textSearch(params: {
+    query: string;
+    location?: string;
+    radius?: number;
+    type?: string;
+  }): Promise<any[]> {
+    try {
+      const response = await this.client.textSearch({
+        params: {
+          query: params.query,
+          ...(params.location && { location: params.location }),
+          ...(params.radius && { radius: params.radius }),
+          ...(params.type && { type: params.type as any }),
+          key: this.apiKey
+        }
+      });
+      
+      return response.data.results || [];
+    } catch (error) {
+      console.error('❌ Google Places text search error:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Public method for nearby search (for provider executor)
+   */
+  async nearbySearch(params: {
+    location: string;
+    radius?: number;
+    type?: string;
+    keyword?: string;
+  }): Promise<any[]> {
+    try {
+      const response = await this.client.placesNearby({
+        params: {
+          location: params.location,
+          ...(params.radius && { radius: params.radius }),
+          ...(params.type && { type: params.type as any }),
+          ...(params.keyword && { keyword: params.keyword }),
+          key: this.apiKey
+        }
+      });
+      
+      return response.data.results || [];
+    } catch (error) {
+      console.error('❌ Google Places nearby search error:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Public method for place details (for provider executor)
+   */
+  async getPlaceDetails(placeId: string, options?: { fields?: string[] }): Promise<any> {
+    try {
+      const response = await this.client.placeDetails({
+        params: {
+          place_id: placeId,
+          fields: options?.fields || [
+            'place_id', 'name', 'rating', 'user_ratings_total', 
+            'geometry', 'types', 'vicinity', 'price_level', 
+            'opening_hours', 'photos', 'website'
+          ],
+          key: this.apiKey
+        }
+      });
+      
+      return response.data.result || {};
+    } catch (error) {
+      console.error('❌ Google Places details error:', error);
+      return {};
+    }
+  }
+
+  /**
+   * Enhanced place details for activity blurbs and reviews
+   * Includes editorial_summary and reviews for rich experience details
+   */
+  async getEnhancedPlaceDetails(placeId: string): Promise<any> {
+    try {
+      console.log('📋 Fetching enhanced details for place:', placeId);
+      
+      const response = await this.client.placeDetails({
+        params: {
+          place_id: placeId,
+          fields: [
+            // Core identification
+            'place_id',
+            'name',
+            'types',
+            
+            // Location & Contact
+            'geometry',
+            'formatted_address',
+            'vicinity',
+            'website',
+            
+            // Ratings & Social Proof
+            'rating',
+            'user_ratings_total',
+            'reviews',
+            
+            // Operational Info
+            'opening_hours',
+            'price_level',
+            
+            // Rich Content for Blurbs
+            'editorial_summary',
+            'photos',
+            
+            // Additional Context
+            'business_status',
+            'place_types'
+          ],
+          key: this.apiKey
+        }
+      });
+      
+      const result = response.data.result || {};
+      
+      // Process and normalize the response
+      return {
+        placeId: result.place_id,
+        name: result.name,
+        types: result.types || [],
+        location: result.geometry?.location,
+        address: result.formatted_address,
+        vicinity: result.vicinity,
+        website: result.website,
+        rating: result.rating,
+        userRatingsTotal: result.user_ratings_total,
+        priceLevel: result.price_level,
+        businessStatus: result.business_status,
+        
+        // Rich content for blurbs
+        editorialSummary: result.editorial_summary?.overview,
+        
+        // Opening hours
+        openingHours: result.opening_hours ? {
+          openNow: result.opening_hours.open_now,
+          weekdayText: result.opening_hours.weekday_text,
+          periods: result.opening_hours.periods
+        } : undefined,
+        
+        // Reviews (limit to 3 most relevant)
+        reviews: result.reviews ? result.reviews.slice(0, 3).map((review: any) => ({
+          author: review.author_name,
+          rating: review.rating,
+          time: review.time,
+          relativeTimeDescription: review.relative_time_description,
+          text: review.text,
+          profilePhotoUrl: review.profile_photo_url
+        })) : [],
+        
+        // Photos
+        photos: result.photos ? result.photos.slice(0, 5).map((photo: any) => ({
+          photoReference: photo.photo_reference,
+          width: photo.width,
+          height: photo.height,
+          htmlAttributions: photo.html_attributions
+        })) : []
+      };
+      
+    } catch (error) {
+      console.error('❌ Enhanced place details error:', error);
+      return {
+        placeId,
+        name: 'Unknown Place',
+        types: [],
+        reviews: [],
+        photos: []
+      };
+    }
+  }
+
+  /**
    * Main method: Find experiences based on user's vibe
    */
   async findExperiencesByVibe(vibe: UserVibe): Promise<VibeMatch> {
