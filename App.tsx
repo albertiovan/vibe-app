@@ -19,10 +19,28 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ExperienceDetailScreen from './ExperienceDetailScreen';
 import EnrichedActivityCard from './components/EnrichedActivityCard';
+import { ChatHomeScreen } from './screens/ChatHomeScreen';
+import { ChatConversationScreen } from './screens/ChatConversationScreen';
+import { UserProfileScreen } from './screens/UserProfileScreen';
+import { DiscoveryScreen } from './screens/DiscoveryScreen';
+import { SavedActivitiesScreen } from './screens/SavedActivitiesScreen';
+import EnhancedExperienceDetailScreen from './screens/EnhancedExperienceDetailScreen';
 import * as Location from 'expo-location';
 
 // Define navigation types
 type RootStackParamList = {
+  ChatHome: undefined;
+  ChatConversation: {
+    conversationId: number;
+    deviceId: string;
+    initialMessage?: string;
+  };
+  UserProfile: undefined;
+  Discovery: undefined;
+  SavedActivities: undefined;
+  EnhancedExperienceDetail: {
+    activity: any;
+  };
   Onboarding: undefined;
   Home: undefined;
   Results: {
@@ -972,11 +990,68 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Onboarding"
+          initialRouteName="ChatHome"
           screenOptions={{
             headerShown: false,
           }}
         >
+          {/* New Chat Interface Screens */}
+          <Stack.Screen name="ChatHome" component={ChatHomeScreen} />
+          <Stack.Screen 
+            name="ChatConversation" 
+            component={ChatConversationScreen}
+            options={{
+              headerShown: true,
+              headerTitle: 'Chat',
+              headerStyle: {
+                backgroundColor: '#0A0E17',
+              },
+              headerTintColor: '#FFFFFF',
+              headerBackTitle: 'Back',
+            }}
+          />
+          <Stack.Screen 
+            name="UserProfile" 
+            component={UserProfileScreen}
+            options={{
+              headerShown: true,
+              headerTitle: 'Profile',
+              headerStyle: {
+                backgroundColor: '#0A0E17',
+              },
+              headerTintColor: '#FFFFFF',
+              headerBackTitle: 'Back',
+            }}
+          />
+          <Stack.Screen 
+            name="Discovery" 
+            component={DiscoveryScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="SavedActivities" 
+            component={SavedActivitiesScreen}
+            options={{
+              headerShown: true,
+              headerTitle: 'Saved',
+              headerStyle: {
+                backgroundColor: '#0A0E17',
+              },
+              headerTintColor: '#FFFFFF',
+              headerBackTitle: 'Back',
+            }}
+          />
+          <Stack.Screen 
+            name="EnhancedExperienceDetail" 
+            component={EnhancedExperienceDetailScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          
+          {/* Original Screens */}
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Results" component={ResultsScreen} />

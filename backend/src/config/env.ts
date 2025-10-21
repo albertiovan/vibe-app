@@ -34,8 +34,8 @@ export function loadEnvironment(): void {
   const keyVars = [
     'CLAUDE_API_KEY',
     'OPENAI_API_KEY', 
-    'GOOGLE_MAPS_API_KEY',
     'OPENTRIPMAP_API_KEY',
+    'DATABASE_URL',
     'NODE_ENV',
     'PORT',
     'LLM_PROVIDER',
@@ -56,8 +56,8 @@ export function loadEnvironment(): void {
  */
 export function validateEnvironment(): void {
   const required = [
-    'CLAUDE_API_KEY',
-    'GOOGLE_MAPS_API_KEY'
+    'CLAUDE_API_KEY'
+    // DATABASE_URL is validated separately by PostgreSQL client
   ];
 
   const missing = required.filter(key => !process.env[key]);

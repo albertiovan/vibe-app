@@ -82,18 +82,29 @@ export class LocationService {
   private static async getIPLocation(): Promise<LocationContext | null> {
     try {
       // Using a free IP geolocation service
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
       const response = await fetch('https://ipapi.co/json/', {
-        timeout: 5000,
+        signal: controller.signal,
         headers: {
           'User-Agent': 'VibeApp/1.0'
         }
       });
       
+      clearTimeout(timeoutId);
+      
       if (!response.ok) {
         throw new Error(`IP location API error: ${response.status}`);
       }
       
-      const data = await response.json();
+      const data = await response.json() as {
+        latitude?: number;
+        longitude?: number;
+        city?: string;
+        country_name?: string;
+        timezone?: string;
+      };
       
       if (data.latitude && data.longitude) {
         return {
@@ -274,7 +285,14 @@ export class LocationService {
         throw new Error(`Nominatim API error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as {
+        address?: {
+          city?: string;
+          town?: string;
+          village?: string;
+          country?: string;
+        };
+      };
       
       if (data.address) {
         return {

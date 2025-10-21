@@ -34,7 +34,15 @@
     "test:autonomous-claude": "tsx scripts/test-autonomous-claude.ts",
     "test:enrichment": "tsx scripts/test-media-enrichment.ts",
     "test:ontology": "jest __tests__/ontology.spec.ts",
-    "test:apis": "tsx scripts/test-apis.ts"
+    "test:apis": "tsx scripts/test-apis.ts",
+    "db:migrate": "/opt/homebrew/opt/postgresql@16/bin/psql $DATABASE_URL -f database/migrations/001_create_activities_and_venues.sql",
+    "db:seed": "tsx database/seed.ts",
+    "db:reset": "npm run db:migrate && npm run db:seed",
+    "db:status": "/opt/homebrew/opt/postgresql@16/bin/psql $DATABASE_URL -c '\\dt'",
+    "test:database": "tsx scripts/test-database-direct.ts",
+    "test:mcp": "tsx scripts/test-mcp-recommendations.ts",
+    "csv:convert": "tsx scripts/csv-to-seed-json.ts",
+    "csv:import": "npm run csv:convert && npm run db:reset"
   },
   "keywords": [
     "vibe",
@@ -47,19 +55,23 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.67.0",
     "@googlemaps/google-maps-services-js": "^3.4.2",
+    "@modelcontextprotocol/sdk": "^1.20.1",
     "cors": "^2.8.5",
+    "csv-parse": "^5.6.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "express-validator": "^7.2.1",
     "helmet": "^7.1.0",
     "node-cache": "^5.1.2",
+    "pg": "^8.11.3",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.10.0",
+    "@types/pg": "^8.10.9",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
     "eslint": "^8.54.0",

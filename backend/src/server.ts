@@ -17,16 +17,18 @@ import {
 import { sanitizeQuery } from './middleware/validation';
 import healthRoutes from './routes/health';
 import pingRoutes from './routes/ping.js';
-import vibeRoutes from './routes/vibe.js';
-import llmRoutes from './routes/llm.js';
-import weatherRoutes from './routes/weather.js';
-import placesRoutes from './routes/places.js';
-import nearbySearchRoutes from './routes/nearbySearch.js';
-import personalizationRoutes from './routes/personalization.js';
-import vibeProfileRoutes from './routes/vibeProfile.js';
-import activitiesSearchRoutes from './routes/activitiesSearch.js';
-import autonomousSearchRoutes from './routes/autonomousSearch.js';
-import mediaEnrichmentRoutes from './routes/mediaEnrichment.js';
+// Temporarily disabled routes with missing dependencies
+// import vibeRoutes from './routes/vibe.js';
+// import llmRoutes from './routes/llm.js';
+// import weatherRoutes from './routes/weather.js';
+// import nearbySearchRoutes from './routes/nearbySearch.js';
+// import personalizationRoutes from './routes/personalization.js';
+// import vibeProfileRoutes from './routes/vibeProfile.js';
+// import activitiesSearchRoutes from './routes/activitiesSearch.js';
+// import autonomousSearchRoutes from './routes/autonomousSearch.js';
+import mcpVibeRoutes from './routes/mcpVibe.js';
+import chatRoutes from './routes/chat.js';
+import userRoutes from './routes/user.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -48,16 +50,18 @@ app.use(sanitizeQuery);
 // API Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/ping', pingRoutes);
-app.use('/api/vibe', vibeRoutes);
-app.use('/api/llm', llmRoutes);
-app.use('/api/weather', weatherRoutes);
-app.use('/api/places', placesRoutes);
-app.use('/api/nearby', nearbySearchRoutes);
-app.use('/api/personalization', personalizationRoutes);
-app.use('/api/vibe-profile', vibeProfileRoutes);
-app.use('/api/activities', activitiesSearchRoutes);
-app.use('/api/autonomous', autonomousSearchRoutes);
-app.use('/api/enrichment', mediaEnrichmentRoutes);
+// Temporarily disabled routes with missing dependencies
+// app.use('/api/vibe', vibeRoutes);
+// app.use('/api/llm', llmRoutes);
+// app.use('/api/weather', weatherRoutes);
+// app.use('/api/nearby', nearbySearchRoutes);
+// app.use('/api/personalization', personalizationRoutes);
+// app.use('/api/vibe-profile', vibeProfileRoutes);
+// app.use('/api/activities', activitiesSearchRoutes);
+// app.use('/api/autonomous', autonomousSearchRoutes);
+app.use('/api/mcp-vibe', mcpVibeRoutes); // Tag-first PostgreSQL MCP architecture
+app.use('/api/chat', chatRoutes); // New conversational chat interface ✨
+app.use('/api/user', userRoutes); // User preferences and saved activities ✨
 
 // Root endpoint
 app.get('/', (req, res) => {
