@@ -262,6 +262,18 @@ export const UserProfileScreen: React.FC = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
+            style={[styles.actionButton, styles.trainingButton]}
+            onPress={() => navigation.navigate('TrainingMode' as never)}
+            activeOpacity={0.7}
+          >
+            <View>
+              <Text style={styles.actionButtonText}>Training Mode</Text>
+              <Text style={styles.trainingButtonSubtext}>Help improve recommendations</Text>
+            </View>
+            <Text style={styles.actionButtonIcon}>🎯 →</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => navigation.navigate('Discovery' as never)}
             activeOpacity={0.7}
@@ -467,6 +479,16 @@ const styles = StyleSheet.create({
   },
   actionButtonIcon: {
     fontSize: 20,
+  },
+  trainingButton: {
+    borderWidth: 2,
+    borderColor: colors.accent.primary,
+    backgroundColor: 'rgba(93, 63, 211, 0.1)',
+  },
+  trainingButtonSubtext: {
+    fontSize: tokens.typography.fontSize.xs,
+    color: colors.text.secondary,
+    marginTop: 2,
   },
   deviceInfo: {
     paddingTop: tokens.spacing.sm,

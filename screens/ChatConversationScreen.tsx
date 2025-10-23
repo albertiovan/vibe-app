@@ -341,14 +341,18 @@ const styles = StyleSheet.create({
   inputCard: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    paddingVertical: tokens.spacing.xs,
   },
   input: {
     flex: 1,
     fontSize: tokens.typography.fontSize.md,
     color: colors.text.primary,
-    paddingVertical: tokens.spacing.sm,
+    paddingTop: 10,
+    paddingBottom: 10,
     paddingHorizontal: tokens.spacing.sm,
+    paddingRight: tokens.spacing.xs,
     maxHeight: 100,
+    minHeight: 40,
   },
   sendButton: {
     width: 40,

@@ -9,6 +9,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { spawn } from 'child_process';
+import { analyzeVibeSemantically } from './semanticVibeAnalyzer.js';
 
 interface VibeRequest {
   vibe: string;
@@ -152,7 +153,7 @@ export async function getMCPRecommendations(
 }
 
 /**
- * Query database directly using pg client
+ * Query database using semantic vibe analysis
  * Real data from activities and venues tables
  */
 async function queryDatabaseDirectly(request: VibeRequest): Promise<RecommendationResult> {
@@ -169,30 +170,146 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     if (region.toLowerCase() === 'cluj') region = 'Cluj';
     if (region.toLowerCase() === 'brasov') region = 'Brașov';
     
-    console.log('🔍 Querying real database for vibe:', request.vibe, 'in region:', region);
+    console.log('🔍 Analyzing vibe semantically:', request.vibe);
     
-    // Query activities table with both exact and fallback region match
-    const activitiesQuery = `
-      SELECT a.id, a.name, a.category, a.city, a.region, a.description
+    // STEP 1: Deep semantic analysis
+    const analysis = await analyzeVibeSemantically(request.vibe, {
+      timeOfDay: new Date().getHours() < 12 ? 'morning' : 
+                 new Date().getHours() < 17 ? 'afternoon' : 'evening'
+    });
+    
+    console.log('🧠 Semantic analysis:', {
+      intent: analysis.primaryIntent,
+      categories: analysis.suggestedCategories,
+      energy: analysis.energyLevel,
+      confidence: analysis.confidence
+    });
+    
+    // STEP 2: Build intelligent query with tag filtering
+    let activitiesQuery = `
+      SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags, a.energy_level
       FROM activities a
-      WHERE a.region = $1 OR a.region = 'București'
-      ORDER BY 
-        CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
-        RANDOM()
-      LIMIT 10
+      WHERE (a.region = $1 OR a.region = 'București')
     `;
     
-    const { rows: activities } = await pool.query(activitiesQuery, [region]);
+    const queryParams: any[] = [region];
+    let paramIndex = 2;
     
-    console.log(`✅ Found ${activities.length} activities in database`);
+    // Split required tags into category tags and non-category tags
+    const categoryTags = analysis.requiredTags.filter(tag => tag.startsWith('category:'));
+    const otherTags = analysis.requiredTags.filter(tag => 
+      !tag.startsWith('category:') && !tag.startsWith('energy:')
+    );
     
-    if (activities.length === 0) {
-      throw new Error(`No activities found in database for region: ${region}`);
+    // Filter by category tags (must match ANY category - OR logic)
+    if (categoryTags.length > 0) {
+      activitiesQuery += ` AND a.tags && $${paramIndex}::text[]`;
+      queryParams.push(categoryTags);
+      paramIndex++;
+      console.log('🎯 Category tags (ANY):', categoryTags);
     }
     
-    // For each activity, get venues
+    // Filter by other required tags (must have ALL of these - AND logic)
+    if (otherTags.length > 0) {
+      activitiesQuery += ` AND a.tags @> $${paramIndex}::text[]`;
+      queryParams.push(otherTags);
+      paramIndex++;
+      console.log('🎯 Other required tags (ALL):', otherTags);
+    }
+    
+    // If no required tags but has suggested categories, filter by category
+    if (analysis.requiredTags.length === 0 && analysis.suggestedCategories.length > 0) {
+      const categoryTagsFromSuggested = analysis.suggestedCategories.map(c => `category:${c}`);
+      activitiesQuery += ` AND a.tags && $${paramIndex}::text[]`;
+      queryParams.push(categoryTagsFromSuggested);
+      paramIndex++;
+      console.log('🎯 Category filter (from suggestions):', categoryTagsFromSuggested);
+    }
+    
+    // Filter by energy level if specified
+    if (analysis.energyLevel) {
+      activitiesQuery += ` AND a.energy_level = $${paramIndex}`;
+      queryParams.push(analysis.energyLevel);
+      paramIndex++;
+      console.log('⚡ Energy filter:', analysis.energyLevel);
+    }
+    
+    // Exclude activities with avoid tags
+    if (analysis.avoidTags.length > 0) {
+      activitiesQuery += ` AND NOT (a.tags && $${paramIndex}::text[])`;
+      queryParams.push(analysis.avoidTags);
+      paramIndex++;
+      console.log('❌ Avoiding tags:', analysis.avoidTags);
+    }
+    
+    // Smart ranking: prefer activities with preferred tags, then random within matches
+    if (analysis.preferredTags.length > 0) {
+      // Count how many preferred tags each activity has
+      activitiesQuery += `
+        ORDER BY 
+          CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
+          (SELECT COUNT(*) FROM unnest(a.tags) tag WHERE tag = ANY($${paramIndex}::text[])) DESC,
+          RANDOM()
+      `;
+      queryParams.push(analysis.preferredTags);
+      paramIndex++;
+    } else {
+      activitiesQuery += `
+        ORDER BY 
+          CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
+          RANDOM()
+      `;
+    }
+    
+    activitiesQuery += ` LIMIT 20`;  // Get more candidates for diversity
+    
+    console.log('🔍 Executing intelligent query...');
+    const { rows: activities } = await pool.query(activitiesQuery, queryParams);
+    
+    console.log(`✅ Found ${activities.length} semantically matched activities`);
+    
+    if (activities.length === 0) {
+      console.log('⚠️ No activities matched filters, falling back to broader search...');
+      console.log('🚨 ACTIVITY GAP DETECTED:');
+      console.log(`   Vibe: "${request.vibe}"`);
+      console.log(`   Required tags: ${analysis.requiredTags.join(', ')}`);
+      console.log(`   Energy: ${analysis.energyLevel}`);
+      console.log(`   Categories: ${analysis.suggestedCategories.join(', ')}`);
+      console.log('   💡 Consider adding more activities with these attributes!');
+      
+      // Fallback: just filter by category if available
+      const fallbackQuery = `
+        SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags
+        FROM activities a
+        WHERE (a.region = $1 OR a.region = 'București')
+        ${analysis.suggestedCategories.length > 0 ? 
+          `AND a.category = ANY($2::text[])` : ''}
+        ORDER BY 
+          CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
+          RANDOM()
+        LIMIT 10
+      `;
+      
+      const fallbackParams = analysis.suggestedCategories.length > 0 
+        ? [region, analysis.suggestedCategories] 
+        : [region];
+      
+      const { rows: fallbackActivities } = await pool.query(fallbackQuery, fallbackParams);
+      
+      if (fallbackActivities.length === 0) {
+        throw new Error(`No activities found for region: ${region}`);
+      }
+      
+      console.log(`✅ Fallback found ${fallbackActivities.length} activities`);
+      activities.push(...fallbackActivities);
+    }
+    
+    // STEP 3: Select diverse final 5 activities
+    const selectedActivities = selectDiverseActivities(activities, 5, analysis);
+    
+    // STEP 4: For each selected activity, get venues
     const ideas = await Promise.all(
-      activities.slice(0, 5).map(async (activity) => {
+      selectedActivities.map(async (activity) => {
         const venuesQuery = `
           SELECT v.id, v.name, v.city, v.rating
           FROM venues v
@@ -218,6 +335,7 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       })
     );
     
+    console.log(`🎯 Returning ${ideas.length} final recommendations`);
     return { ideas };
     
   } catch (error) {
@@ -226,6 +344,83 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
   } finally {
     await pool.end();
   }
+}
+
+/**
+ * Select diverse activities from candidates
+ * Ensures variety in categories and moods
+ */
+function selectDiverseActivities(activities: any[], count: number, analysis: any): any[] {
+  if (activities.length <= count) {
+    return activities;
+  }
+  
+  const selected: any[] = [];
+  const usedCategories = new Set<string>();
+  
+  // First pass: select one from each category
+  for (const activity of activities) {
+    if (selected.length >= count) break;
+    
+    if (!usedCategories.has(activity.category)) {
+      selected.push(activity);
+      usedCategories.add(activity.category);
+    }
+  }
+  
+  // Second pass: fill remaining slots with highest-scoring activities
+  const remaining = activities.filter(a => !selected.includes(a));
+  
+  while (selected.length < count && remaining.length > 0) {
+    // Pick best remaining activity (prefer activities with preferred tags)
+    let best = remaining[0];
+    let bestScore = scoreActivity(best, analysis);
+    
+    for (let i = 1; i < remaining.length; i++) {
+      const score = scoreActivity(remaining[i], analysis);
+      if (score > bestScore) {
+        best = remaining[i];
+        bestScore = score;
+      }
+    }
+    
+    selected.push(best);
+    remaining.splice(remaining.indexOf(best), 1);
+  }
+  
+  return selected;
+}
+
+/**
+ * Score activity based on how well it matches analysis
+ */
+function scoreActivity(activity: any, analysis: any): number {
+  let score = 0;
+  
+  if (!activity.tags || !Array.isArray(activity.tags)) {
+    return score;
+  }
+  
+  // +2 points for each preferred tag
+  for (const preferredTag of analysis.preferredTags || []) {
+    if (activity.tags.includes(preferredTag)) {
+      score += 2;
+    }
+  }
+  
+  // +1 point for each suggested category
+  for (const category of analysis.suggestedCategories || []) {
+    if (activity.tags.includes(`category:${category}`)) {
+      score += 1;
+    }
+  }
+  
+  // +1 point for matching energy level
+  if (activity.energy_level === analysis.energyLevel) {
+    score += 1;
+  }
+  
+  return score;
 }
 /**
  * Test MCP connection and database access

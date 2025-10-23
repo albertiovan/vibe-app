@@ -25,6 +25,7 @@ import { UserProfileScreen } from './screens/UserProfileScreen';
 import { DiscoveryScreen } from './screens/DiscoveryScreen';
 import { SavedActivitiesScreen } from './screens/SavedActivitiesScreen';
 import EnhancedExperienceDetailScreen from './screens/EnhancedExperienceDetailScreen';
+import { TrainingModeScreen } from './screens/TrainingModeScreen';
 import * as Location from 'expo-location';
 
 // Define navigation types
@@ -38,6 +39,7 @@ type RootStackParamList = {
   UserProfile: undefined;
   Discovery: undefined;
   SavedActivities: undefined;
+  TrainingMode: undefined;
   EnhancedExperienceDetail: {
     activity: any;
   };
@@ -1016,6 +1018,19 @@ export default function App() {
             options={{
               headerShown: true,
               headerTitle: 'Profile',
+              headerStyle: {
+                backgroundColor: '#0A0E17',
+              },
+              headerTintColor: '#FFFFFF',
+              headerBackTitle: 'Back',
+            }}
+          />
+          <Stack.Screen 
+            name="TrainingMode" 
+            component={TrainingModeScreen}
+            options={{
+              headerShown: true,
+              headerTitle: '🎯 Training Mode',
               headerStyle: {
                 backgroundColor: '#0A0E17',
               },

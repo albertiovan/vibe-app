@@ -153,6 +153,7 @@ export const ChatHomeScreen: React.FC = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={0}
     >
       {/* Animated background gradient */}
       <Animated.View style={StyleSheet.absoluteFill}>
@@ -176,26 +177,23 @@ export const ChatHomeScreen: React.FC = () => {
         </LinearGradient>
       </Animated.View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.logo}>Vibe</Text>
-          <TouchableOpacity
-            style={styles.profileButton}
-            onPress={() => navigation.navigate('UserProfile')}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.profileIcon}>👤</Text>
-          </TouchableOpacity>
-        </View>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.logo}>Vibe</Text>
+        <TouchableOpacity
+          style={styles.profileButton}
+          onPress={() => navigation.navigate('UserProfile')}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.profileIcon}>👤</Text>
+        </TouchableOpacity>
+      </View>
 
+      {/* Centered Content Container */}
+      <View style={styles.centeredContainer}>
         {/* AI Greeting Card */}
         {greeting && (
-          <GlassCard style={styles.greetingCard} padding="lg" radius="md">
+          <GlassCard style={styles.centeredGreetingCard} padding="lg" radius="md">
             <Text style={styles.greetingEmoji}>{greeting.greeting.emoji}</Text>
             <Text style={styles.greetingText}>{greeting.greeting.text}</Text>
           </GlassCard>
@@ -203,8 +201,7 @@ export const ChatHomeScreen: React.FC = () => {
 
         {/* Suggested Vibes */}
         {greeting && greeting.suggestedVibes.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Suggested Vibes</Text>
+          <View style={styles.centeredVibesSection}>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -226,56 +223,61 @@ export const ChatHomeScreen: React.FC = () => {
             </ScrollView>
           </View>
         )}
+        
+        {/* Input Field - Always Centered */}
+        <View style={styles.centeredInputContainer}>
+          <GlassCard style={styles.inputCard} padding="sm" radius="sm">
+            <TextInput
+              style={styles.input}
+              placeholder="Type here..."
+              placeholderTextColor={colors.text.tertiary}
+              value={inputText}
+              onChangeText={setInputText}
+              onSubmitEditing={handleSendMessage}
+              returnKeyType="send"
+            />
+            <TouchableOpacity
+              onPress={handleSendMessage}
+              disabled={!inputText.trim()}
+              style={styles.sendButton}
+            >
+              <Text style={[
+                styles.sendButtonText,
+                !inputText.trim() && styles.sendButtonTextDisabled
+              ]}>
+                →
+              </Text>
+            </TouchableOpacity>
+          </GlassCard>
+        </View>
 
-        {/* Recent Conversations */}
+        {/* Recent Conversations - Below Input */}
         {recentConversations.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Recent Conversations</Text>
-            {recentConversations.map((conversation) => (
-              <TouchableOpacity
-                key={conversation.id}
-                activeOpacity={0.8}
-                onPress={() => handleConversationPress(conversation)}
-              >
-                <GlassCard style={styles.conversationCard} padding="md" radius="md">
-                  <Text style={styles.conversationTitle} numberOfLines={1}>
-                    {conversation.title || 'Conversation'}
-                  </Text>
-                  <Text style={styles.conversationDate}>
-                    {new Date(conversation.updated_at).toLocaleDateString()}
-                  </Text>
-                </GlassCard>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.recentConversationsSection}>
+            <Text style={styles.recentConversationsTitle}>Recent</Text>
+            <ScrollView
+              style={styles.recentConversationsScroll}
+              showsVerticalScrollIndicator={false}
+            >
+              {recentConversations.slice(0, 3).map((conversation) => (
+                <TouchableOpacity
+                  key={conversation.id}
+                  activeOpacity={0.8}
+                  onPress={() => handleConversationPress(conversation)}
+                >
+                  <GlassCard style={styles.conversationCard} padding="sm" radius="sm">
+                    <Text style={styles.conversationTitle} numberOfLines={1}>
+                      {conversation.title || 'Conversation'}
+                    </Text>
+                    <Text style={styles.conversationDate}>
+                      {new Date(conversation.updated_at).toLocaleDateString()}
+                    </Text>
+                  </GlassCard>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
         )}
-      </ScrollView>
-
-      {/* Input Field */}
-      <View style={styles.inputContainer}>
-        <GlassCard style={styles.inputCard} padding="sm" radius="sm">
-          <TextInput
-            style={styles.input}
-            placeholder="Type here..."
-            placeholderTextColor={colors.text.tertiary}
-            value={inputText}
-            onChangeText={setInputText}
-            onSubmitEditing={handleSendMessage}
-            returnKeyType="send"
-          />
-          <TouchableOpacity
-            onPress={handleSendMessage}
-            disabled={!inputText.trim()}
-            style={styles.sendButton}
-          >
-            <Text style={[
-              styles.sendButtonText,
-              !inputText.trim() && styles.sendButtonTextDisabled
-            ]}>
-              →
-            </Text>
-          </TouchableOpacity>
-        </GlassCard>
       </View>
     </KeyboardAvoidingView>
   );
@@ -296,7 +298,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 60,
+    paddingTop: tokens.spacing.md,
     paddingHorizontal: tokens.spacing.lg,
     paddingBottom: tokens.spacing.xxl,
   },
@@ -304,7 +306,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: tokens.spacing.xl,
+    paddingTop: 60,
+    paddingHorizontal: tokens.spacing.lg,
+    paddingBottom: tokens.spacing.md,
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: tokens.spacing.lg,
+    paddingBottom: tokens.spacing.xl,
+  },
+  centeredGreetingCard: {
+    marginBottom: tokens.spacing.md,
+    width: '100%',
+  },
+  centeredVibesSection: {
+    width: '100%',
+    marginBottom: tokens.spacing.lg,
+  },
+  centeredInputContainer: {
+    width: '100%',
+    marginBottom: tokens.spacing.lg,
+  },
+  recentConversationsSection: {
+    width: '100%',
+    maxHeight: 150,
+  },
+  recentConversationsTitle: {
+    fontSize: tokens.typography.fontSize.xs,
+    fontWeight: tokens.typography.fontWeight.semibold,
+    color: colors.text.tertiary,
+    marginBottom: tokens.spacing.sm,
+    textTransform: 'uppercase',
+    letterSpacing: tokens.typography.letterSpacing.wide,
+  },
+  recentConversationsScroll: {
+    maxHeight: 120,
   },
   logo: {
     fontSize: tokens.typography.fontSize.xxl,
@@ -378,14 +416,18 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    paddingVertical: tokens.spacing.xs,
   },
   input: {
     flex: 1,
     fontSize: tokens.typography.fontSize.md,
     color: colors.text.primary,
-    paddingVertical: tokens.spacing.sm,
+    paddingTop: 10,
+    paddingBottom: 10,
     paddingHorizontal: tokens.spacing.sm,
+    paddingRight: tokens.spacing.xs,
+    minHeight: 40,
   },
   sendButton: {
     width: 40,

@@ -1,0 +1,97 @@
+═══════════════════════════════════════════════════════════════════
+COPY THIS ENTIRE MESSAGE AND PASTE INTO CHATGPT
+═══════════════════════════════════════════════════════════════════
+
+You are helping me curate activities for an intelligent recommendation system that uses SEMANTIC VIBE UNDERSTANDING.
+
+CRITICAL: Our AI deeply analyzes user intent and underlying needs:
+- "I miss legos" → AI understands: building, creating, tactile making, pride in physical objects
+- "I want sports" → AI understands: physical exertion, competition, achievement
+
+YOUR TASK: Generate activities with SEMANTIC-RICH descriptions.
+
+───────────────────────────────────────────────────────────────────
+DESCRIPTION REQUIREMENTS (Most Important!)
+───────────────────────────────────────────────────────────────────
+
+Write descriptions that reveal UNDERLYING EXPERIENCE:
+
+❌ BAD: "Pottery class where you make bowls"
+✅ GOOD: "Shape clay with your hands in a step-by-step process. Leave with a tangible object you built from scratch - that satisfying feeling of creating something physical."
+
+Include these elements:
+✅ What you DO physically (hands-on details)
+✅ How it FEELS emotionally (proud, calm, excited)
+✅ What you GET (tangible object, skill, connection)
+✅ Step-by-step vs freeform nature
+✅ Solo vs social experience
+
+───────────────────────────────────────────────────────────────────
+REQUIRED FIELDS
+───────────────────────────────────────────────────────────────────
+
+CATEGORY (choose one):
+creative, sports, fitness, adventure, wellness, mindfulness, nature, culinary, culture, learning, water, social, romance, seasonal, nightlife
+
+ENERGY LEVEL (be HONEST!):
+- low: Spa, massage, meditation, gentle walks
+- medium: Pottery, painting, badminton, cooking
+- high: CrossFit, climbing, intense sports
+
+INDOOR/OUTDOOR:
+indoor, outdoor, both
+
+TAGS (comma-separated, NO SPACES after commas):
+
+tags_experience_level: beginner, intermediate, advanced, mixed
+
+tags_mood (MOST IMPORTANT):
+creative, relaxed, cozy, mindful, romantic, social, adrenaline, adventurous, explorer, focused
+
+tags_context:
+solo, date, friends, family, small-group, group, team
+
+tags_equipment:
+provided, rental-gear, none, camera, laptop
+
+tags_requirement:
+booking-required, booking-optional, lesson-recommended, guide-required
+
+tags_cost_band:
+$, $$, $$$, $$$$
+
+───────────────────────────────────────────────────────────────────
+CSV FORMAT
+───────────────────────────────────────────────────────────────────
+
+slug,name,category,subtypes,description,city,region,latitude,longitude,duration_min,duration_max,seasonality,indoor_outdoor,energy_level,tags_experience_level,tags_mood,tags_terrain,tags_equipment,tags_context,tags_requirement,tags_risk_level,tags_weather_fit,tags_time_of_day,tags_travel_time_band,tags_skills,tags_cost_band,hero_image_url,source_url,notes
+
+───────────────────────────────────────────────────────────────────
+EXAMPLES
+───────────────────────────────────────────────────────────────────
+
+BUILDING/CREATING (for "I miss legos"):
+bucharest-woodworking-basics,Woodworking Fundamentals,creative,"woodworking,making","Learn to saw, plane, and sand wood by hand to build a functional object. Step-by-step instruction guides you through measuring, cutting, and assembly - that satisfying feeling of creating something real with your hands.",Bucharest,București,44.432,26.105,180,240,all,indoor,medium,beginner,"creative,mindful,focused","urban",provided,"solo,small-group",booking-required,moderate,all_weather,daytime,in-city,technique,$$,,https://example.com,"Materials included"
+
+HIGH-ENERGY SPORTS (for "I want sports"):
+bucharest-squash-session,Squash Court & Coaching,sports,"squash,racket","Fast-paced racket sport - sprint, pivot, and strike in intense rallies. Great cardio workout with competitive edge. Coaching available for technique.",Bucharest,București,44.445,26.098,60,90,all,indoor,high,beginner,"adrenaline,social","urban",rental-gear,"solo,friends",booking-required,low,all_weather,"daytime,evening",in-city,technique,$$,,https://example.com,"Equipment rental available"
+
+RELAXING WELLNESS (for "I'm exhausted"):
+bucharest-aromatherapy-massage,Aromatherapy Massage,wellness,"massage,aromatherapy","Sink into 90 minutes of slow therapeutic massage with warm oils. Gentle pressure releases tension and calms your nervous system. Leave feeling physically lighter and mentally reset.",Bucharest,București,44.448,26.102,60,90,all,indoor,low,beginner,"relaxed,cozy,mindful","urban",provided,"solo,date",booking-required,low,all_weather,"evening,daytime",in-city,none_required,$$,,https://example.com,"Quiet rooms"
+
+───────────────────────────────────────────────────────────────────
+QUALITY CHECKLIST
+───────────────────────────────────────────────────────────────────
+
+Before submitting, verify:
+✅ Description reveals EXPERIENCE (not just "what it is")
+✅ Energy level is HONEST
+✅ Mood tags match FEELING it creates
+✅ NO spaces after commas in tags
+✅ Duration is realistic
+✅ Coordinates are accurate
+✅ All required tags included
+
+───────────────────────────────────────────────────────────────────
+READY! Now I'll generate activities based on your requests.
+───────────────────────────────────────────────────────────────────

@@ -29,6 +29,7 @@ import pingRoutes from './routes/ping.js';
 import mcpVibeRoutes from './routes/mcpVibe.js';
 import chatRoutes from './routes/chat.js';
 import userRoutes from './routes/user.js';
+import trainingRoutes from './routes/training.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -62,6 +63,7 @@ app.use('/api/ping', pingRoutes);
 app.use('/api/mcp-vibe', mcpVibeRoutes); // Tag-first PostgreSQL MCP architecture
 app.use('/api/chat', chatRoutes); // New conversational chat interface ✨
 app.use('/api/user', userRoutes); // User preferences and saved activities ✨
+app.use('/api/training', trainingRoutes); // Training feedback collection ✨
 
 // Root endpoint
 app.get('/', (req, res) => {
