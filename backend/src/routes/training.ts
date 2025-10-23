@@ -7,6 +7,7 @@ import express, { Request, Response } from 'express';
 import { Pool } from 'pg';
 import mcpRecommender from '../services/llm/mcpClaudeRecommender.js';
 import { ContextualPromptsService } from '../services/context/contextualPrompts.js';
+import { analyzeVibeSemantically } from '../services/llm/semanticVibeAnalyzer.js';
 
 const router = express.Router();
 
@@ -29,6 +30,9 @@ router.post('/recommendations', async (req: Request, res: Response) => {
         error: 'Message is required',
       });
     }
+
+    // Analyze vibe semantically to get energy level and other insights
+    const semanticAnalysis = await analyzeVibeSemantically(message);
 
     // Get AI recommendations using the MCP recommender
     const recommendations = await mcpRecommender.getMCPRecommendations({
@@ -54,7 +58,9 @@ router.post('/recommendations', async (req: Request, res: Response) => {
       activities,
       vibeAnalysis: {
         primaryMood: vibeState,
-        energyLevel: 'medium', // Could be enhanced
+        energyLevel: semanticAnalysis.energyLevel, // Real energy level from semantic analysis
+        suggestedCategories: semanticAnalysis.suggestedCategories,
+        preferredMoods: semanticAnalysis.preferredMoods,
         context: message,
       },
     });

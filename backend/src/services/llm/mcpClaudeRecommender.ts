@@ -10,6 +10,8 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { spawn } from 'child_process';
 import { analyzeVibeSemantically } from './semanticVibeAnalyzer.js';
+import { getActivityFeedbackScores, filterAvoidedActivities, getFeedbackMultiplier } from '../feedback/feedbackScoring.js';
+import { FilterOptions, buildFilterClause, filterByDistance } from '../filters/activityFilters.js';
 
 interface VibeRequest {
   vibe: string;
@@ -19,6 +21,7 @@ interface VibeRequest {
   indoorOutdoor?: 'indoor' | 'outdoor' | 'both';
   energyLevel?: 'low' | 'medium' | 'high';
   currentSeason?: string;
+  filters?: FilterOptions; // NEW: Comprehensive filtering options
 }
 
 interface RecommendationResult {
@@ -27,6 +30,11 @@ interface RecommendationResult {
     name: string;
     bucket: string;
     region: string;
+    distanceKm?: number; // NEW: Distance from user if location provided
+    durationMinutes?: number; // NEW: Activity duration
+    crowdSize?: string; // NEW: Crowd size
+    groupSuitability?: string; // NEW: Solo/group friendly
+    priceTier?: string; // NEW: Price tier
     venues: Array<{
       venueId: number;
       name: string;
@@ -159,10 +167,15 @@ export async function getMCPRecommendations(
 async function queryDatabaseDirectly(request: VibeRequest): Promise<RecommendationResult> {
   const { Pool } = await import('pg');
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
   });
-
+  
   try {
+    // STEP 0: Load feedback scores for activity filtering and ranking
+    console.log('📊 Loading training feedback scores...');
+    const feedbackScores = await getActivityFeedbackScores(pool);
+    console.log(`✅ Loaded feedback for ${feedbackScores.size} activities`);
+    
     // Normalize region to match database
     let region = request.region || request.city || 'Bucharest';
     // Convert common variations to database format
@@ -171,6 +184,7 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     if (region.toLowerCase() === 'brasov') region = 'Brașov';
     
     console.log('🔍 Analyzing vibe semantically:', request.vibe);
+    console.log('📋 Filters received:', JSON.stringify(request.filters, null, 2));
     
     // STEP 1: Deep semantic analysis
     const analysis = await analyzeVibeSemantically(request.vibe, {
@@ -182,16 +196,29 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       intent: analysis.primaryIntent,
       categories: analysis.suggestedCategories,
       energy: analysis.energyLevel,
-      confidence: analysis.confidence
+      confidence: analysis.confidence,
+      keywordPrefer: analysis.keywordPrefer
     });
     
-    // STEP 2: Build intelligent query with tag filtering
+    // STEP 2: Build intelligent query with tag filtering AND user filters
+    // Check if user wants to search anywhere (no distance limit or large distance)
+    const searchEverywhere = !request.filters?.maxDistanceKm || request.filters.maxDistanceKm >= 50;
+    
     let activitiesQuery = `
-      SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags, a.energy_level
+      SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags, 
+             a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
+             a.duration_min, a.duration_max, a.crowd_size, a.crowd_type, 
+             a.group_suitability, a.price_tier
       FROM activities a
-      WHERE (a.region = $1 OR a.region = 'București')
+      WHERE ${searchEverywhere ? '1=1' : '(a.region = $1 OR a.region = \'București\')'}
     `;
     
+    console.log(`🌍 Search scope: ${searchEverywhere ? 'ALL ROMANIA' : `${region} + București`}`);
+    if (searchEverywhere) {
+      console.log(`🗺️  Preference: Activities OUTSIDE ${region} (user selected "Anywhere")`);
+    }
+    
+    // Always include region as $1 for ORDER BY ranking, even when not used in WHERE
     const queryParams: any[] = [region];
     let paramIndex = 2;
     
@@ -242,31 +269,142 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       console.log('❌ Avoiding tags:', analysis.avoidTags);
     }
     
+    // ALWAYS exclude activities that require explicit request (language learning, etc.)
+    // These have been identified as too niche through training feedback
+    activitiesQuery += ` AND NOT (a.tags && ARRAY['requirement:explicit-request']::text[])`;
+    console.log('🚫 Auto-excluding activities with requirement:explicit-request tag');
+    
+    // STEP 2.4: Apply user-defined filters
+    if (request.filters && Object.keys(request.filters).length > 0) {
+      // Pass searchEverywhere flag to filter builder for travel-aware duration logic
+      const filterResult = buildFilterClause(request.filters, paramIndex, searchEverywhere);
+      activitiesQuery += filterResult.clause;
+      queryParams.push(...filterResult.params);
+      paramIndex += filterResult.params.length;
+      console.log('🔍 Applied user filters:', Object.keys(request.filters).join(', '));
+      if (searchEverywhere && request.filters.durationRange === 'full-day') {
+        console.log('✈️ Travel-aware duration: Activity time + Travel time = Full day');
+      }
+    }
+    
     // Smart ranking: prefer activities with preferred tags, then random within matches
     if (analysis.preferredTags.length > 0) {
       // Count how many preferred tags each activity has
-      activitiesQuery += `
-        ORDER BY 
-          CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
-          (SELECT COUNT(*) FROM unnest(a.tags) tag WHERE tag = ANY($${paramIndex}::text[])) DESC,
-          RANDOM()
-      `;
+      if (searchEverywhere) {
+        // When "Anywhere" is explicitly selected: PREFER activities OUTSIDE current city
+        // User is saying "I want to explore beyond my city"
+        activitiesQuery += `
+          ORDER BY 
+            CASE WHEN a.region != $1 THEN 0 ELSE 1 END,  -- Outside city ranked HIGHER
+            (SELECT COUNT(*) FROM unnest(a.tags) tag WHERE tag = ANY($${paramIndex}::text[])) DESC,
+            RANDOM()
+        `;
+      } else {
+        // When no distance filter: prefer LOCAL activities (default behavior)
+        activitiesQuery += `
+          ORDER BY 
+            CASE WHEN a.region = $1 THEN 0 ELSE 1 END,  -- Local city ranked HIGHER
+            (SELECT COUNT(*) FROM unnest(a.tags) tag WHERE tag = ANY($${paramIndex}::text[])) DESC,
+            RANDOM()
+        `;
+      }
       queryParams.push(analysis.preferredTags);
       paramIndex++;
     } else {
-      activitiesQuery += `
-        ORDER BY 
-          CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
-          RANDOM()
-      `;
+      if (searchEverywhere) {
+        // When "Anywhere" selected: PREFER activities outside current city
+        activitiesQuery += `
+          ORDER BY 
+            CASE WHEN a.region != $1 THEN 0 ELSE 1 END,  -- Outside city first
+            RANDOM()
+        `;
+      } else {
+        // When no distance filter: prefer local
+        activitiesQuery += `
+          ORDER BY 
+            CASE WHEN a.region = $1 THEN 0 ELSE 1 END,  -- Local first
+            RANDOM()
+        `;
+      }
     }
     
-    activitiesQuery += ` LIMIT 20`;  // Get more candidates for diversity
+    // Increase limit when searching all of Romania for specific activities
+    const queryLimit = searchEverywhere ? 50 : 20;
+    activitiesQuery += ` LIMIT ${queryLimit}`;
+    console.log(`📊 Query limit: ${queryLimit} activities`);
     
     console.log('🔍 Executing intelligent query...');
-    const { rows: activities } = await pool.query(activitiesQuery, queryParams);
+    let { rows: activities } = await pool.query(activitiesQuery, queryParams);
     
     console.log(`✅ Found ${activities.length} semantically matched activities`);
+    
+    // STEP 2.5: Filter out consistently rejected activities based on feedback
+    const beforeFeedbackFilter = activities.length;
+    activities = filterAvoidedActivities(activities, feedbackScores);
+    if (beforeFeedbackFilter > activities.length) {
+      console.log(`🚫 Feedback filter: Removed ${beforeFeedbackFilter - activities.length} poorly-rated activities`);
+    }
+    
+    // STEP 2.6: Apply keyword matching - MANDATORY for specific requests, PREFERRED for general
+    if (analysis.keywordPrefer && analysis.keywordPrefer.length > 0) {
+      // Determine if this is a SPECIFIC activity request (high confidence) or GENERAL request
+      const isSpecificActivity = analysis.confidence >= 0.9;
+      
+      if (isSpecificActivity) {
+        // HIGH SPECIFICITY: MANDATORY keyword matching (e.g., "mountain biking", "rock climbing")
+        console.log('🎯 HIGH SPECIFICITY: Applying MANDATORY keyword filter for:', analysis.keywordPrefer);
+        
+        const beforeKeywordFilter = activities.length;
+        activities = activities.filter((activity: any) => {
+          const searchText = `${activity.name} ${activity.description || ''}`.toLowerCase();
+          const hasMatch = analysis.keywordPrefer!.some(keyword => 
+            searchText.includes(keyword.toLowerCase())
+          );
+          if (hasMatch) {
+            activity._keywordMatchCount = analysis.keywordPrefer!.filter(keyword => 
+              searchText.includes(keyword.toLowerCase())
+            ).length;
+          }
+          return hasMatch;
+        });
+        
+        console.log(`✅ MANDATORY keyword matching: ${activities.length} activities (removed ${beforeKeywordFilter - activities.length})`);
+        
+        // Sort by keyword match count
+        activities.sort((a: any, b: any) => (b._keywordMatchCount || 0) - (a._keywordMatchCount || 0));
+        console.log(`   Top match: "${activities[0]?.name}" with ${activities[0]?._keywordMatchCount} keyword matches`);
+      } else {
+        // GENERAL REQUEST: PREFERRED keyword boosting (e.g., "adventure in the mountains", "outdoor fun")
+        console.log('🌟 GENERAL REQUEST: Applying keyword BOOSTING (not mandatory) for:', analysis.keywordPrefer);
+        
+        // Score all activities by keyword matches (but don't filter out non-matches)
+        activities.forEach((activity: any) => {
+          const searchText = `${activity.name} ${activity.description || ''}`.toLowerCase();
+          activity._keywordMatchCount = analysis.keywordPrefer!.filter(keyword => 
+            searchText.includes(keyword.toLowerCase())
+          ).length;
+        });
+        
+        // Sort by keyword match count (activities with keywords go first, but others still included)
+        activities.sort((a: any, b: any) => (b._keywordMatchCount || 0) - (a._keywordMatchCount || 0));
+        
+        const withKeywords = activities.filter(a => a._keywordMatchCount > 0).length;
+        console.log(`✅ Keyword boosting: ${withKeywords} activities match keywords, ${activities.length - withKeywords} others still included`);
+      }
+    }
+    
+    // STEP 2.7: Apply keyword AVOID filtering
+    if (analysis.keywordAvoid && analysis.keywordAvoid.length > 0) {
+      const beforeCount = activities.length;
+      activities = activities.filter((activity: any) => {
+        const activityName = activity.name.toLowerCase();
+        const hasAvoidKeyword = analysis.keywordAvoid!.some(keyword => 
+          activityName.includes(keyword.toLowerCase())
+        );
+        return !hasAvoidKeyword;
+      });
+      console.log(`🚫 Keyword filtering: Removed ${beforeCount - activities.length} activities with avoid keywords:`, analysis.keywordAvoid);
+    }
     
     if (activities.length === 0) {
       console.log('⚠️ No activities matched filters, falling back to broader search...');
@@ -304,8 +442,65 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       activities.push(...fallbackActivities);
     }
     
-    // STEP 3: Select diverse final 5 activities
-    const selectedActivities = selectDiverseActivities(activities, 5, analysis);
+    // STEP 2.7: Apply distance filtering if location provided
+    if (request.filters?.userLatitude && request.filters?.userLongitude) {
+      const beforeDistanceFilter = activities.length;
+      activities = filterByDistance(
+        activities,
+        request.filters.userLatitude,
+        request.filters.userLongitude,
+        request.filters.maxDistanceKm || null
+      );
+      console.log(`📍 Distance filter: ${activities.length} activities after filtering (removed ${beforeDistanceFilter - activities.length})`);
+      if (activities.length > 0) {
+        console.log(`   Closest: ${activities[0].name} (${activities[0].distanceKm}km away)`);
+      }
+    }
+    
+    // STEP 3: Ensure we have enough activities - if not, do broader search
+    if (activities.length < 5) {
+      console.log(`⚠️ Only ${activities.length} activities found, broadening search...`);
+      
+      // Fallback: Search with just category, no other filters
+      const fallbackQuery = `
+        SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags,
+               a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
+               a.duration_min, a.duration_max, a.crowd_size, a.crowd_type,
+               a.group_suitability, a.price_tier
+        FROM activities a
+        WHERE ${searchEverywhere ? '1=1' : '(a.region = \'București\' OR a.region IN (\'Prahova\', \'Brașov\', \'Ilfov\'))'}
+        ${analysis.suggestedCategories.length > 0 ? `AND a.category = ANY(ARRAY[${analysis.suggestedCategories.map(c => `'${c}'`).join(',')}]::text[])` : ''}
+        ORDER BY RANDOM()
+        LIMIT 30
+      `;
+      
+      const { rows: fallbackActivities } = await pool.query(fallbackQuery);
+      console.log(`🔄 Fallback found ${fallbackActivities.length} additional activities`);
+      
+      // Apply keyword matching to fallback too
+      if (analysis.keywordPrefer && analysis.keywordPrefer.length > 0) {
+        const keywordMatches = fallbackActivities.filter((activity: any) => {
+          const searchText = `${activity.name} ${activity.description || ''}`.toLowerCase();
+          return analysis.keywordPrefer!.some(keyword => 
+            searchText.includes(keyword.toLowerCase())
+          );
+        });
+        activities.push(...keywordMatches);
+        console.log(`✅ Added ${keywordMatches.length} keyword-matching activities from fallback`);
+      } else {
+        activities.push(...fallbackActivities.slice(0, 10));
+      }
+    }
+    
+    // STEP 4: Select diverse final 5 activities (with feedback scoring)
+    const selectedActivities = selectDiverseActivities(activities, 5, analysis, feedbackScores);
+    
+    // CRITICAL: If we still don't have 5, just take what we have
+    if (selectedActivities.length < 5 && activities.length > selectedActivities.length) {
+      console.log(`⚠️ Only selected ${selectedActivities.length}, adding more to reach 5...`);
+      const remaining = activities.filter(a => !selectedActivities.includes(a)).slice(0, 5 - selectedActivities.length);
+      selectedActivities.push(...remaining);
+    }
     
     // STEP 4: For each selected activity, get venues
     const ideas = await Promise.all(
@@ -325,6 +520,13 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
           name: activity.name,
           bucket: activity.category,
           region: activity.region,
+          energy_level: activity.energy_level,
+          indoor_outdoor: activity.indoor_outdoor,
+          distanceKm: activity.distanceKm, // Include if calculated
+          durationMinutes: activity.duration_min, // Activity duration
+          crowdSize: activity.crowd_size,
+          groupSuitability: activity.group_suitability,
+          priceTier: activity.price_tier,
           venues: venues.map(v => ({
             venueId: v.id,
             name: v.name,
@@ -349,30 +551,119 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
 /**
  * Select diverse activities from candidates
  * Ensures variety in categories and moods
+ * Now enhanced with feedback-based scoring AND energy variety
  */
-function selectDiverseActivities(activities: any[], count: number, analysis: any): any[] {
+function selectDiverseActivities(activities: any[], count: number, analysis: any, feedbackScores?: Map<number, any>): any[] {
   if (activities.length <= count) {
+    console.log(`📊 Returning all ${activities.length} activities (less than ${count} requested)`);
     return activities;
   }
+  
+  console.log(`🎲 Selecting ${count} diverse activities from ${activities.length} candidates`);
   
   const selected: any[] = [];
   const usedCategories = new Set<string>();
   
-  // First pass: select one from each category
-  for (const activity of activities) {
-    if (selected.length >= count) break;
+  // Apply feedback multipliers to activities for scoring
+  if (feedbackScores) {
+    activities.forEach(activity => {
+      activity._feedbackScore = getFeedbackMultiplier(activity.id, feedbackScores);
+    });
+    
+    // Sort by feedback score first (higher is better)
+    activities.sort((a, b) => (b._feedbackScore || 1.0) - (a._feedbackScore || 1.0));
+    console.log('🎯 Activities ranked by feedback scores');
+  }
+  
+  // NEW: Map energy levels to numeric values for comparison
+  const energyLevelMap: Record<string, number> = {
+    'low': 1,
+    'medium': 2,
+    'high': 3
+  };
+  
+  const userEnergyLevel = analysis.energyLevel || 'medium';
+  const userEnergyValue = energyLevelMap[userEnergyLevel] || 2;
+  
+  console.log(`⚡ User energy preference: ${userEnergyLevel} (${userEnergyValue})`);
+  
+  // NEW: Calculate target distribution - gentle variety, not extreme
+  // If user wants low energy: 3 low, 1 medium, 1 high (gentle push)
+  // If user wants medium: 3 medium, 1 low, 1 high (explore both directions)
+  // If user wants high: 3 high, 1 medium, 1 low (try to balance)
+  let targetDistribution = {
+    matchingEnergy: Math.ceil(count * 0.6), // 60% match user preference (3 out of 5)
+    stretchEnergy: Math.floor(count * 0.4)  // 40% gently stretch (2 out of 5)
+  };
+  
+  console.log(`🎯 Target: ${targetDistribution.matchingEnergy} matching energy, ${targetDistribution.stretchEnergy} stretch activities`);
+  
+  // First pass: select diverse categories, prioritizing user's energy preference
+  const matchingEnergyActivities = activities.filter(a => a.energy_level === userEnergyLevel);
+  const stretchActivities = activities.filter(a => a.energy_level !== userEnergyLevel);
+  
+  console.log(`   Available: ${matchingEnergyActivities.length} matching energy, ${stretchActivities.length} stretch`);
+  
+  // Pick from matching energy first
+  for (const activity of matchingEnergyActivities) {
+    if (selected.length >= targetDistribution.matchingEnergy) break;
     
     if (!usedCategories.has(activity.category)) {
       selected.push(activity);
       usedCategories.add(activity.category);
+      console.log(`   ✓ Added ${activity.name} (${activity.energy_level} energy, matches preference)`);
     }
   }
   
-  // Second pass: fill remaining slots with highest-scoring activities
+  // Fill remaining matching energy slots
+  for (const activity of matchingEnergyActivities) {
+    if (selected.length >= targetDistribution.matchingEnergy) break;
+    if (!selected.includes(activity)) {
+      selected.push(activity);
+      usedCategories.add(activity.category);
+      console.log(`   ✓ Added ${activity.name} (${activity.energy_level} energy, matches preference)`);
+    }
+  }
+  
+  // NEW: Now add stretch activities (different energy levels)
+  // Prefer one step up/down rather than extreme jumps (gentle push)
+  const gentleStretch = stretchActivities.filter(a => {
+    const activityEnergyValue = energyLevelMap[a.energy_level] || 2;
+    const diff = Math.abs(activityEnergyValue - userEnergyValue);
+    return diff === 1; // Only 1 level different (gentle)
+  });
+  
+  const extremeStretch = stretchActivities.filter(a => {
+    const activityEnergyValue = energyLevelMap[a.energy_level] || 2;
+    const diff = Math.abs(activityEnergyValue - userEnergyValue);
+    return diff > 1; // More than 1 level different
+  });
+  
+  console.log(`   Stretch options: ${gentleStretch.length} gentle, ${extremeStretch.length} extreme`);
+  
+  // Prefer gentle stretch first (one energy level up/down)
+  for (const activity of gentleStretch) {
+    if (selected.length >= count) break;
+    if (!usedCategories.has(activity.category)) {
+      selected.push(activity);
+      usedCategories.add(activity.category);
+      console.log(`   ⚡ Added ${activity.name} (${activity.energy_level} energy, gentle stretch)`);
+    }
+  }
+  
+  // Fill remaining with any stretch activities
+  for (const activity of [...gentleStretch, ...extremeStretch]) {
+    if (selected.length >= count) break;
+    if (!selected.includes(activity)) {
+      selected.push(activity);
+      console.log(`   ⚡ Added ${activity.name} (${activity.energy_level} energy, variety)`);
+    }
+  }
+  
+  // Final pass: fill any remaining slots with best-scoring activities
   const remaining = activities.filter(a => !selected.includes(a));
   
   while (selected.length < count && remaining.length > 0) {
-    // Pick best remaining activity (prefer activities with preferred tags)
     let best = remaining[0];
     let bestScore = scoreActivity(best, analysis);
     
@@ -385,8 +676,18 @@ function selectDiverseActivities(activities: any[], count: number, analysis: any
     }
     
     selected.push(best);
+    console.log(`   + Filled remaining slot with ${best.name} (${best.energy_level} energy)`);
     remaining.splice(remaining.indexOf(best), 1);
   }
+  
+  // Log final energy distribution
+  const energyDistribution = selected.reduce((acc, a) => {
+    acc[a.energy_level] = (acc[a.energy_level] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  console.log(`✅ Selected ${selected.length} diverse activities with energy distribution:`, energyDistribution);
+  selected.forEach((a, i) => console.log(`   ${i+1}. ${a.name} (${a.category}, ${a.energy_level} energy)`));
   
   return selected;
 }

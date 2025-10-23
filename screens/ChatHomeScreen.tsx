@@ -27,12 +27,17 @@ type RootStackParamList = {
     conversationId: number;
     deviceId: string;
     initialMessage?: string;
+    initialFilters?: FilterOptions; // NEW: Pass filters to conversation
   };
   UserProfile: undefined;
 };
 import { GlassCard } from '../components/design-system/GlassCard';
 import { ThinkingOrb } from '../components/design-system/ThinkingOrb';
 import { VibeChip } from '../components/design-system/VibeChip';
+import ActivityFilters, { FilterOptions } from '../components/filters/ActivityFilters';
+import { ChallengeMe } from '../components/ChallengeMe';
+import { VibeProfileSelector } from '../components/VibeProfileSelector';
+import { CreateVibeProfileModal } from '../components/CreateVibeProfileModal';
 import { chatApi, ChatStartResponse } from '../src/services/chatApi';
 import { weatherService, WeatherData } from '../src/services/weatherService';
 import { colors, getTimeGradient } from '../src/design-system/colors';
@@ -46,6 +51,10 @@ export const ChatHomeScreen: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [recentConversations, setRecentConversations] = useState<any[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<number | null>(null);
+  const [filters, setFilters] = useState<FilterOptions>({}); // NEW: Store filters
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null); // NEW: User location
+  const [showCreateProfileModal, setShowCreateProfileModal] = useState(false); // NEW: Profile modal
+  const [profileSelectorKey, setProfileSelectorKey] = useState(0); // NEW: Force profile selector refresh
   
   const gradientAnim = useRef(new Animated.Value(0)).current;
   const gradient = getTimeGradient();
@@ -53,7 +62,28 @@ export const ChatHomeScreen: React.FC = () => {
   useEffect(() => {
     initializeScreen();
     startGradientAnimation();
+    requestLocationPermission();
   }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === 'granted') {
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+        setUserLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+        console.log('📍 User location obtained for filters:', location.coords.latitude, location.coords.longitude);
+      } else {
+        console.log('⚠️ Location permission denied - filters will work without distance');
+      }
+    } catch (error) {
+      console.error('Failed to get location:', error);
+    }
+  };
 
   const startGradientAnimation = () => {
     Animated.loop(
@@ -119,11 +149,19 @@ export const ChatHomeScreen: React.FC = () => {
 
     const messageToSend = inputText.trim();
     
-    // Navigate to conversation screen with initial message
+    // Prepare filters with location
+    const activeFilters = {
+      ...filters,
+      userLatitude: userLocation?.latitude,
+      userLongitude: userLocation?.longitude,
+    };
+    
+    // Navigate to conversation screen with initial message AND filters
     navigation.navigate('ChatConversation', {
       conversationId: currentConversationId,
       deviceId: deviceId,
-      initialMessage: messageToSend, // Pass the message to auto-send
+      initialMessage: messageToSend,
+      initialFilters: Object.keys(filters).length > 0 ? activeFilters : undefined, // Pass filters if any are set
     });
     
     setInputText('');
@@ -198,6 +236,38 @@ export const ChatHomeScreen: React.FC = () => {
             <Text style={styles.greetingText}>{greeting.greeting.text}</Text>
           </GlassCard>
         )}
+
+        {/* Vibe Profile Selector - NEW: Quick access to saved profiles */}
+        <VibeProfileSelector
+          key={profileSelectorKey}
+          deviceId={deviceId}
+          onProfileSelect={(profile) => {
+            console.log('📚 Applying profile:', profile.name);
+            setFilters(profile.filters as FilterOptions);
+            // Optionally set vibe text if profile has it
+            if (profile.filters.vibeText) {
+              setInputText(profile.filters.vibeText);
+            }
+          }}
+          onCreateProfile={() => setShowCreateProfileModal(true)}
+        />
+
+        {/* Filters - NEW: Add filters before starting chat */}
+        <View style={styles.filtersSection}>
+          <ActivityFilters
+            onFiltersChange={setFilters}
+            userLocation={userLocation || undefined}
+          />
+        </View>
+
+        {/* Challenge Me Section */}
+        <ChallengeMe
+          deviceId={deviceId}
+          onChallengeAccepted={(challenge) => {
+            console.log('Challenge accepted:', challenge.name);
+            // Navigate to activity detail or show more info
+          }}
+        />
 
         {/* Suggested Vibes */}
         {greeting && greeting.suggestedVibes.length > 0 && (
@@ -279,6 +349,18 @@ export const ChatHomeScreen: React.FC = () => {
           </View>
         )}
       </View>
+
+      {/* Create Vibe Profile Modal */}
+      <CreateVibeProfileModal
+        visible={showCreateProfileModal}
+        deviceId={deviceId}
+        onClose={() => setShowCreateProfileModal(false)}
+        onProfileCreated={() => {
+          console.log('✅ Profile created, refreshing list');
+          setProfileSelectorKey(prev => prev + 1); // Force refresh
+        }}
+        initialFilters={filters as any}
+      />
     </KeyboardAvoidingView>
   );
 };
@@ -318,8 +400,12 @@ const styles = StyleSheet.create({
     paddingBottom: tokens.spacing.xl,
   },
   centeredGreetingCard: {
-    marginBottom: tokens.spacing.md,
+    alignSelf: 'stretch',
+    marginBottom: tokens.spacing.lg,
+  },
+  filtersSection: {
     width: '100%',
+    marginBottom: tokens.spacing.md,
   },
   centeredVibesSection: {
     width: '100%',

@@ -72,6 +72,7 @@ class ChatApiService {
     conversationId: number;
     message: string;
     location?: { city: string; lat: number; lng: number };
+    filters?: any; // Activity filters
   }): Promise<ChatMessageResponse> {
     console.log('🚀 Sending message to API:', { 
       url: `${API_URL}/chat/message`,

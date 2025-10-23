@@ -28,6 +28,10 @@ export interface SemanticVibeAnalysis {
   preferredTags: string[];  // Boost activities with these
   avoidTags: string[];     // Exclude activities with these
   
+  // Keyword filters for activity names (NEW)
+  keywordPrefer?: string[];  // Prefer activities with these keywords in name
+  keywordAvoid?: string[];   // Avoid activities with these keywords in name
+  
   // Reasoning
   reasoning: string;
   confidence: number;  // 0-1
@@ -86,6 +90,112 @@ DEEP (✅ BETTER):
   * Preferred: energy:high, mood:adrenaline, context:friends
   * Avoid: energy:low, mood:relaxed
 
+⚠️ **CRITICAL: CONFIDENCE LEVELS FOR KEYWORD MATCHING**
+
+**CONFIDENCE >= 0.9 (HIGH SPECIFICITY):**
+Use for EXPLICIT activity name requests. Keywords become MANDATORY filters.
+Examples:
+- "mountain biking" → confidence: 0.95, keywordPrefer: [mountain, biking, bike, MTB]
+- "rock climbing" → confidence: 0.95, keywordPrefer: [rock, climbing, climb, boulder]
+- "kayaking" → confidence: 0.95, keywordPrefer: [kayak, kayaking, paddling]
+
+These requests get ONLY activities matching keywords (strict filtering).
+
+**CONFIDENCE < 0.9 (GENERAL REQUEST):**
+Use for broad/thematic requests. Keywords become PREFERRED (boosting, not filtering).
+Examples:
+- "adventure in the mountains" → confidence: 0.75, keywordPrefer: [mountain, adventure, outdoor]
+- "something fun outdoors" → confidence: 0.6, keywordPrefer: [outdoor, fun, nature]
+- "relax in nature" → confidence: 0.7, keywordPrefer: [nature, relax, outdoor]
+
+These requests get activities WITH keywords first, then others (variety maintained).
+
+**RULE:** If user says exact activity name → confidence 0.9+
+         If user describes vibe/theme → confidence < 0.9
+
+Example: "mountain biking"
+- primaryIntent: "Go mountain biking on trails"
+- suggestedCategories: sports, adventure, nature
+- keywordPrefer: mountain, biking, bike, MTB, trail, downhill, enduro
+- requiredTags: category:sports, category:adventure
+- confidence: 0.95 ← HIGH = MANDATORY keyword matching
+
+Example: "adventure in the mountains"
+- primaryIntent: "Mountain adventure experience"
+- suggestedCategories: adventure, nature, sports
+- keywordPrefer: mountain, adventure, outdoor, hiking
+- requiredTags: category:adventure, category:nature
+- confidence: 0.75 ← MEDIUM = PREFERRED keyword boosting (keeps variety)
+
+CRITICAL: CULINARY CATEGORY DISTINCTION
+
+User vibe: "I'm craving food"
+
+SURFACE (❌ WRONG):
+- Keyword: "culinary" → includes wine tasting, cocktail workshops
+
+DEEP (✅ CORRECT):
+- PRIMARY INTENT: Wants to EAT actual FOOD, not drinks
+- EMOTIONAL CONTEXT: Hungry, wants dining/tasting experiences with solid food
+- UNDERLYING NEEDS:
+  * Actual meals or food tasting
+  * NOT beverages only (wine, cocktails, beer)
+  * Food-focused culinary experiences
+  
+- SUGGESTED CATEGORIES: culinary
+- KEYWORD FILTERS:
+  * Preferred: "food", "dining", "tasting", "cooking", "chef", "cuisine", "meal", "restaurant", "street food"
+  * Avoid keywords in activity names: "wine", "cocktail", "mixology", "beer", "spirits", "bartending", "sommelier"
+- TAGS:
+  * Required: category:culinary
+  * Preferred: mood:social, context:friends
+  * Avoid: None (use keyword filtering instead)
+
+User vibe: "I want cocktails" or "wine tasting"
+
+DEEP (✅ CORRECT):
+- PRIMARY INTENT: Wants DRINKS/BEVERAGES experiences
+- SUGGESTED CATEGORIES: culinary, social, nightlife
+- KEYWORD FILTERS:
+  * Preferred: "cocktail", "wine", "beer", "mixology", "tasting", "bar", "spirits"
+  * Avoid keywords: None (include drink-focused activities)
+
+KEYWORD FILTERING RULES:
+- When user mentions FOOD-related words (food, hungry, eat, dining, meal, cuisine), add "keywordAvoid" for drinks
+- When user mentions DRINK-related words (wine, cocktail, beer, drinks, mixology), prefer drink activities
+- Check activity NAMES for these keywords to filter within a category
+
+TRAINING DATA INSIGHTS - LEARN FROM USER REJECTIONS:
+
+❌ COMMON MISTAKES TO AVOID (based on 366+ feedback sessions):
+
+1. **Creative vibes with specific mediums** (5/5 rejected):
+   User: "I'm feeling creative with my music"
+   WRONG: Suggesting pottery, woodworking, jewelry, sewing (generic crafts)
+   RIGHT: Need music-specific activities (karaoke, DJ workshops, music production, concerts)
+   RULE: When user mentions a SPECIFIC creative medium (music, photography, writing), ONLY suggest that medium. Don't suggest unrelated creative activities.
+
+2. **Language learning activities** (100% rejection rate):
+   - "Romanian Language Course" - 8/8 rejected
+   - "Language Exchange Social" - 9/9 rejected
+   RULE: Avoid suggesting language learning unless user EXPLICITLY asks for it with keywords: "learn Romanian", "language class", "practice language"
+
+3. **Romance category** (75-100% rejection):
+   - "Romantic Boat Ride" - 3/3 rejected
+   - "Couples' Photoshoot" - 5/5 rejected
+   RULE: Only suggest romance activities if user explicitly mentions: "date", "romantic", "anniversary", "couple", "partner"
+   NEVER suggest romance for: "bored", "creative", "explore", "active", "social with friends"
+
+4. **Escape rooms** (85%+ rejection):
+   - Multiple escape room activities heavily rejected
+   RULE: Only suggest escape rooms if user wants: "puzzle", "escape room", "mystery", "challenge", "brain teaser"
+   NOT for general "social" or "bored" vibes
+
+5. **Social activities confusion**:
+   Social category has 40.4% approval (lowest performing)
+   BETTER: Use specific subcategories: "sports" (66%), "creative" (63%), "fitness" (67%)
+   RULE: Don't default to generic "social" - understand what KIND of social they want
+
 YOUR ANALYSIS PROCESS:
 
 1. READ the vibe carefully - what is the user REALLY expressing?
@@ -93,7 +203,9 @@ YOUR ANALYSIS PROCESS:
 3. UNDERSTAND underlying needs (physical? mental? social? achievement? relaxation?)
 4. MAP to activity attributes (not just categories!)
 5. CONSIDER context clues (time of day, season, mood indicators)
-6. PROVIDE reasoning that shows deep understanding
+6. DETECT specific keywords (food vs drinks vs other nuances)
+7. CHECK against rejection patterns above - avoid known mismatches
+8. PROVIDE reasoning that shows deep understanding
 
 DATABASE TAG SYSTEM:
 
@@ -128,6 +240,8 @@ RETURN FORMAT (JSON):
   "requiredTags": ["category:creative", "equipment:provided"],
   "preferredTags": ["mood:creative", "mood:mindful"],
   "avoidTags": ["energy:high", "mood:adrenaline"],
+  "keywordPrefer": ["food", "dining", "cooking"],
+  "keywordAvoid": ["wine", "cocktail", "beer"],
   "reasoning": "Single-line explanation with spaces not newlines",
   "confidence": 0.9
 }
@@ -283,6 +397,8 @@ function fallbackKeywordAnalysis(vibe: string): SemanticVibeAnalysis {
     requiredTags,
     preferredTags,
     avoidTags: [],
+    keywordPrefer: [],
+    keywordAvoid: [],
     reasoning: 'Fallback keyword-based analysis (LLM unavailable)',
     confidence: 0.5
   };

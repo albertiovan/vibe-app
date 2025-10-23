@@ -26,6 +26,9 @@ import { DiscoveryScreen } from './screens/DiscoveryScreen';
 import { SavedActivitiesScreen } from './screens/SavedActivitiesScreen';
 import EnhancedExperienceDetailScreen from './screens/EnhancedExperienceDetailScreen';
 import { TrainingModeScreen } from './screens/TrainingModeScreen';
+import { OnboardingScreen as NewUserOnboarding } from './screens/OnboardingScreen';
+import { DevMenu } from './components/DevMenu';
+import { userStorage } from './src/services/userStorage';
 import * as Location from 'expo-location';
 
 // Define navigation types
@@ -126,127 +129,8 @@ const HELP_SUGGESTIONS = [
   }
 ];
 
-// Simple Onboarding Screen
-function OnboardingScreen({ navigation }: { navigation: any }) {
-  const [loading, setLoading] = useState(false);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  
-  const interests = [
-    { id: 'adventure', label: 'Adventure & Thrills', emoji: '🎢' },
-    { id: 'nature', label: 'Nature & Outdoors', emoji: '🌲' },
-    { id: 'culture', label: 'Culture & Arts', emoji: '🎨' },
-    { id: 'wellness', label: 'Wellness & Relaxation', emoji: '🧘' },
-    { id: 'food', label: 'Food & Culinary', emoji: '🍽️' },
-    { id: 'nightlife', label: 'Nightlife & Social', emoji: '🌃' },
-    { id: 'shopping', label: 'Shopping & Markets', emoji: '🛍️' },
-    { id: 'photography', label: 'Photography & Views', emoji: '📸' }
-  ];
-
-  const toggleInterest = (interestId: string) => {
-    setSelectedInterests(prev => {
-      if (prev.includes(interestId)) {
-        return prev.filter(id => id !== interestId);
-      } else if (prev.length < 7) {
-        return [...prev, interestId];
-      }
-      return prev;
-    });
-  };
-
-  const completeOnboarding = async () => {
-    if (selectedInterests.length < 3) {
-      Alert.alert('Please select at least 3 interests');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const userId = `user_${Date.now()}`;
-      const response = await fetch('http://10.103.30.198:3000/api/vibe-profile/onboarding', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          interests: selectedInterests,
-          energyLevel: 'medium',
-          indoorOutdoor: 'either',
-          socialStyle: 'either',
-          opennessScore: 3
-        }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        // Store user ID for future use
-        console.log('✅ Profile created for user:', userId);
-        navigation.navigate('Home');
-      } else {
-        Alert.alert('Setup Error', data.error || 'Failed to complete setup');
-      }
-    } catch (error) {
-      console.error('❌ Onboarding error:', error);
-      Alert.alert('Network Error', 'Please check your connection and try again');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <StatusBar style="dark" />
-      <View style={styles.header}>
-        <Text style={styles.title}>Build Your Vibe Profile</Text>
-        <Text style={styles.subtitle}>Select 3-7 interests to get personalized recommendations</Text>
-      </View>
-
-      <ScrollView style={styles.interestsContainer}>
-        <View style={styles.interestsGrid}>
-          {interests.map(interest => (
-            <TouchableOpacity
-              key={interest.id}
-              style={[
-                styles.interestTile,
-                selectedInterests.includes(interest.id) && styles.interestTileSelected
-              ]}
-              onPress={() => toggleInterest(interest.id)}
-            >
-              <Text style={styles.interestEmoji}>{interest.emoji}</Text>
-              <Text style={[
-                styles.interestLabel,
-                selectedInterests.includes(interest.id) && styles.interestLabelSelected
-              ]}>
-                {interest.label}
-              </Text>
-              {selectedInterests.includes(interest.id) && (
-                <Text style={styles.selectedCheck}>✓</Text>
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-
-      <View style={styles.onboardingFooter}>
-        <Text style={styles.selectionCount}>
-          {selectedInterests.length} of 3-7 selected
-        </Text>
-        <TouchableOpacity
-          style={[
-            styles.completeButton,
-            selectedInterests.length < 3 && styles.completeButtonDisabled
-          ]}
-          onPress={completeOnboarding}
-          disabled={selectedInterests.length < 3 || loading}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color="white" />
-          ) : (
-            <Text style={styles.completeButtonText}>Complete Setup</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
+// Old Onboarding Screen - Removed
+// Using dedicated OnboardingScreen.tsx imported at the top
 
 function HomeScreen({ navigation }: { navigation: any }) {
   const [vibe, setVibe] = useState('');
@@ -984,17 +868,64 @@ function ResultsScreen({ route, navigation }: any) {
       </ScrollView>
     </View>
   );
-}
+};
 
 // Main App Component
 export default function App() {
+  const [isOnboarded, setIsOnboarded] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkOnboardingStatus();
+  }, []);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const hasAccount = await userStorage.hasAccount();
+      const account = await userStorage.getAccount();
+      
+      // User is onboarded if they have an account and completed onboarding
+      setIsOnboarded(hasAccount && account?.onboardingCompleted === true);
+    } catch (error) {
+      console.error('Error checking onboarding:', error);
+      setIsOnboarded(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOnboardingComplete = () => {
+    setIsOnboarded(true);
+  };
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0A0E17' }}>
+        <ActivityIndicator size="large" color="#667EEA" />
+        <Text style={{ color: '#fff', marginTop: 16 }}>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (!isOnboarded) {
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style="light" />
+        <NewUserOnboarding onComplete={handleOnboardingComplete} />
+        <DevMenu />
+      </GestureHandlerRootView>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
+        <StatusBar style="light" />
         <Stack.Navigator
           initialRouteName="ChatHome"
           screenOptions={{
             headerShown: false,
+            contentStyle: { backgroundColor: '#0A0E17' },
           }}
         >
           {/* New Chat Interface Screens */}
@@ -1067,7 +998,6 @@ export default function App() {
           />
           
           {/* Original Screens */}
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Results" component={ResultsScreen} />
           <Stack.Screen name="ExperienceDetail" component={ExperienceDetailScreen} />

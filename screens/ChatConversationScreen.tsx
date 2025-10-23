@@ -22,6 +22,7 @@ import * as Location from 'expo-location';
 import { GlassCard } from '../components/design-system/GlassCard';
 import { ThinkingOrb } from '../components/design-system/ThinkingOrb';
 import { GradientButton } from '../components/design-system/GradientButton';
+import ActivityFilters, { FilterOptions } from '../components/filters/ActivityFilters';
 import { chatApi, Message } from '../src/services/chatApi';
 import { weatherService } from '../src/services/weatherService';
 import { colors, getTimeGradient, getVibeGradient } from '../src/design-system/colors';
@@ -32,24 +33,48 @@ type RouteParams = {
     conversationId: number;
     deviceId: string;
     initialMessage?: string;
+    initialFilters?: FilterOptions;
   };
 };
 
 export const ChatConversationScreen: React.FC = () => {
   const route = useRoute<RouteProp<RouteParams, 'ChatConversation'>>();
-  const { conversationId, deviceId, initialMessage } = route.params;
+  const { conversationId, deviceId, initialMessage, initialFilters } = route.params;
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [vibeState, setVibeState] = useState<'calm' | 'excited' | 'romantic' | 'adventurous'>('calm');
+  const [filters, setFilters] = useState<FilterOptions>(initialFilters || {}); // Use initialFilters if provided
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   
   const scrollViewRef = useRef<ScrollView>(null);
   const gradient = getVibeGradient(vibeState);
 
   useEffect(() => {
     loadConversation();
+    requestLocationPermission();
   }, [conversationId]);
+
+  const requestLocationPermission = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === 'granted') {
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+        setUserLocation({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+        console.log('📍 User location obtained:', location.coords.latitude, location.coords.longitude);
+      } else {
+        console.log('⚠️ Location permission denied');
+      }
+    } catch (error) {
+      console.error('Failed to get location:', error);
+    }
+  };
 
   const loadConversation = async () => {
     try {
@@ -94,18 +119,26 @@ export const ChatConversationScreen: React.FC = () => {
     scrollToBottom();
 
     try {
-      // Hardcoded location: Bucharest, Romania
+      // Use user location if available, fallback to Bucharest
       const location = {
         city: 'Bucharest',
-        lat: 44.4268,
-        lng: 26.1025,
+        lat: userLocation?.latitude || 44.4268,
+        lng: userLocation?.longitude || 26.1025,
       };
       
-      // Send message to API
+      // Prepare filters with user location
+      const activeFilters = {
+        ...filters,
+        userLatitude: userLocation?.latitude,
+        userLongitude: userLocation?.longitude,
+      };
+      
+      // Send message to API with filters
       const response = await chatApi.sendMessage({
         conversationId,
         message: messageText,
         location,
+        filters: Object.keys(activeFilters).length > 2 ? activeFilters : undefined, // Only send if filters besides location
       });
 
       // Update vibe state
@@ -175,7 +208,7 @@ export const ChatConversationScreen: React.FC = () => {
             {message.metadata?.activities && message.metadata.activities.length > 0 && (
               <View style={styles.activitiesContainer}>
                 <Text style={styles.activitiesLabel}>Recommended for you:</Text>
-                {message.metadata.activities.slice(0, 3).map((activity: any, idx: number) => (
+                {message.metadata.activities.slice(0, 5).map((activity: any, idx: number) => (
                   <TouchableOpacity
                     key={idx}
                     style={styles.activityCard}
@@ -210,6 +243,15 @@ export const ChatConversationScreen: React.FC = () => {
       >
         <View style={[StyleSheet.absoluteFill, { opacity: 0.03 }]} />
       </LinearGradient>
+
+      {/* Filters */}
+      <View style={styles.filtersContainer}>
+        <ActivityFilters
+          onFiltersChange={setFilters}
+          userLocation={userLocation || undefined}
+          initialFilters={filters} // Pass current filters to preserve selections
+        />
+      </View>
 
       {/* Messages */}
       <ScrollView
@@ -262,6 +304,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.base.canvas,
+  },
+  filtersContainer: {
+    paddingHorizontal: tokens.spacing.md,
+    paddingTop: tokens.spacing.md,
+    zIndex: 1000,
   },
   scrollView: {
     flex: 1,

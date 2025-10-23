@@ -79,7 +79,7 @@ router.post('/start', async (req, res) => {
  */
 router.post('/message', async (req, res) => {
   try {
-    const { conversationId, message, location } = req.body;
+    const { conversationId, message, location, filters } = req.body;
 
     if (!conversationId || !message) {
       return res.status(400).json({ error: 'conversation_id_and_message_required' });
@@ -101,17 +101,29 @@ router.post('/message', async (req, res) => {
     }
 
     // Detect vibe state from user message
-    const vibeState = ContextualPromptsService.detectVibeState(message);
+    let vibeState = ContextualPromptsService.detectVibeState(message);
     await ConversationHistoryService.updateVibeState(conversationId, vibeState);
 
-    // Get AI recommendations using the MCP recommender
+    // Get AI recommendations using the MCP recommender (with filters)
     const recommendations = await mcpRecommender.getMCPRecommendations({
       vibe: message,
-      city: location?.city || 'Bucharest'
+      city: location?.city || 'Bucharest',
+      filters: filters || undefined // Pass user filters if provided
     });
 
-    // Generate response text based on vibe state and results
+    // Generate response text based on ACTUAL activities returned, not assumed vibe
     let responseText = "Here's what I found for you!";
+    
+    // Detect actual energy level from recommended activities
+    const hasHighEnergy = recommendations.ideas.some((activity: any) => 
+      activity.energy_level === 'high'
+    );
+    
+    // Override vibe state if activities are clearly high-energy but vibe was detected as calm
+    if (hasHighEnergy && vibeState === 'calm') {
+      vibeState = 'adventurous';
+    }
+    
     if (vibeState === 'excited') {
       responseText = "Let's get out there! Here are some great options:";
     } else if (vibeState === 'romantic') {

@@ -30,6 +30,8 @@ import mcpVibeRoutes from './routes/mcpVibe.js';
 import chatRoutes from './routes/chat.js';
 import userRoutes from './routes/user.js';
 import trainingRoutes from './routes/training.js';
+import challengeRoutes from './routes/challenges.js';
+import vibeProfileRoutes from './routes/vibeProfiles.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -64,6 +66,8 @@ app.use('/api/mcp-vibe', mcpVibeRoutes); // Tag-first PostgreSQL MCP architectur
 app.use('/api/chat', chatRoutes); // New conversational chat interface ✨
 app.use('/api/user', userRoutes); // User preferences and saved activities ✨
 app.use('/api/training', trainingRoutes); // Training feedback collection ✨
+app.use('/api/challenges', challengeRoutes); // Challenge Me feature ✨
+app.use('/api/vibe-profiles', vibeProfileRoutes); // Custom Vibe Profiles ✨
 
 // Root endpoint
 app.get('/', (req, res) => {
