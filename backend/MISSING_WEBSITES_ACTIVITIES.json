@@ -1,0 +1,2266 @@
+[
+  {
+    "id": 77,
+    "name": "Edenland Park Zipline & Aerial Courses",
+    "category": "adventure",
+    "city": "Balotești",
+    "latitude": 44.6544,
+    "longitude": 26.1
+  },
+  {
+    "id": 78,
+    "name": "Comana Adventure Park & Kayak",
+    "category": "adventure",
+    "city": "Comana",
+    "latitude": 44.115,
+    "longitude": 26.146
+  },
+  {
+    "id": 79,
+    "name": "Tandem Skydiving at Clinceni Airfield",
+    "category": "adventure",
+    "city": "Clinceni",
+    "latitude": 44.359,
+    "longitude": 25.942
+  },
+  {
+    "id": 91,
+    "name": "Go-Karting: VMAX (Indoor) or AMCKart (Outdoor)",
+    "category": "adventure",
+    "city": "Bucharest",
+    "latitude": 44.4733,
+    "longitude": 26.0769
+  },
+  {
+    "id": 92,
+    "name": "Indoor Climbing Session (Top-rope & Bouldering)",
+    "category": "adventure",
+    "city": "Bucharest",
+    "latitude": 44.45,
+    "longitude": 26.148
+  },
+  {
+    "id": 217,
+    "name": "Guided Mountain Biking — Postăvarul Peak",
+    "category": "adventure",
+    "city": "Brașov",
+    "latitude": 45.588,
+    "longitude": 25.552
+  },
+  {
+    "id": 218,
+    "name": "Outdoor Rock Climbing Day",
+    "category": "adventure",
+    "city": "Cheile Turzii",
+    "latitude": 46.548,
+    "longitude": 23.704
+  },
+  {
+    "id": 219,
+    "name": "Via Ferrata “Casa Zmeului”",
+    "category": "adventure",
+    "city": "Vadu Crișului",
+    "latitude": 46.981,
+    "longitude": 22.514
+  },
+  {
+    "id": 220,
+    "name": "Guided Hike — Omu Peak (Bucegi)",
+    "category": "adventure",
+    "city": "Bucegi",
+    "latitude": 45.438,
+    "longitude": 25.449
+  },
+  {
+    "id": 221,
+    "name": "Trail Running Clinic (Brașov)",
+    "category": "adventure",
+    "city": "Brașov",
+    "latitude": 45.644,
+    "longitude": 25.588
+  },
+  {
+    "id": 223,
+    "name": "Bungee Jump (Râșnoavei Gorge)",
+    "category": "adventure",
+    "city": "Râșnov",
+    "latitude": 45.56,
+    "longitude": 25.503
+  },
+  {
+    "id": 224,
+    "name": "Paragliding Tandem (Bunloc)",
+    "category": "adventure",
+    "city": "Săcele",
+    "latitude": 45.606,
+    "longitude": 25.639
+  },
+  {
+    "id": 225,
+    "name": "ATV/Quad Biking (Cernica Forest)",
+    "category": "adventure",
+    "city": "Cernica",
+    "latitude": 44.452,
+    "longitude": 26.292
+  },
+  {
+    "id": 226,
+    "name": "Paintball Skirmish (Woodland Maps)",
+    "category": "adventure",
+    "city": "Balotești",
+    "latitude": 44.69,
+    "longitude": 26.08
+  },
+  {
+    "id": 315,
+    "name": "Tandem Skydive at Clinceni (TNT Brothers)",
+    "category": "adventure",
+    "city": "Cornetu",
+    "latitude": 44.3583,
+    "longitude": 25.9306
+  },
+  {
+    "id": 317,
+    "name": "High Ropes & Mega Ziplines (Parc Aventura Brașov)",
+    "category": "adventure",
+    "city": "Brașov",
+    "latitude": 45.613269,
+    "longitude": 25.637773
+  },
+  {
+    "id": 320,
+    "name": "Via Ferrata Casa Zmeului (Vadu Crișului)",
+    "category": "adventure",
+    "city": "Vadu Crișului",
+    "latitude": 46.97123,
+    "longitude": 22.51355
+  },
+  {
+    "id": 321,
+    "name": "Via Ferrata Hili's Cave (Cheile Turzii)",
+    "category": "adventure",
+    "city": "Cheia (near Turda)",
+    "latitude": 46.565667,
+    "longitude": 23.676194
+  },
+  {
+    "id": 322,
+    "name": "Downhill & Enduro Runs (Postăvaru Bike Park)",
+    "category": "adventure",
+    "city": "Poiana Brașov",
+    "latitude": 45.59671,
+    "longitude": 25.55619
+  },
+  {
+    "id": 740,
+    "name": "Via Ferrata Casa Zmeului – Vadu Crișului",
+    "category": "adventure",
+    "city": "Vadu Crișului",
+    "latitude": 46.977,
+    "longitude": 22.548
+  },
+  {
+    "id": 741,
+    "name": "Via Ferrata Pietrele Negre – Vârtop (Apuseni)",
+    "category": "adventure",
+    "city": "Vârtop (Arieșeni)",
+    "latitude": 46.5167,
+    "longitude": 22.6317
+  },
+  {
+    "id": 742,
+    "name": "Seven Ladders Canyon Tyrolean Zipline (Dâmbul Morii)",
+    "category": "adventure",
+    "city": "Dâmbul Morii",
+    "latitude": 45.613,
+    "longitude": 25.68
+  },
+  {
+    "id": 743,
+    "name": "Paragliding Tandem Flight – Bunloc Take-off (Brașov)",
+    "category": "adventure",
+    "city": "Săcele/Brașov",
+    "latitude": 45.604,
+    "longitude": 25.651
+  },
+  {
+    "id": 744,
+    "name": "Tandem Skydive – Tuzla Aerodrome (Black Sea)",
+    "category": "adventure",
+    "city": "Tuzla",
+    "latitude": 43.994,
+    "longitude": 28.642
+  },
+  {
+    "id": 750,
+    "name": "Rock Ridge Climb – Acele Morarului (Bucegi)",
+    "category": "adventure",
+    "city": "Bușteni",
+    "latitude": 45.409,
+    "longitude": 25.543
+  },
+  {
+    "id": 751,
+    "name": "First-Time Caving – Apuseni Mountains (Guided)",
+    "category": "adventure",
+    "city": "Meziad/Apuseni",
+    "latitude": 46.666,
+    "longitude": 22.466
+  },
+  {
+    "id": 794,
+    "name": "Tandem Skydiving over Cluj with Skydive Transilvania",
+    "category": "adventure",
+    "city": "Luncani",
+    "latitude": 46.4817,
+    "longitude": 23.9341
+  },
+  {
+    "id": 797,
+    "name": "High Ropes & Mega Ziplines at Adrenalin Park",
+    "category": "adventure",
+    "city": "Casele Micești (Cluj)",
+    "latitude": 46.69603,
+    "longitude": 23.57802
+  },
+  {
+    "id": 798,
+    "name": "Zipline & Rope Courses at Comana Adventure Park",
+    "category": "adventure",
+    "city": "Comana",
+    "latitude": 44.172347,
+    "longitude": 26.132858
+  },
+  {
+    "id": 799,
+    "name": "Via Ferrata Wild Ferenc in Bicaz Gorges",
+    "category": "adventure",
+    "city": "Lacu Roșu",
+    "latitude": 46.798428,
+    "longitude": 25.793445
+  },
+  {
+    "id": 800,
+    "name": "Guided Canyoning in Valea lui Stan (Vidraru)",
+    "category": "adventure",
+    "city": "Arefu",
+    "latitude": 45.37273,
+    "longitude": 24.59991
+  },
+  {
+    "id": 936,
+    "name": "Tandem Skydive over the Black Sea (Tuzla)",
+    "category": "adventure",
+    "city": "Tuzla",
+    "latitude": 43.9845,
+    "longitude": 28.6062
+  },
+  {
+    "id": 937,
+    "name": "Tandem Skydive Luncani (Skydive Transilvania)",
+    "category": "adventure",
+    "city": "Luncani",
+    "latitude": 46.48167,
+    "longitude": 23.93139
+  },
+  {
+    "id": 938,
+    "name": "Tandem Skydive Timișoara (GoJump LRSG)",
+    "category": "adventure",
+    "city": "Sânmihaiu German",
+    "latitude": 45.70372,
+    "longitude": 21.05524
+  },
+  {
+    "id": 939,
+    "name": "Cheile Râșnoavei Bungee Jump",
+    "category": "adventure",
+    "city": "Râșnov",
+    "latitude": 45.54589,
+    "longitude": 25.51717
+  },
+  {
+    "id": 940,
+    "name": "Adventure Park Brașov Mega Zip & Ropes",
+    "category": "adventure",
+    "city": "Brașov",
+    "latitude": 45.6097,
+    "longitude": 25.6572
+  },
+  {
+    "id": 941,
+    "name": "Tandem Paragliding Clopotiva (Retezat)",
+    "category": "adventure",
+    "city": "Clopotiva",
+    "latitude": 45.56,
+    "longitude": 22.82
+  },
+  {
+    "id": 942,
+    "name": "Seven Ladders Canyon Via Ferrata Sprint",
+    "category": "adventure",
+    "city": "Timișu de Jos",
+    "latitude": 45.5809,
+    "longitude": 25.6513
+  },
+  {
+    "id": 1112,
+    "name": "Wheel Throwing Intro at Clay Play",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4268,
+    "longitude": 26.1035
+  },
+  {
+    "id": 1113,
+    "name": "Paint-Your-Own Ceramics at Made by You",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4466,
+    "longitude": 26.0949
+  },
+  {
+    "id": 1114,
+    "name": "Guided Acrylic Painting (Art & Hobby Studio)",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4479,
+    "longitude": 26.0874
+  },
+  {
+    "id": 1115,
+    "name": "Jewelry Making Fundamentals (Assamblage School)",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4397,
+    "longitude": 26.1013
+  },
+  {
+    "id": 1117,
+    "name": "Leathercraft: Hand-Stitched Wallet at Urban Bag",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4272,
+    "longitude": 26.1209
+  },
+  {
+    "id": 1118,
+    "name": "Modern Calligraphy at Seneca AntiCafe",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4613,
+    "longitude": 26.0858
+  },
+  {
+    "id": 1119,
+    "name": "Woodworking Basics at NOD Makerspace",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4202,
+    "longitude": 26.1159
+  },
+  {
+    "id": 1120,
+    "name": "Traditional Embroidery at Casa cu Rost",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4352,
+    "longitude": 26.1334
+  },
+  {
+    "id": 1121,
+    "name": "Ceramics Hand-Building (Alimeria Ceramics)",
+    "category": "creative",
+    "city": "Timișoara",
+    "latitude": 45.7489,
+    "longitude": 21.2087
+  },
+  {
+    "id": 1122,
+    "name": "Paint-Your-Own Ceramics (Caferamica Iași)",
+    "category": "creative",
+    "city": "Iași",
+    "latitude": 47.1598,
+    "longitude": 27.5901
+  },
+  {
+    "id": 1123,
+    "name": "Maker Induction & Studio Access (FIX Makerspace)",
+    "category": "creative",
+    "city": "Oradea",
+    "latitude": 47.053,
+    "longitude": 21.937
+  },
+  {
+    "id": 1124,
+    "name": "Sip & Paint Night (PaintandParty.ro)",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.43,
+    "longitude": 26.1
+  },
+  {
+    "id": 1218,
+    "name": "Wheel Throwing Starter at Em Chang Studio",
+    "category": "creative",
+    "city": "Brașov",
+    "latitude": 45.658,
+    "longitude": 25.6012
+  },
+  {
+    "id": 1219,
+    "name": "Botanical Watercolor with Irina Neacșu",
+    "category": "creative",
+    "city": "Brașov",
+    "latitude": 45.6417,
+    "longitude": 25.5883
+  },
+  {
+    "id": 1220,
+    "name": "Sewing & Patternmaking Basics (Atelierele ILBAH)",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4475,
+    "longitude": 26.084
+  },
+  {
+    "id": 1221,
+    "name": "Stained Glass (Tiffany) Intro Workshop",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.3825,
+    "longitude": 26.0665
+  },
+  {
+    "id": 1222,
+    "name": "Traditional Pottery at Ceramica de Nocrich",
+    "category": "creative",
+    "city": "Nocrich",
+    "latitude": 45.896,
+    "longitude": 24.4544
+  },
+  {
+    "id": 1223,
+    "name": "Fashion Illustration After-Work (DallesGO)",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.4446,
+    "longitude": 26.0968
+  },
+  {
+    "id": 1225,
+    "name": "Resin Art: Pour & Finish (NOD cursuri)",
+    "category": "creative",
+    "city": "Bucharest",
+    "latitude": 44.427,
+    "longitude": 26.09
+  },
+  {
+    "id": 36,
+    "name": "Bucharest Traditional Food Tour",
+    "category": "culinary",
+    "city": "Bucharest",
+    "latitude": 44.4319,
+    "longitude": 26.1025
+  },
+  {
+    "id": 1022,
+    "name": "Old Town Wine Tasting at Abel's",
+    "category": "culinary",
+    "city": "Bucharest",
+    "latitude": 44.43006,
+    "longitude": 26.09736
+  },
+  {
+    "id": 1023,
+    "name": "LacertA Winery Tour & Tasting (Dealu Mare)",
+    "category": "culinary",
+    "city": "Fintești",
+    "latitude": 45.072521,
+    "longitude": 26.468487
+  },
+  {
+    "id": 1024,
+    "name": "Rhein Azuga 1892 Cellar Tour & Bubbles",
+    "category": "culinary",
+    "city": "Azuga",
+    "latitude": 45.443768,
+    "longitude": 25.56391
+  },
+  {
+    "id": 1025,
+    "name": "Cramele Recaș Estate Visit & Tasting",
+    "category": "culinary",
+    "city": "Recaș",
+    "latitude": 45.826998,
+    "longitude": 21.527345
+  },
+  {
+    "id": 1028,
+    "name": "Meron Public Coffee Cupping (Cluj)",
+    "category": "culinary",
+    "city": "Cluj-Napoca",
+    "latitude": 46.77481,
+    "longitude": 23.58689
+  },
+  {
+    "id": 1029,
+    "name": "Hands-on Cocktail Workshop (Bucharest)",
+    "category": "culinary",
+    "city": "Bucharest",
+    "latitude": 44.436,
+    "longitude": 26.103
+  },
+  {
+    "id": 2005,
+    "name": "Professional Cooking at Horeca Culinary School",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2006,
+    "name": "Hands-On Classes at Cooking Studio",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2007,
+    "name": "Amateur Cooking at Atelierele ILBAH",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4475,
+    "longitude": 26.084
+  },
+  {
+    "id": 2008,
+    "name": "Cooking for Beginners at DallesGO",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4446,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2009,
+    "name": "Gourmet Techniques at Société Gourmet",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2010,
+    "name": "Modern Cooking at CulinaryOn România",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2011,
+    "name": "Artisan Techniques at Artisan Cooking Classes",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2012,
+    "name": "Grill Mastery at Grill Expert Academy",
+    "category": "culinary",
+    "city": "Cluj-Napoca",
+    "latitude": 46.7708,
+    "longitude": 23.5919
+  },
+  {
+    "id": 2013,
+    "name": "Local Cuisine Workshops at My Transylvania",
+    "category": "culinary",
+    "city": "Brașov",
+    "latitude": 45.6524,
+    "longitude": 25.6089
+  },
+  {
+    "id": 2014,
+    "name": "Culinary Workshops at KUXA Studio",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2015,
+    "name": "Traditional Cookery at Casa Ratiu",
+    "category": "culinary",
+    "city": "Turda",
+    "latitude": 46.5742,
+    "longitude": 23.7864
+  },
+  {
+    "id": 2016,
+    "name": "French Techniques at Disciples Escoffier",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2017,
+    "name": "Professional Chef Training at ICEP Hotel School",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2018,
+    "name": "Chef Course at ICEP București",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2019,
+    "name": "Culinary Masterclass at Horeca School",
+    "category": "culinary",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2020,
+    "name": "Pastry Courses at SIMPA Sibiu",
+    "category": "culinary",
+    "city": "Sibiu",
+    "latitude": 45.7983,
+    "longitude": 24.1256
+  },
+  {
+    "id": 1026,
+    "name": "ASTRA Museum Hands-on Crafts Workshop",
+    "category": "culture",
+    "city": "Sibiu",
+    "latitude": 45.755552,
+    "longitude": 24.111696
+  },
+  {
+    "id": 1027,
+    "name": "Village Museum Curated Guided Tour",
+    "category": "culture",
+    "city": "Bucharest",
+    "latitude": 44.471645,
+    "longitude": 26.077896
+  },
+  {
+    "id": 227,
+    "name": "Boxing Fitness (No Sparring)",
+    "category": "fitness",
+    "city": "Bucharest",
+    "latitude": 44.424,
+    "longitude": 26.117
+  },
+  {
+    "id": 228,
+    "name": "Indoor Cycling (Beat-Driven Ride)",
+    "category": "fitness",
+    "city": "Bucharest",
+    "latitude": 44.466,
+    "longitude": 26.085
+  },
+  {
+    "id": 229,
+    "name": "Outdoor Bootcamp (Total Body)",
+    "category": "fitness",
+    "city": "Bucharest",
+    "latitude": 44.478,
+    "longitude": 26.084
+  },
+  {
+    "id": 230,
+    "name": "F45 HIIT Team Training",
+    "category": "fitness",
+    "city": "Bucharest",
+    "latitude": 44.48,
+    "longitude": 26.085
+  },
+  {
+    "id": 231,
+    "name": "Zumba Dance Fitness",
+    "category": "fitness",
+    "city": "Bucharest",
+    "latitude": 44.446,
+    "longitude": 26.11
+  },
+  {
+    "id": 232,
+    "name": "Calisthenics Park Training (Parc Tei)",
+    "category": "fitness",
+    "city": "Bucharest",
+    "latitude": 44.462,
+    "longitude": 26.125
+  },
+  {
+    "id": 233,
+    "name": "Obstacle Course/Ninja Training",
+    "category": "fitness",
+    "city": "Bucharest",
+    "latitude": 44.426,
+    "longitude": 26.103
+  },
+  {
+    "id": 1973,
+    "name": "Olympic Lanes at Complex Sportiv Otopeni",
+    "category": "fitness",
+    "city": "Otopeni",
+    "latitude": 44.5486,
+    "longitude": 26.085
+  },
+  {
+    "id": 1974,
+    "name": "Training Session at Bazinul Olimpic Dinamo",
+    "category": "fitness",
+    "city": "București",
+    "latitude": 44.4551,
+    "longitude": 26.1024
+  },
+  {
+    "id": 1975,
+    "name": "Mountain City Laps at Bazinul Olimpic Mihai Mitrofan",
+    "category": "fitness",
+    "city": "Brașov",
+    "latitude": 45.6579,
+    "longitude": 25.6012
+  },
+  {
+    "id": 1976,
+    "name": "University Pool at Complexul de Natație UBB",
+    "category": "fitness",
+    "city": "Cluj-Napoca",
+    "latitude": 46.7712,
+    "longitude": 23.6236
+  },
+  {
+    "id": 1977,
+    "name": "Technical University Pool at UTCN",
+    "category": "fitness",
+    "city": "Cluj-Napoca",
+    "latitude": 46.7693,
+    "longitude": 23.5856
+  },
+  {
+    "id": 1978,
+    "name": "Western Training at Bazinul Olimpic Ioan Alexandrescu",
+    "category": "fitness",
+    "city": "Oradea",
+    "latitude": 47.0458,
+    "longitude": 21.9189
+  },
+  {
+    "id": 1979,
+    "name": "Transylvanian Laps at Bazinul Olimpic Târgu Mureș",
+    "category": "fitness",
+    "city": "Târgu Mureș",
+    "latitude": 46.5426,
+    "longitude": 24.5574
+  },
+  {
+    "id": 1980,
+    "name": "Modern Training at Complex Sportiv City",
+    "category": "fitness",
+    "city": "Ploiești",
+    "latitude": 44.9536,
+    "longitude": 26.0219
+  },
+  {
+    "id": 1981,
+    "name": "Community Swimming at Bazinul Vega",
+    "category": "fitness",
+    "city": "Ploiești",
+    "latitude": 44.9389,
+    "longitude": 26.0258
+  },
+  {
+    "id": 1982,
+    "name": "Year-Round Swimming at Aria Aqua Park",
+    "category": "fitness",
+    "city": "Sibiu",
+    "latitude": 45.7983,
+    "longitude": 24.1256
+  },
+  {
+    "id": 1983,
+    "name": "Premium Club Swimming at World Class Mall Moldova",
+    "category": "fitness",
+    "city": "Iași",
+    "latitude": 47.1615,
+    "longitude": 27.5878
+  },
+  {
+    "id": 1984,
+    "name": "Coastal Training at World Class Constanța",
+    "category": "fitness",
+    "city": "Constanța",
+    "latitude": 44.1767,
+    "longitude": 28.6472
+  },
+  {
+    "id": 316,
+    "name": "Track Day Laps at MotorPark Romania",
+    "category": "motorsports",
+    "city": "Adâncata",
+    "latitude": 44.779422,
+    "longitude": 26.471723
+  },
+  {
+    "id": 318,
+    "name": "Outdoor Karting Session (AMCKart Tunari)",
+    "category": "motorsports",
+    "city": "Tunari",
+    "latitude": 44.53564,
+    "longitude": 26.14964
+  },
+  {
+    "id": 747,
+    "name": "Outdoor Go-Karting – AMCKart (1.24 km CIK-FIA Track)",
+    "category": "motorsports",
+    "city": "Bucharest",
+    "latitude": 44.544,
+    "longitude": 26.147
+  },
+  {
+    "id": 749,
+    "name": "ATV/Quad Off-Road Tour – Zărnești & Plaiul Foii",
+    "category": "motorsports",
+    "city": "Zărnești",
+    "latitude": 45.561,
+    "longitude": 25.335
+  },
+  {
+    "id": 795,
+    "name": "Drift Taxi & Hot Laps at Academia Titi Aur",
+    "category": "motorsports",
+    "city": "Cocani",
+    "latitude": 44.635173,
+    "longitude": 25.899088
+  },
+  {
+    "id": 796,
+    "name": "Outdoor Karting Sprints at Prejmer Raceway",
+    "category": "motorsports",
+    "city": "Prejmer",
+    "latitude": 45.746743,
+    "longitude": 25.770453
+  },
+  {
+    "id": 62,
+    "name": "Leaota Mountain Horseback Trail Ride",
+    "category": "nature",
+    "city": "Runcu",
+    "latitude": 45.2452,
+    "longitude": 25.3027
+  },
+  {
+    "id": 63,
+    "name": "Bucegi Plateau Hike: Babele & Sphinx",
+    "category": "nature",
+    "city": "Bușteni",
+    "latitude": 45.4141,
+    "longitude": 25.5166
+  },
+  {
+    "id": 64,
+    "name": "Scărișoara Ice Cave & Apuseni Views",
+    "category": "nature",
+    "city": "Gârda de Sus",
+    "latitude": 46.4934,
+    "longitude": 22.8118
+  },
+  {
+    "id": 65,
+    "name": "Cheile Turzii Gorge Guided Hike",
+    "category": "nature",
+    "city": "Tureni",
+    "latitude": 46.5546,
+    "longitude": 23.722
+  },
+  {
+    "id": 67,
+    "name": "Viscri Pastures Bike & Haystack Walk",
+    "category": "nature",
+    "city": "Viscri",
+    "latitude": 46.0532,
+    "longitude": 25.0909
+  },
+  {
+    "id": 1735,
+    "name": "Control Club Electronic Night",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4356,
+    "longitude": 26.097
+  },
+  {
+    "id": 1736,
+    "name": "Expirat Halele Carol Live & DJ",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.415,
+    "longitude": 26.0931
+  },
+  {
+    "id": 1737,
+    "name": "Fratelli Studios High-End Clubbing",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4469,
+    "longitude": 26.1545
+  },
+  {
+    "id": 1738,
+    "name": "Kristal Glam Club Techno Night",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4349,
+    "longitude": 26.0957
+  },
+  {
+    "id": 1739,
+    "name": "BOA Beat of Angels Luxury Night",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4727,
+    "longitude": 26.0794
+  },
+  {
+    "id": 1740,
+    "name": "Nomad Skybar Rooftop Evenings",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4332,
+    "longitude": 26.1027
+  },
+  {
+    "id": 1741,
+    "name": "Linea/Closer to the Moon Rooftop",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4479,
+    "longitude": 26.0979
+  },
+  {
+    "id": 1742,
+    "name": "Corks Cozy Winebar Social Tasting",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4328,
+    "longitude": 26.1022
+  },
+  {
+    "id": 1743,
+    "name": "Abel's Wine Bar Discovery Night",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4326,
+    "longitude": 26.1031
+  },
+  {
+    "id": 1744,
+    "name": "Mojo Music Club Karaoke Night",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4318,
+    "longitude": 26.1025
+  },
+  {
+    "id": 1745,
+    "name": "BERĂRIA H Live & Beer Hall",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4728,
+    "longitude": 26.0797
+  },
+  {
+    "id": 1746,
+    "name": "Energiea Gastropub Social Night",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.435,
+    "longitude": 26.0962
+  },
+  {
+    "id": 1747,
+    "name": "Green Hours Live Jazz Night",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.442,
+    "longitude": 26.0968
+  },
+  {
+    "id": 1894,
+    "name": "Tech-House Marathon at Kristal Glam Club",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4352,
+    "longitude": 26.0979
+  },
+  {
+    "id": 1895,
+    "name": "Student Night at Kulturhaus Bucharest",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4319,
+    "longitude": 26.1025
+  },
+  {
+    "id": 1897,
+    "name": "House Night at Fratelli Lounge & Club",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.47247,
+    "longitude": 26.11297
+  },
+  {
+    "id": 1898,
+    "name": "Rooftop Cocktails at NOMAD Skybar",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4321,
+    "longitude": 26.1001
+  },
+  {
+    "id": 1899,
+    "name": "Rooftop Sundowners at Linea / Closer to the Moon",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4327,
+    "longitude": 26.0993
+  },
+  {
+    "id": 1900,
+    "name": "Live Band & Karaoke at Mojo Music Club",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4323,
+    "longitude": 26.102
+  },
+  {
+    "id": 1901,
+    "name": "Intimate Jazz Night at Green Hours",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4429,
+    "longitude": 26.0965
+  },
+  {
+    "id": 1902,
+    "name": "Stand-Up Night at The Fool Comedy Club",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4359,
+    "longitude": 26.1
+  },
+  {
+    "id": 1904,
+    "name": "Queens Club LGBTQ+ Night",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.43724,
+    "longitude": 26.10949
+  },
+  {
+    "id": 1908,
+    "name": "Craft Beers at Beer O'Clock",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.432,
+    "longitude": 26.1026
+  },
+  {
+    "id": 1909,
+    "name": "Sports & Pints at St. Patrick Irish Pub",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.432,
+    "longitude": 26.1008
+  },
+  {
+    "id": 1911,
+    "name": "Live Jazz Sessions at The JAZZ BOOK",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.435,
+    "longitude": 26.05
+  },
+  {
+    "id": 1912,
+    "name": "Live Anthems at Hard Rock Cafe Bucharest",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4764,
+    "longitude": 26.0802
+  },
+  {
+    "id": 1913,
+    "name": "Peak Weekend at FACE Club",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4765,
+    "longitude": 26.081
+  },
+  {
+    "id": 1914,
+    "name": "Foraged Cocktails at FIX Me a Drink",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4429,
+    "longitude": 26.0968
+  },
+  {
+    "id": 1915,
+    "name": "Origo Cocktail Evenings (Old Town)",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.432,
+    "longitude": 26.102
+  },
+  {
+    "id": 1916,
+    "name": "High-Gloss Nights at E3 by Entourage",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.47,
+    "longitude": 26.105
+  },
+  {
+    "id": 1917,
+    "name": "Uanderful: Floreasca Lounge & Late Drinks",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4705,
+    "longitude": 26.1048
+  },
+  {
+    "id": 1919,
+    "name": "Sunset Rooftops at 18 Lounge (City Gate)",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4795,
+    "longitude": 26.078
+  },
+  {
+    "id": 1920,
+    "name": "LINEA / Closer to the Moon Rooftop",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4327,
+    "longitude": 26.0993
+  },
+  {
+    "id": 1921,
+    "name": "Mojo: Karaoke & Live Band Nights",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4323,
+    "longitude": 26.102
+  },
+  {
+    "id": 1922,
+    "name": "SHOTERIA Old Town: Rapid-Fire Shots",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4318,
+    "longitude": 26.101
+  },
+  {
+    "id": 1924,
+    "name": "Fire Club: Rock & Alternative",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4325,
+    "longitude": 26.1022
+  },
+  {
+    "id": 1925,
+    "name": "St. Patrick Irish Pub: Sports & Pints",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.432,
+    "longitude": 26.1008
+  },
+  {
+    "id": 1929,
+    "name": "Quantic: Rock & Metal Live",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.438,
+    "longitude": 26.045
+  },
+  {
+    "id": 1937,
+    "name": "Pura Vida Sky Bar (Old Town)",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4321,
+    "longitude": 26.1005
+  },
+  {
+    "id": 1938,
+    "name": "Halftime Sports Pub (Gabroveni)",
+    "category": "nightlife",
+    "city": "Bucharest",
+    "latitude": 44.4323,
+    "longitude": 26.1022
+  },
+  {
+    "id": 1949,
+    "name": "Flying Circus Alt Nights",
+    "category": "nightlife",
+    "city": "Cluj-Napoca",
+    "latitude": 46.769539,
+    "longitude": 23.589831
+  },
+  {
+    "id": 1950,
+    "name": "Steampunk Cocktails at Joben",
+    "category": "nightlife",
+    "city": "Cluj-Napoca",
+    "latitude": 46.76708,
+    "longitude": 23.59375
+  },
+  {
+    "id": 1951,
+    "name": "D'Arc Unirii Sessions",
+    "category": "nightlife",
+    "city": "Timișoara",
+    "latitude": 45.757527,
+    "longitude": 21.22933
+  },
+  {
+    "id": 1958,
+    "name": "Jazz & Blues Club Târgu Mureș",
+    "category": "nightlife",
+    "city": "Târgu Mureș",
+    "latitude": 46.542964,
+    "longitude": 24.557858
+  },
+  {
+    "id": 1961,
+    "name": "Tipografia Culture Bar",
+    "category": "nightlife",
+    "city": "Brașov",
+    "latitude": 45.6429,
+    "longitude": 25.5908
+  },
+  {
+    "id": 1968,
+    "name": "Concert Night at Doors Club",
+    "category": "nightlife",
+    "city": "Constanța",
+    "latitude": 44.168333,
+    "longitude": 28.638611
+  },
+  {
+    "id": 214,
+    "name": "Table Tennis Club Session",
+    "category": "racket_sports",
+    "city": "Bucharest",
+    "latitude": 44.418,
+    "longitude": 26.119
+  },
+  {
+    "id": 215,
+    "name": "Pickleball Social Play",
+    "category": "racket_sports",
+    "city": "Bucharest",
+    "latitude": 44.45,
+    "longitude": 26.1
+  },
+  {
+    "id": 216,
+    "name": "Beach Tennis Doubles",
+    "category": "racket_sports",
+    "city": "Constanța",
+    "latitude": 44.264,
+    "longitude": 28.621
+  },
+  {
+    "id": 72,
+    "name": "NOR Sky Rooftop Dinner for Two",
+    "category": "romance",
+    "city": "Bucharest",
+    "latitude": 44.4786,
+    "longitude": 26.1128
+  },
+  {
+    "id": 73,
+    "name": "Rooftop Cocktails at Linea/Closer to the Moon",
+    "category": "romance",
+    "city": "Bucharest",
+    "latitude": 44.4326,
+    "longitude": 26.0984
+  },
+  {
+    "id": 74,
+    "name": "Private Boat Ride on Herăstrău Lake",
+    "category": "romance",
+    "city": "Bucharest",
+    "latitude": 44.4765,
+    "longitude": 26.0865
+  },
+  {
+    "id": 75,
+    "name": "Private Snagov Lake Boat Cruise",
+    "category": "romance",
+    "city": "Snagov",
+    "latitude": 44.6958,
+    "longitude": 26.1884
+  },
+  {
+    "id": 88,
+    "name": "Romantic Candlelight Concert (Fever)",
+    "category": "romance",
+    "city": "Bucharest",
+    "latitude": 44.435,
+    "longitude": 26.1025
+  },
+  {
+    "id": 89,
+    "name": "Stargazing at Vasile Urseanu Observatory",
+    "category": "romance",
+    "city": "Bucharest",
+    "latitude": 44.4465,
+    "longitude": 26.0969
+  },
+  {
+    "id": 90,
+    "name": "Boat Ride on Herăstrău Lake",
+    "category": "romance",
+    "city": "Bucharest",
+    "latitude": 44.4721,
+    "longitude": 26.0822
+  },
+  {
+    "id": 68,
+    "name": "Board Game Night in Bucharest Old Town",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.431,
+    "longitude": 26.103
+  },
+  {
+    "id": 69,
+    "name": "Pub Quiz Night in the Old Town (Mojo & The PUB)",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4327,
+    "longitude": 26.1037
+  },
+  {
+    "id": 70,
+    "name": "Escape Room Marathon (Central Bucharest)",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4411,
+    "longitude": 26.1008
+  },
+  {
+    "id": 84,
+    "name": "Karaoke Night at Mojo Music Club",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4318,
+    "longitude": 26.1009
+  },
+  {
+    "id": 85,
+    "name": "Fun Bowling & Billiards at Trickshot",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4787,
+    "longitude": 26.1018
+  },
+  {
+    "id": 86,
+    "name": "Free-Roam VR Arena & Escape Games (Gateway VR)",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4805,
+    "longitude": 26.0555
+  },
+  {
+    "id": 87,
+    "name": "Immersive Escape Room Adventure",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4401,
+    "longitude": 26.1011
+  },
+  {
+    "id": 141,
+    "name": "Quick Reset: Aesthetic Coffee Spots (15–30 min)",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.433,
+    "longitude": 26.1025
+  },
+  {
+    "id": 1331,
+    "name": "321sport Community Run",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4671,
+    "longitude": 26.0781
+  },
+  {
+    "id": 1332,
+    "name": "Vertical Spirit Social Climb Night",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4445,
+    "longitude": 26.073
+  },
+  {
+    "id": 1333,
+    "name": "Board Game Social at The Guild Hall",
+    "category": "social",
+    "city": "Cluj-Napoca",
+    "latitude": 46.7708,
+    "longitude": 23.5919
+  },
+  {
+    "id": 1334,
+    "name": "Level Up Language Exchange Meetup",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4316,
+    "longitude": 26.112
+  },
+  {
+    "id": 1335,
+    "name": "Improteca Improv Jam Night",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4412,
+    "longitude": 26.1115
+  },
+  {
+    "id": 1337,
+    "name": "Team Escape at Captive",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4473,
+    "longitude": 26.1016
+  },
+  {
+    "id": 1338,
+    "name": "The Dungeon – Team Escape Night",
+    "category": "social",
+    "city": "Cluj-Napoca",
+    "latitude": 46.7516,
+    "longitude": 23.5876
+  },
+  {
+    "id": 1339,
+    "name": "Impact Hub Community Friday",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4169,
+    "longitude": 26.1148
+  },
+  {
+    "id": 1340,
+    "name": "Social Ping-Pong at Ping Pong Academy",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4743,
+    "longitude": 26.1103
+  },
+  {
+    "id": 1342,
+    "name": "Mojo's Weekly Pub Quiz (Social Teams)",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4319,
+    "longitude": 26.1032
+  },
+  {
+    "id": 1343,
+    "name": "Volleyball Social Play – CCSS Tei",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4578,
+    "longitude": 26.1058
+  },
+  {
+    "id": 1344,
+    "name": "Seneca AntiCafe – Board Game & Social Work Sesh",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4469,
+    "longitude": 26.0949
+  },
+  {
+    "id": 1457,
+    "name": "BlaBla Language Exchange (Iași)",
+    "category": "social",
+    "city": "Iași",
+    "latitude": 47.1578,
+    "longitude": 27.5899
+  },
+  {
+    "id": 1458,
+    "name": "Board Games Night at Harmony Cafe",
+    "category": "social",
+    "city": "Iași",
+    "latitude": 47.1725,
+    "longitude": 27.5748
+  },
+  {
+    "id": 1459,
+    "name": "Board Games Zone Social (Timișoara)",
+    "category": "social",
+    "city": "Timișoara",
+    "latitude": 45.7549,
+    "longitude": 21.2294
+  },
+  {
+    "id": 1460,
+    "name": "ExitGames Team Escape (Timișoara)",
+    "category": "social",
+    "city": "Timișoara",
+    "latitude": 45.7415,
+    "longitude": 21.2197
+  },
+  {
+    "id": 1461,
+    "name": "Pub Quiz Night at O'Peter's Irish Pub (Brașov)",
+    "category": "social",
+    "city": "Brașov",
+    "latitude": 45.6432,
+    "longitude": 25.5896
+  },
+  {
+    "id": 1462,
+    "name": "Puzzle Punks Board-Games Social (Brașov)",
+    "category": "social",
+    "city": "Brașov",
+    "latitude": 45.6569,
+    "longitude": 25.6167
+  },
+  {
+    "id": 1463,
+    "name": "BlaBla Language Exchange (Constanța)",
+    "category": "social",
+    "city": "Constanța",
+    "latitude": 44.176,
+    "longitude": 28.6516
+  },
+  {
+    "id": 1464,
+    "name": "The Escapers Team Escape (Constanța)",
+    "category": "social",
+    "city": "Constanța",
+    "latitude": 44.1755,
+    "longitude": 28.6573
+  },
+  {
+    "id": 1590,
+    "name": "Toastmasters Public Speaking Night (Iași)",
+    "category": "social",
+    "city": "Iași",
+    "latitude": 47.157,
+    "longitude": 27.59
+  },
+  {
+    "id": 1591,
+    "name": "Legend Pub Quiz Night",
+    "category": "social",
+    "city": "Iași",
+    "latitude": 47.158,
+    "longitude": 27.589
+  },
+  {
+    "id": 1592,
+    "name": "Retro Café Board-Game Social",
+    "category": "social",
+    "city": "Iași",
+    "latitude": 47.16,
+    "longitude": 27.59
+  },
+  {
+    "id": 1593,
+    "name": "Toastmasters Public Speaking Night (Timișoara)",
+    "category": "social",
+    "city": "Timișoara",
+    "latitude": 45.757,
+    "longitude": 21.23
+  },
+  {
+    "id": 1594,
+    "name": "Vineri 15 Riverfront Quiz Night",
+    "category": "social",
+    "city": "Timișoara",
+    "latitude": 45.751,
+    "longitude": 21.23
+  },
+  {
+    "id": 1595,
+    "name": "Cowork Timișoara Language Hangout",
+    "category": "social",
+    "city": "Timișoara",
+    "latitude": 45.757,
+    "longitude": 21.23
+  },
+  {
+    "id": 1596,
+    "name": "ZborHub Language Exchange (Brașov)",
+    "category": "social",
+    "city": "Brașov",
+    "latitude": 45.641,
+    "longitude": 25.576
+  },
+  {
+    "id": 1597,
+    "name": "Deane's Wednesday Pub Quiz (Brașov)",
+    "category": "social",
+    "city": "Brașov",
+    "latitude": 45.643,
+    "longitude": 25.592
+  },
+  {
+    "id": 1599,
+    "name": "Encanto Latin Social (Constanța)",
+    "category": "social",
+    "city": "Constanța",
+    "latitude": 44.181,
+    "longitude": 28.64
+  },
+  {
+    "id": 1600,
+    "name": "NEXT DOOR Game Night (Constanța)",
+    "category": "social",
+    "city": "Constanța",
+    "latitude": 44.194,
+    "longitude": 28.649
+  },
+  {
+    "id": 1601,
+    "name": "Toastmasters Public Speaking Night (Constanța)",
+    "category": "social",
+    "city": "Constanța",
+    "latitude": 44.172,
+    "longitude": 28.648
+  },
+  {
+    "id": 1903,
+    "name": "KIKI Lounge & Bar (LGBTQ+ friendly) Cocktails",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.4477,
+    "longitude": 26.1016
+  },
+  {
+    "id": 1932,
+    "name": "Trickshot Mega Mall: Bowling & Bar",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.425,
+    "longitude": 26.155
+  },
+  {
+    "id": 1934,
+    "name": "Trickshot Promenada Rooftop",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.471,
+    "longitude": 26.103
+  },
+  {
+    "id": 1946,
+    "name": "Affordable Lengths at Olimpia (Iancului)",
+    "category": "social",
+    "city": "Bucharest",
+    "latitude": 44.442738,
+    "longitude": 26.148557
+  },
+  {
+    "id": 80,
+    "name": "Squash Session & Coaching (Central-East)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.416,
+    "longitude": 26.146
+  },
+  {
+    "id": 81,
+    "name": "Badminton Courts & Group Play (Sun Plaza)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.407,
+    "longitude": 26.117
+  },
+  {
+    "id": 82,
+    "name": "Ice Skating Session (AFI Cotroceni)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.4322,
+    "longitude": 26.0608
+  },
+  {
+    "id": 83,
+    "name": "Beginner Archery Class (Sector 5 Range)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.41,
+    "longitude": 26.07
+  },
+  {
+    "id": 93,
+    "name": "Laser Tag Battles",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.3985,
+    "longitude": 26.1305
+  },
+  {
+    "id": 94,
+    "name": "Padel Court Booking (Romexpo Area)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.4765,
+    "longitude": 26.071
+  },
+  {
+    "id": 95,
+    "name": "5-a-Side Football Pitch Hire (South)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.3941,
+    "longitude": 26.1315
+  },
+  {
+    "id": 199,
+    "name": "Indoor Volleyball Session",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.428,
+    "longitude": 26.154
+  },
+  {
+    "id": 200,
+    "name": "Boxing Gym Session (Pads & Bag)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.44,
+    "longitude": 26.161
+  },
+  {
+    "id": 203,
+    "name": "Tennis Lesson Or Court (Herăstrău)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.479,
+    "longitude": 26.086
+  },
+  {
+    "id": 204,
+    "name": "Footvolley/Beach Football On Sand",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.483,
+    "longitude": 26.091
+  },
+  {
+    "id": 205,
+    "name": "Rugby Intro Session (Non-contact Basics)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.471,
+    "longitude": 26.041
+  },
+  {
+    "id": 206,
+    "name": "Ultimate Frisbee Pickup Night",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.409,
+    "longitude": 26.11
+  },
+  {
+    "id": 207,
+    "name": "Dodgeball League Night",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.428,
+    "longitude": 26.154
+  },
+  {
+    "id": 208,
+    "name": "Handball Pickup (Full-Court)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.416,
+    "longitude": 26.175
+  },
+  {
+    "id": 210,
+    "name": "Muay Thai/Kickboxing Class",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.425,
+    "longitude": 26.07
+  },
+  {
+    "id": 211,
+    "name": "50m Lap Swim (Olympic Pool)",
+    "category": "sports",
+    "city": "Otopeni",
+    "latitude": 44.553,
+    "longitude": 26.087
+  },
+  {
+    "id": 212,
+    "name": "Track Session (Iolanda Balaș-Soter)",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.471,
+    "longitude": 26.079
+  },
+  {
+    "id": 213,
+    "name": "Fencing Intro: Foil Basics",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.472,
+    "longitude": 26.079
+  },
+  {
+    "id": 222,
+    "name": "Park Orienteering Challenge",
+    "category": "sports",
+    "city": "Bucharest",
+    "latitude": 44.46,
+    "longitude": 26.095
+  },
+  {
+    "id": 746,
+    "name": "Downhill MTB – Bike Resort Sinaia",
+    "category": "sports",
+    "city": "Sinaia",
+    "latitude": 45.347,
+    "longitude": 25.546
+  },
+  {
+    "id": 1985,
+    "name": "Premium Tennis at Stejarii Country Club",
+    "category": "sports",
+    "city": "București",
+    "latitude": 44.4929,
+    "longitude": 26.0752
+  },
+  {
+    "id": 1986,
+    "name": "Modern Tennis at Winners Sports Club",
+    "category": "sports",
+    "city": "Cluj-Napoca",
+    "latitude": 46.7693,
+    "longitude": 23.5985
+  },
+  {
+    "id": 1987,
+    "name": "Coastal Tennis at Tenis Club IDU",
+    "category": "sports",
+    "city": "Mamaia",
+    "latitude": 44.2147,
+    "longitude": 28.6139
+  },
+  {
+    "id": 1988,
+    "name": "Wellness & Tennis at Pescariu Sports",
+    "category": "sports",
+    "city": "București",
+    "latitude": 44.4892,
+    "longitude": 26.1247
+  },
+  {
+    "id": 1989,
+    "name": "Parkside Tennis at North Tennis Herăstrău",
+    "category": "sports",
+    "city": "București",
+    "latitude": 44.4758,
+    "longitude": 26.0856
+  },
+  {
+    "id": 1990,
+    "name": "Community Tennis at BDK Tennis Herăstrău",
+    "category": "sports",
+    "city": "București",
+    "latitude": 44.4769,
+    "longitude": 26.0842
+  },
+  {
+    "id": 1991,
+    "name": "National Training at Centrul Național de Tenis",
+    "category": "sports",
+    "city": "București",
+    "latitude": 44.4156,
+    "longitude": 26.1389
+  },
+  {
+    "id": 1992,
+    "name": "Western Tennis at Tenis Timișoara",
+    "category": "sports",
+    "city": "Moșnița Nouă",
+    "latitude": 45.7892,
+    "longitude": 21.1547
+  },
+  {
+    "id": 1993,
+    "name": "Mountain City Tennis at Tenis Arena Brașov",
+    "category": "sports",
+    "city": "Brașov",
+    "latitude": 45.6524,
+    "longitude": 25.6089
+  },
+  {
+    "id": 1994,
+    "name": "Urban Tennis at Tenis Club AS",
+    "category": "sports",
+    "city": "Timișoara",
+    "latitude": 45.7489,
+    "longitude": 21.2267
+  },
+  {
+    "id": 1995,
+    "name": "Moldavian Tennis at Tenis Club Leo",
+    "category": "sports",
+    "city": "Iași",
+    "latitude": 47.1589,
+    "longitude": 27.5897
+  },
+  {
+    "id": 1996,
+    "name": "Modern Tennis at iTENIS Iași",
+    "category": "sports",
+    "city": "Iași",
+    "latitude": 47.1625,
+    "longitude": 27.5842
+  },
+  {
+    "id": 1997,
+    "name": "Social Badminton at WePlay Brașov",
+    "category": "sports",
+    "city": "Brașov",
+    "latitude": 45.6489,
+    "longitude": 25.6058
+  },
+  {
+    "id": 1998,
+    "name": "Competitive Badminton at Badminton Club Cluj",
+    "category": "sports",
+    "city": "Cluj-Napoca",
+    "latitude": 46.7708,
+    "longitude": 23.5919
+  },
+  {
+    "id": 1999,
+    "name": "Training & Play at ACS Pro Badminton",
+    "category": "sports",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 2000,
+    "name": "Multi-Sport Badminton at AeroSquash Băneasa",
+    "category": "sports",
+    "city": "București",
+    "latitude": 44.5086,
+    "longitude": 26.0789
+  },
+  {
+    "id": 2001,
+    "name": "Community Badminton at Banu Sport",
+    "category": "sports",
+    "city": "Timișoara",
+    "latitude": 45.7489,
+    "longitude": 21.2267
+  },
+  {
+    "id": 2002,
+    "name": "Sports Hall Badminton at Sala STOMART",
+    "category": "sports",
+    "city": "Iași",
+    "latitude": 47.1578,
+    "longitude": 27.5899
+  },
+  {
+    "id": 2003,
+    "name": "Club Badminton at CSM Timișoara",
+    "category": "sports",
+    "city": "Timișoara",
+    "latitude": 45.7489,
+    "longitude": 21.2267
+  },
+  {
+    "id": 2004,
+    "name": "Student Club Badminton at Sportul Studențesc",
+    "category": "sports",
+    "city": "București",
+    "latitude": 44.4479,
+    "longitude": 26.0968
+  },
+  {
+    "id": 234,
+    "name": "Stand-Up Paddle (City Session)",
+    "category": "water",
+    "city": "Bucharest",
+    "latitude": 44.481,
+    "longitude": 26.08
+  },
+  {
+    "id": 235,
+    "name": "Surfing Lesson (Black Sea)",
+    "category": "water",
+    "city": "Constanța",
+    "latitude": 44.258,
+    "longitude": 28.634
+  },
+  {
+    "id": 236,
+    "name": "Windsurfing Intro (Mamaia)",
+    "category": "water",
+    "city": "Mamaia",
+    "latitude": 44.264,
+    "longitude": 28.62
+  },
+  {
+    "id": 275,
+    "name": "Scuba Diving — Discover Scuba (DSD)",
+    "category": "water",
+    "city": "Constanța",
+    "latitude": 44.18,
+    "longitude": 28.654
+  },
+  {
+    "id": 276,
+    "name": "Traditional Rowing (Canotcă) Basics",
+    "category": "water",
+    "city": "Tulcea",
+    "latitude": 45.175,
+    "longitude": 28.804
+  },
+  {
+    "id": 319,
+    "name": "Jet Ski Bursts on Lake Siutghiol (JT Watersports Mamaia)",
+    "category": "water",
+    "city": "Constanța",
+    "latitude": 44.26,
+    "longitude": 28.63
+  },
+  {
+    "id": 738,
+    "name": "Buzău River Whitewater Rafting (Class III–IV) with Green Adventure",
+    "category": "water",
+    "city": "Nehoiu",
+    "latitude": 45.42,
+    "longitude": 26.305
+  },
+  {
+    "id": 739,
+    "name": "Jiu Gorge Whitewater Rafting (Class III–IV)",
+    "category": "water",
+    "city": "Bumbești-Jiu",
+    "latitude": 45.178,
+    "longitude": 23.385
+  },
+  {
+    "id": 745,
+    "name": "Kitesurfing Lessons – H2O Kiteboarding Mamaia",
+    "category": "water",
+    "city": "Mamaia",
+    "latitude": 44.279,
+    "longitude": 28.622
+  },
+  {
+    "id": 801,
+    "name": "Full-Size Cable Wakeboarding at A2Wake (km 49 A2)",
+    "category": "water",
+    "city": "Sărulești-Gară",
+    "latitude": 44.44444,
+    "longitude": 26.6578
+  },
+  {
+    "id": 803,
+    "name": "Black Sea Intro Dive with Marine Explorers",
+    "category": "water",
+    "city": "Constanța",
+    "latitude": 44.179249,
+    "longitude": 28.64994
+  },
+  {
+    "id": 60,
+    "name": "Ana Aslan Health Spa Day – Eforie Nord",
+    "category": "wellness",
+    "city": "Eforie Nord",
+    "latitude": 44.0697,
+    "longitude": 28.6336
+  },
+  {
+    "id": 61,
+    "name": "Aqvatonic Med Spa Pass – Eforie Nord",
+    "category": "wellness",
+    "city": "Eforie Nord",
+    "latitude": 44.0621,
+    "longitude": 28.6305
+  },
+  {
+    "id": 154,
+    "name": "Orchid Thai Spa – Aromatherapy Ritual",
+    "category": "wellness",
+    "city": "Bucharest",
+    "latitude": 44.4472,
+    "longitude": 26.1025
+  },
+  {
+    "id": 1018,
+    "name": "Therme București Full-Day Thermal Spa",
+    "category": "wellness",
+    "city": "Balotești",
+    "latitude": 44.605431,
+    "longitude": 26.084768
+  },
+  {
+    "id": 1019,
+    "name": "Aquapark Nymphaea Day Pass",
+    "category": "wellness",
+    "city": "Oradea",
+    "latitude": 47.052915,
+    "longitude": 21.95216
+  },
+  {
+    "id": 1020,
+    "name": "Ensana Sovata Spa & Saltwater Pools",
+    "category": "wellness",
+    "city": "Sovata",
+    "latitude": 46.5989,
+    "longitude": 25.0746
+  },
+  {
+    "id": 1021,
+    "name": "Grand Santerra Spa Forest Thermal Session",
+    "category": "wellness",
+    "city": "Băile Balvanyos",
+    "latitude": 46.11674,
+    "longitude": 25.9442
+  },
+  {
+    "id": 748,
+    "name": "Backcountry Snowmobile Tour – Harghita-Mădăraș",
+    "category": "winter",
+    "city": "Mădăraș",
+    "latitude": 46.436,
+    "longitude": 25.592
+  },
+  {
+    "id": 859,
+    "name": "Bâlea Ski Mountaineering Clinic (Făgăraș)",
+    "category": "winter",
+    "city": "Cârțișoara",
+    "latitude": 45.603,
+    "longitude": 24.617
+  },
+  {
+    "id": 860,
+    "name": "Făgăraș Ski Touring Week (High Alpine)",
+    "category": "winter",
+    "city": "Cârțișoara",
+    "latitude": 45.604,
+    "longitude": 24.616
+  },
+  {
+    "id": 861,
+    "name": "Retezat Backcountry Ski (6-Day)",
+    "category": "winter",
+    "city": "Râușor",
+    "latitude": 45.381,
+    "longitude": 22.849
+  },
+  {
+    "id": 862,
+    "name": "Harghita Husky Dog-Sledding Ride",
+    "category": "winter",
+    "city": "Ciumani",
+    "latitude": 46.7,
+    "longitude": 25.45
+  },
+  {
+    "id": 863,
+    "name": "Azuga Guided Snowmobile Ride",
+    "category": "winter",
+    "city": "Azuga",
+    "latitude": 45.445,
+    "longitude": 25.556
+  },
+  {
+    "id": 864,
+    "name": "Bâlea Ice Climbing Intro",
+    "category": "winter",
+    "city": "Cârțișoara",
+    "latitude": 45.604,
+    "longitude": 24.617
+  },
+  {
+    "id": 865,
+    "name": "Făgăraș Winter Mountaineering Weekend",
+    "category": "winter",
+    "city": "Bâlea Lac",
+    "latitude": 45.608,
+    "longitude": 24.615
+  },
+  {
+    "id": 866,
+    "name": "Bucegi Ski Touring (Busteni/Sinaia)",
+    "category": "winter",
+    "city": "Sinaia",
+    "latitude": 45.35,
+    "longitude": 25.545
+  },
+  {
+    "id": 867,
+    "name": "Poiana Brașov Steep Snowshoe Traverse",
+    "category": "winter",
+    "city": "Brașov",
+    "latitude": 45.574,
+    "longitude": 25.557
+  },
+  {
+    "id": 868,
+    "name": "Avalanche Skills & Freetouring – Bâlea",
+    "category": "winter",
+    "city": "Bâlea Lac",
+    "latitude": 45.608,
+    "longitude": 24.615
+  },
+  {
+    "id": 869,
+    "name": "Héliski Făgăraș (Freeride Vertical)",
+    "category": "winter",
+    "city": "Sibiu",
+    "latitude": 45.788,
+    "longitude": 24.151
+  },
+  {
+    "id": 870,
+    "name": "Bicaz Gorges Ice Climbing",
+    "category": "winter",
+    "city": "Lacu Roșu",
+    "latitude": 46.792,
+    "longitude": 25.792
+  }
+]

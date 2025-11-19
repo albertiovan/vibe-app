@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 // @ts-ignore
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../src/design-system/colors';
@@ -136,29 +137,31 @@ export const CreateVibeProfileModal: React.FC<CreateVibeProfileModalProps> = ({
     <Modal
       visible={visible}
       animationType="slide"
-      presentationStyle="pageSheet"
+      presentationStyle="fullScreen"
       onRequestClose={onClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={28} color={colors.text.primary} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Create Vibe Profile</Text>
-          <TouchableOpacity
-            onPress={handleSave}
-            style={styles.saveButton}
-            disabled={saving}
+      <SafeAreaView style={styles.safeContainer} edges={['top', 'bottom']}>
+        <View style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.flex}
           >
-            <Text style={[styles.saveButtonText, saving && styles.saveButtonDisabled]}>
-              {saving ? 'Saving...' : 'Save'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+            {/* Header */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <Ionicons name="close" size={28} color={colors.text.primary} />
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>Create Vibe Profile</Text>
+              <TouchableOpacity
+                onPress={handleSave}
+                style={styles.saveButton}
+                disabled={saving}
+              >
+                <Text style={[styles.saveButtonText, saving && styles.saveButtonDisabled]}>
+                  {saving ? 'Saving...' : 'Save'}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* Profile Name */}
@@ -384,22 +387,30 @@ export const CreateVibeProfileModal: React.FC<CreateVibeProfileModalProps> = ({
 
           <View style={styles.bottomPadding} />
         </ScrollView>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+        </View>
+      </SafeAreaView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  safeContainer: {
     flex: 1,
     backgroundColor: colors.base.canvas,
+  },
+  container: {
+    flex: 1,
+  },
+  flex: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: tokens.spacing.md,
-    paddingTop: 60,
+    paddingTop: tokens.spacing.md,
     paddingBottom: tokens.spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.1)',

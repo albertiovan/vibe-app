@@ -32,6 +32,7 @@ import userRoutes from './routes/user.js';
 import trainingRoutes from './routes/training.js';
 import challengeRoutes from './routes/challenges.js';
 import vibeProfileRoutes from './routes/vibeProfiles.js';
+import activityFeedbackRoutes from './routes/activityFeedback.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -68,6 +69,7 @@ app.use('/api/user', userRoutes); // User preferences and saved activities ✨
 app.use('/api/training', trainingRoutes); // Training feedback collection ✨
 app.use('/api/challenges', challengeRoutes); // Challenge Me feature ✨
 app.use('/api/vibe-profiles', vibeProfileRoutes); // Custom Vibe Profiles ✨
+app.use('/api/activities', activityFeedbackRoutes); // Activity feedback for ML ✨
 
 // Root endpoint
 app.get('/', (req, res) => {

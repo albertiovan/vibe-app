@@ -37,9 +37,7 @@ import { rateLimitedLLM } from '../llm/rateLimitedProvider.js';
 import { ChallengeSelector } from './challengeSelector.js';
 import { enhancedVibeDetector } from '../vibeDetection/enhancedVibeDetector.js';
 import { ALL_ROMANIA_ACTIVITIES, ALL_SUBTYPES } from '../../domain/activities/index.js';
-import { GOOGLE_PLACES_MAPPING } from '../../domain/activities/mapping/google-places-mapping.js';
-import { OSM_TAGS_MAPPING } from '../../domain/activities/mapping/osm-tags-mapping.js';
-import { OPENTRIPMAP_MAPPING } from '../../domain/activities/mapping/opentripmap-mapping.js';
+// Removed unused provider mappings - app now uses database only
 
 export class ActivitiesAgent {
   private llmProvider: any;
@@ -340,12 +338,7 @@ ${JSON.stringify(proposedActivities, null, 2)}
 CONTEXT:
 ${JSON.stringify({
   regionsSeed: context.regionsSeed,
-  toolBudget,
-  mappingHints: {
-    google: GOOGLE_PLACES_MAPPING,
-    osm: OSM_TAGS_MAPPING,
-    otm: OPENTRIPMAP_MAPPING
-  }
+  toolBudget
 }, null, 2)}`;
   }
 

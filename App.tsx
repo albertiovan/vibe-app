@@ -17,12 +17,16 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ExperienceDetailScreen from './ExperienceDetailScreen';
 import EnrichedActivityCard from './components/EnrichedActivityCard';
 import { ChatHomeScreen } from './screens/ChatHomeScreen';
 import { ChatConversationScreen } from './screens/ChatConversationScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
+import { MinimalUserProfileScreen } from './screens/MinimalUserProfileScreen';
+import { ProfileScreenShell } from './screens/ProfileScreenShell';
 import { DiscoveryScreen } from './screens/DiscoveryScreen';
+import { MinimalDiscoveryScreen } from './screens/MinimalDiscoveryScreen';
 import { SavedActivitiesScreen } from './screens/SavedActivitiesScreen';
 import EnhancedExperienceDetailScreen from './screens/EnhancedExperienceDetailScreen';
 import { TrainingModeScreen } from './screens/TrainingModeScreen';
@@ -30,10 +34,60 @@ import { OnboardingScreen as NewUserOnboarding } from './screens/OnboardingScree
 import { DevMenu } from './components/DevMenu';
 import { userStorage } from './src/services/userStorage';
 import * as Location from 'expo-location';
+import { LanguageProvider } from './src/i18n/LanguageContext';
+// New Visual Shell Screens
+import { NewChatHomeScreen } from './screens/NewChatHomeScreen';
+import { ActivitySuggestionsScreen } from './screens/ActivitySuggestionsScreen';
+import { ActivityDetailScreen } from './screens/ActivityDetailScreen';
+import { DevPreviewScreen } from './screens/DevPreviewScreen';
+import { HomeScreenShell } from './screens/HomeScreenShell';
+import { HomeScreenMinimal } from './screens/HomeScreenMinimal';
+import { SuggestionsScreenShell } from './screens/SuggestionsScreenShell';
+import { MinimalSuggestionsScreen } from './screens/MinimalSuggestionsScreen';
+import { ActivityDetailScreenShell } from './screens/ActivityDetailScreenShell';
+import { MinimalActivityDetailScreen } from './screens/MinimalActivityDetailScreen';
+import { ChallengeMeScreen } from './screens/ChallengeMeScreen';
+import { MinimalChallengeMeScreen } from './screens/MinimalChallengeMeScreen';
+import { ActivityAcceptedScreen } from './screens/ActivityAcceptedScreen';
+import { isFeatureEnabled } from './config/featureFlags';
 
 // Define navigation types
 type RootStackParamList = {
   ChatHome: undefined;
+  NewChatHome: undefined; // New visual shell home (old)
+  HomeScreenShell: undefined; // New visual shell home (Prompt B)
+  HomeScreenMinimal: undefined; // Minimal ChatGPT-style home
+  SuggestionsScreenShell: { // New suggestions screen (Prompt C)
+    conversationId: number;
+    deviceId: string;
+    userMessage: string;
+    filters?: any;
+    userLocation?: { latitude: number; longitude: number };
+  };
+  ActivitySuggestions: { // Old suggestions screen
+    conversationId: number;
+    deviceId: string;
+    userMessage: string;
+    filters?: any;
+    userLocation?: { latitude: number; longitude: number };
+  };
+  ActivityDetailScreenShell: { // New detail screen (Prompt D)
+    activity: any;
+    userLocation?: { latitude: number; longitude: number };
+  };
+  ChallengeMeScreen: { // Challenge Me screen
+    deviceId: string;
+    userLocation?: { latitude: number; longitude: number };
+  };
+  ActivityAcceptedScreen: { // Activity accepted screen
+    activity: any;
+    userLocation?: { latitude: number; longitude: number };
+  };
+  ActivityDetail: { // Old detail screen
+    activity: any;
+    userLocation?: { latitude: number; longitude: number };
+  };
+  DevPreview: undefined; // Component showcase
   ChatConversation: {
     conversationId: number;
     deviceId: string;
@@ -909,26 +963,49 @@ export default function App() {
 
   if (!isOnboarded) {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar style="light" />
-        <NewUserOnboarding onComplete={handleOnboardingComplete} />
-        <DevMenu />
-      </GestureHandlerRootView>
+      <LanguageProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar style="light" />
+          <NewUserOnboarding onComplete={handleOnboardingComplete} />
+          <DevMenu />
+        </GestureHandlerRootView>
+      </LanguageProvider>
     );
   }
 
+  // Use minimal home screen
+  const initialRoute = 'HomeScreenMinimal';
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <StatusBar style="light" />
+    <LanguageProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <StatusBar style="light" />
         <Stack.Navigator
-          initialRouteName="ChatHome"
+          initialRouteName={initialRoute}
           screenOptions={{
             headerShown: false,
             contentStyle: { backgroundColor: '#0A0E17' },
           }}
         >
-          {/* New Chat Interface Screens */}
+          {/* Minimal Home Screen */}
+          <Stack.Screen name="HomeScreenMinimal" component={HomeScreenMinimal} options={{ headerShown: false }} />
+          
+          {/* New Visual Shell Screens (Prompt B, C & D) */}
+          <Stack.Screen name="HomeScreenShell" component={HomeScreenShell} options={{ headerShown: false }} />
+          <Stack.Screen name="SuggestionsScreenShell" component={MinimalSuggestionsScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ChallengeMeScreen" component={MinimalChallengeMeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ActivityAcceptedScreen" component={ActivityAcceptedScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ActivityDetailScreenShell" component={MinimalActivityDetailScreen} options={{ headerShown: false }} />
+          
+          {/* New Visual Shell Screens (Previous) */}
+          <Stack.Screen name="NewChatHome" component={NewChatHomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ActivitySuggestions" component={ActivitySuggestionsScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="DevPreview" component={DevPreviewScreen} options={{ headerShown: false }} />
+          
+          {/* Original Chat Interface Screens */}
           <Stack.Screen name="ChatHome" component={ChatHomeScreen} />
           <Stack.Screen 
             name="ChatConversation" 
@@ -945,15 +1022,9 @@ export default function App() {
           />
           <Stack.Screen 
             name="UserProfile" 
-            component={UserProfileScreen}
+            component={MinimalUserProfileScreen}
             options={{
-              headerShown: true,
-              headerTitle: 'Profile',
-              headerStyle: {
-                backgroundColor: '#0A0E17',
-              },
-              headerTintColor: '#FFFFFF',
-              headerBackTitle: 'Back',
+              headerShown: false,
             }}
           />
           <Stack.Screen 
@@ -971,7 +1042,7 @@ export default function App() {
           />
           <Stack.Screen 
             name="Discovery" 
-            component={DiscoveryScreen}
+            component={MinimalDiscoveryScreen}
             options={{
               headerShown: false,
             }}
@@ -1003,7 +1074,10 @@ export default function App() {
           <Stack.Screen name="ExperienceDetail" component={ExperienceDetailScreen} />
         </Stack.Navigator>
       </NavigationContainer>
-    </GestureHandlerRootView>
+      </SafeAreaProvider>
+        <DevMenu />
+      </GestureHandlerRootView>
+    </LanguageProvider>
   );
 }
 

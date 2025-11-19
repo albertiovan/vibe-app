@@ -11,7 +11,9 @@ const USER_PREFERENCES_KEY = '@vibe_user_preferences';
 export interface UserAccount {
   userId: string;
   name: string;
+  nickname?: string; // Display name for social features
   email?: string;
+  profilePicture?: string; // URI to profile photo (local or remote)
   createdAt: string;
   onboardingCompleted: boolean;
 }

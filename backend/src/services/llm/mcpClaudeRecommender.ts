@@ -10,8 +10,11 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { spawn } from 'child_process';
 import { analyzeVibeSemantically } from './semanticVibeAnalyzer.js';
+import { analyzeRomanianVibe } from './romanianVibeAnalyzer.js';
 import { getActivityFeedbackScores, filterAvoidedActivities, getFeedbackMultiplier } from '../feedback/feedbackScoring.js';
 import { FilterOptions, buildFilterClause, filterByDistance } from '../filters/activityFilters.js';
+import { multiLocationWeather } from '../weather/multiLocationWeather.js';
+import { assessWeatherSuitability } from '../orchestrator/weatherSuitability.js';
 
 interface VibeRequest {
   vibe: string;
@@ -22,6 +25,7 @@ interface VibeRequest {
   energyLevel?: 'low' | 'medium' | 'high';
   currentSeason?: string;
   filters?: FilterOptions; // NEW: Comprehensive filtering options
+  language?: 'en' | 'ro'; // NEW: Language preference for responses
 }
 
 interface RecommendationResult {
@@ -35,6 +39,9 @@ interface RecommendationResult {
     crowdSize?: string; // NEW: Crowd size
     groupSuitability?: string; // NEW: Solo/group friendly
     priceTier?: string; // NEW: Price tier
+    expandedRadius?: boolean; // NEW: Indicates if distance was expanded
+    originalMaxDistance?: number; // NEW: Original distance limit
+    expandedMaxDistance?: number; // NEW: Expanded distance limit
     venues: Array<{
       venueId: number;
       name: string;
@@ -43,6 +50,11 @@ interface RecommendationResult {
       booking_url?: string;
     }>;
   }>;
+  metadata?: {
+    degradationLevel: number;
+    distanceExpanded: boolean;
+    uxMessage: string | null;
+  };
 }
 
 const MCP_SYSTEM_PROMPT = `You are an intelligent activity recommendation assistant with direct access to a PostgreSQL database containing curated activities and venues in Romania.
@@ -84,6 +96,8 @@ venues table:
    - "I want adrenaline" → mood:adrenaline
    - "beginner-friendly" → experience_level:beginner
    - "outdoor summer" → indoor_outdoor:outdoor + seasonality:summer
+   - "I want to read" / "book shopping" → category:creative + keywords:["bookstore", "library", "reading"]
+   - "quiet reading space" → mood:contemplative + keywords:["library", "bookstore", "cafe"]
 
 2. **Query database** with tag filtering (DETERMINISTIC PREFILTER):
    \`\`\`sql
@@ -184,15 +198,23 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     if (region.toLowerCase() === 'brasov') region = 'Brașov';
     
     console.log('🔍 Analyzing vibe semantically:', request.vibe);
+    console.log('🌐 Language:', request.language || 'en');
     console.log('📋 Filters received:', JSON.stringify(request.filters, null, 2));
     
-    // STEP 1: Deep semantic analysis
-    const analysis = await analyzeVibeSemantically(request.vibe, {
-      timeOfDay: new Date().getHours() < 12 ? 'morning' : 
-                 new Date().getHours() < 17 ? 'afternoon' : 'evening'
-    });
+    // STEP 1: Deep semantic analysis (language-aware)
+    const isRomanian = request.language === 'ro';
+    const analysis = isRomanian 
+      ? await analyzeRomanianVibe(request.vibe, {
+          timeOfDay: new Date().getHours() < 12 ? 'morning' : 
+                     new Date().getHours() < 17 ? 'afternoon' : 'evening'
+        })
+      : await analyzeVibeSemantically(request.vibe, {
+          timeOfDay: new Date().getHours() < 12 ? 'morning' : 
+                     new Date().getHours() < 17 ? 'afternoon' : 'evening'
+        });
     
     console.log('🧠 Semantic analysis:', {
+      language: isRomanian ? 'Romanian' : 'English',
       intent: analysis.primaryIntent,
       categories: analysis.suggestedCategories,
       energy: analysis.energyLevel,
@@ -200,23 +222,80 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       keywordPrefer: analysis.keywordPrefer
     });
     
-    // STEP 2: Build intelligent query with tag filtering AND user filters
-    // Check if user wants to search anywhere (no distance limit or large distance)
-    const searchEverywhere = !request.filters?.maxDistanceKm || request.filters.maxDistanceKm >= 50;
+    // STEP 1.5: Merge user's favorite categories with semantic analysis
+    if (request.filters?.favoriteCategories && request.filters.favoriteCategories.length > 0) {
+      console.log('❤️ User favorite categories:', request.filters.favoriteCategories);
+      
+      // Add favorite categories to suggested categories if not already present
+      const favoriteCategoryTags = request.filters.favoriteCategories.map(c => `category:${c}`);
+      
+      // Boost activities in favorite categories by adding them to preferred tags
+      analysis.preferredTags = [
+        ...analysis.preferredTags,
+        ...favoriteCategoryTags
+      ];
+      
+      // If user's vibe matches their favorite categories, prioritize those
+      const vibeMatchesFavorites = analysis.suggestedCategories.some(cat => 
+        request.filters?.favoriteCategories?.includes(cat)
+      );
+      
+      if (vibeMatchesFavorites) {
+        console.log('✨ Vibe matches favorite categories - boosting those activities');
+      } else {
+        // Even if vibe doesn't match, still include some favorites for variety
+        console.log('🎯 Including favorite categories for personalization');
+        analysis.suggestedCategories = [
+          ...analysis.suggestedCategories,
+          ...request.filters.favoriteCategories.slice(0, 2) // Add top 2 favorites
+        ];
+      }
+    }
+    
+    // STEP 2: Build intelligent query with NEW LOCATION FILTERING LOGIC
+    // Three states: undefined (variety), 20 (in city only), null (explore outside)
+    const userCity = request.filters?.userCity || region;
+    const locationFilter = request.filters?.maxDistanceKm;
+    
+    let locationMode: 'variety' | 'in-city' | 'explore-outside';
+    let whereClause: string;
+    
+    if (locationFilter === undefined) {
+      // NO FILTER: Variety mode - mix of local and outside activities
+      locationMode = 'variety';
+      whereClause = '1=1'; // Get all activities, will enforce variety in post-processing
+      console.log(`🌍 Location Mode: VARIETY (mix of ${userCity} + outside)`);
+    } else if (locationFilter === 20) {
+      // IN CITY: Only activities in user's current city
+      locationMode = 'in-city';
+      whereClause = `a.region = $1`; // Strict city match
+      console.log(`📍 Location Mode: IN CITY ONLY (${userCity})`);
+    } else if (locationFilter === null) {
+      // EXPLORE ROMANIA: Only activities OUTSIDE user's city
+      locationMode = 'explore-outside';
+      whereClause = `a.region != $1`; // Exclude user's city
+      console.log(`🗺️  Location Mode: EXPLORE OUTSIDE (exclude ${userCity})`);
+    } else {
+      // Fallback for other distance values
+      locationMode = 'variety';
+      whereClause = '1=1';
+      console.log(`🌍 Location Mode: CUSTOM DISTANCE (${locationFilter}km)`);
+    }
+    
+    // Select appropriate language fields based on user preference
+    const nameField = isRomanian ? 'COALESCE(a.name_ro, a.name)' : 'a.name';
+    const descField = isRomanian ? 'COALESCE(a.description_ro, a.description)' : 'a.description';
+    const tagsField = isRomanian ? 'COALESCE(a.tags_ro, a.tags)' : 'a.tags';
     
     let activitiesQuery = `
-      SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags, 
+      SELECT a.id, ${nameField} as name, a.category, a.city, a.region, 
+             ${descField} as description, ${tagsField} as tags, 
              a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
              a.duration_min, a.duration_max, a.crowd_size, a.crowd_type, 
              a.group_suitability, a.price_tier
       FROM activities a
-      WHERE ${searchEverywhere ? '1=1' : '(a.region = $1 OR a.region = \'București\')'}
+      WHERE ${whereClause}
     `;
-    
-    console.log(`🌍 Search scope: ${searchEverywhere ? 'ALL ROMANIA' : `${region} + București`}`);
-    if (searchEverywhere) {
-      console.log(`🗺️  Preference: Activities OUTSIDE ${region} (user selected "Anywhere")`);
-    }
     
     // Always include region as $1 for ORDER BY ranking, even when not used in WHERE
     const queryParams: any[] = [region];
@@ -276,13 +355,13 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     
     // STEP 2.4: Apply user-defined filters
     if (request.filters && Object.keys(request.filters).length > 0) {
-      // Pass searchEverywhere flag to filter builder for travel-aware duration logic
-      const filterResult = buildFilterClause(request.filters, paramIndex, searchEverywhere);
+      // Pass explore-outside flag to filter builder for travel-aware duration logic
+      const filterResult = buildFilterClause(request.filters, paramIndex, locationMode === 'explore-outside');
       activitiesQuery += filterResult.clause;
       queryParams.push(...filterResult.params);
       paramIndex += filterResult.params.length;
       console.log('🔍 Applied user filters:', Object.keys(request.filters).join(', '));
-      if (searchEverywhere && request.filters.durationRange === 'full-day') {
+      if (locationMode === 'explore-outside' && request.filters.durationRange === 'full-day') {
         console.log('✈️ Travel-aware duration: Activity time + Travel time = Full day');
       }
     }
@@ -290,20 +369,25 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     // Smart ranking: prefer activities with preferred tags, then random within matches
     if (analysis.preferredTags.length > 0) {
       // Count how many preferred tags each activity has
-      if (searchEverywhere) {
-        // When "Anywhere" is explicitly selected: PREFER activities OUTSIDE current city
-        // User is saying "I want to explore beyond my city"
+      if (locationMode === 'explore-outside') {
+        // Explore Romania: PREFER activities OUTSIDE current city
         activitiesQuery += `
           ORDER BY 
             CASE WHEN a.region != $1 THEN 0 ELSE 1 END,  -- Outside city ranked HIGHER
             (SELECT COUNT(*) FROM unnest(a.tags) tag WHERE tag = ANY($${paramIndex}::text[])) DESC,
             RANDOM()
         `;
-      } else {
-        // When no distance filter: prefer LOCAL activities (default behavior)
+      } else if (locationMode === 'in-city') {
+        // In City: Only local (already filtered in WHERE), just rank by tags
         activitiesQuery += `
           ORDER BY 
-            CASE WHEN a.region = $1 THEN 0 ELSE 1 END,  -- Local city ranked HIGHER
+            (SELECT COUNT(*) FROM unnest(a.tags) tag WHERE tag = ANY($${paramIndex}::text[])) DESC,
+            RANDOM()
+        `;
+      } else {
+        // Variety mode: Random mix (variety enforced in post-processing)
+        activitiesQuery += `
+          ORDER BY 
             (SELECT COUNT(*) FROM unnest(a.tags) tag WHERE tag = ANY($${paramIndex}::text[])) DESC,
             RANDOM()
         `;
@@ -311,25 +395,23 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       queryParams.push(analysis.preferredTags);
       paramIndex++;
     } else {
-      if (searchEverywhere) {
-        // When "Anywhere" selected: PREFER activities outside current city
+      if (locationMode === 'explore-outside') {
+        // Explore Romania: PREFER activities outside current city
         activitiesQuery += `
           ORDER BY 
             CASE WHEN a.region != $1 THEN 0 ELSE 1 END,  -- Outside city first
             RANDOM()
         `;
       } else {
-        // When no distance filter: prefer local
+        // In City or Variety: Random order (variety enforced later)
         activitiesQuery += `
-          ORDER BY 
-            CASE WHEN a.region = $1 THEN 0 ELSE 1 END,  -- Local first
-            RANDOM()
+          ORDER BY RANDOM()
         `;
       }
     }
     
-    // Increase limit when searching all of Romania for specific activities
-    const queryLimit = searchEverywhere ? 50 : 20;
+    // Increase limit when exploring outside city for more options
+    const queryLimit = locationMode === 'explore-outside' ? 50 : 30;
     activitiesQuery += ` LIMIT ${queryLimit}`;
     console.log(`📊 Query limit: ${queryLimit} activities`);
     
@@ -406,43 +488,8 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       console.log(`🚫 Keyword filtering: Removed ${beforeCount - activities.length} activities with avoid keywords:`, analysis.keywordAvoid);
     }
     
-    if (activities.length === 0) {
-      console.log('⚠️ No activities matched filters, falling back to broader search...');
-      console.log('🚨 ACTIVITY GAP DETECTED:');
-      console.log(`   Vibe: "${request.vibe}"`);
-      console.log(`   Required tags: ${analysis.requiredTags.join(', ')}`);
-      console.log(`   Energy: ${analysis.energyLevel}`);
-      console.log(`   Categories: ${analysis.suggestedCategories.join(', ')}`);
-      console.log('   💡 Consider adding more activities with these attributes!');
-      
-      // Fallback: just filter by category if available
-      const fallbackQuery = `
-        SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags
-        FROM activities a
-        WHERE (a.region = $1 OR a.region = 'București')
-        ${analysis.suggestedCategories.length > 0 ? 
-          `AND a.category = ANY($2::text[])` : ''}
-        ORDER BY 
-          CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
-          RANDOM()
-        LIMIT 10
-      `;
-      
-      const fallbackParams = analysis.suggestedCategories.length > 0 
-        ? [region, analysis.suggestedCategories] 
-        : [region];
-      
-      const { rows: fallbackActivities } = await pool.query(fallbackQuery, fallbackParams);
-      
-      if (fallbackActivities.length === 0) {
-        throw new Error(`No activities found for region: ${region}`);
-      }
-      
-      console.log(`✅ Fallback found ${fallbackActivities.length} activities`);
-      activities.push(...fallbackActivities);
-    }
-    
-    // STEP 2.7: Apply distance filtering if location provided
+    // STEP 2.8: Apply distance filtering if location provided
+    let distanceExpanded = false;
     if (request.filters?.userLatitude && request.filters?.userLongitude) {
       const beforeDistanceFilter = activities.length;
       activities = filterByDistance(
@@ -457,27 +504,197 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       }
     }
     
-    // STEP 3: Ensure we have enough activities - if not, do broader search
-    if (activities.length < 5) {
-      console.log(`⚠️ Only ${activities.length} activities found, broadening search...`);
+    // STEP 2.9: GRACEFUL DEGRADATION - progressively relax filters if no results
+    let degradationLevel = 0;
+    const originalMaxDistance = request.filters?.maxDistanceKm;
+    
+    if (activities.length === 0) {
+      console.log('⚠️ No activities matched filters, starting graceful degradation...');
       
-      // Fallback: Search with just category, no other filters
+      // DEGRADATION LEVEL 1: Demote MANDATORY keywords to PREFERRED (if high specificity)
+      if (analysis.confidence >= 0.9 && analysis.keywordPrefer && analysis.keywordPrefer.length > 0) {
+        degradationLevel = 1;
+        console.log('🔄 DEGRADATION LEVEL 1: Demoting MANDATORY keywords to PREFERRED boosting');
+        
+        // Re-query with same semantic filters but keyword boosting instead of mandatory
+        const { rows: relaxedActivities } = await pool.query(activitiesQuery, queryParams);
+        
+        // Apply keyword boosting (not filtering)
+        relaxedActivities.forEach((activity: any) => {
+          const searchText = `${activity.name} ${activity.description || ''}`.toLowerCase();
+          activity._keywordMatchCount = analysis.keywordPrefer!.filter(keyword => 
+            searchText.includes(keyword.toLowerCase())
+          ).length;
+        });
+        
+        // Sort by keyword matches (but keep all)
+        relaxedActivities.sort((a: any, b: any) => (b._keywordMatchCount || 0) - (a._keywordMatchCount || 0));
+        
+        // Apply distance filter
+        if (request.filters?.userLatitude && request.filters?.userLongitude) {
+          activities = filterByDistance(
+            relaxedActivities,
+            request.filters.userLatitude,
+            request.filters.userLongitude,
+            request.filters.maxDistanceKm || null
+          );
+        } else {
+          activities = relaxedActivities;
+        }
+        
+        const withKeywords = activities.filter(a => a._keywordMatchCount > 0).length;
+        console.log(`✅ Level 1: Found ${activities.length} activities (${withKeywords} with keywords, ${activities.length - withKeywords} others)`);
+      }
+    }
+    
+    if (activities.length === 0) {
+      // DEGRADATION LEVEL 2: Expand distance radius by 50%
+      if (originalMaxDistance && originalMaxDistance < 25) {
+        degradationLevel = 2;
+        const expandedDistance = Math.min(originalMaxDistance * 1.5, 25);
+        console.log(`🔄 DEGRADATION LEVEL 2: Expanding radius from ${originalMaxDistance}km to ${expandedDistance}km`);
+        
+        const { rows: expandedActivities } = await pool.query(activitiesQuery, queryParams);
+        
+        if (request.filters?.userLatitude && request.filters?.userLongitude) {
+          activities = filterByDistance(
+            expandedActivities,
+            request.filters.userLatitude,
+            request.filters.userLongitude,
+            expandedDistance
+          );
+          
+          // Mark activities as expanded radius
+          activities.forEach(a => {
+            a._expandedRadius = true;
+            a._originalMaxDistance = originalMaxDistance;
+            a._expandedMaxDistance = expandedDistance;
+          });
+          
+          distanceExpanded = true;
+        }
+        
+        console.log(`✅ Level 2: Found ${activities.length} activities within ${expandedDistance}km`);
+      }
+    }
+    
+    if (activities.length === 0) {
+      // DEGRADATION LEVEL 3: Broaden to category only (drop all tag requirements)
+      degradationLevel = 3;
+      console.log('🔄 DEGRADATION LEVEL 3: Dropping tag requirements, using category only');
+      console.log('🚨 ACTIVITY GAP DETECTED:');
+      console.log(`   Vibe: "${request.vibe}"`);
+      console.log(`   Required tags: ${analysis.requiredTags.join(', ')}`);
+      console.log(`   Energy: ${analysis.energyLevel}`);
+      console.log(`   Categories: ${analysis.suggestedCategories.join(', ')}`);
+      console.log('   💡 Consider adding more activities with these attributes!');
+      
       const fallbackQuery = `
         SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags,
                a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
                a.duration_min, a.duration_max, a.crowd_size, a.crowd_type,
                a.group_suitability, a.price_tier
         FROM activities a
-        WHERE ${searchEverywhere ? '1=1' : '(a.region = \'București\' OR a.region IN (\'Prahova\', \'Brașov\', \'Ilfov\'))'}
+        WHERE (a.region = $1 OR a.region = 'București')
+        ${analysis.suggestedCategories.length > 0 ? 
+          `AND a.category = ANY($2::text[])` : ''}
+        ORDER BY 
+          CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
+          RANDOM()
+        LIMIT 30
+      `;
+      
+      const fallbackParams = analysis.suggestedCategories.length > 0 
+        ? [region, analysis.suggestedCategories] 
+        : [region];
+      
+      let { rows: fallbackActivities } = await pool.query(fallbackQuery, fallbackParams);
+      
+      // Apply distance filter to fallback
+      if (request.filters?.userLatitude && request.filters?.userLongitude) {
+        const expandedDistance = originalMaxDistance ? Math.min(originalMaxDistance * 1.5, 25) : null;
+        fallbackActivities = filterByDistance(
+          fallbackActivities,
+          request.filters.userLatitude,
+          request.filters.userLongitude,
+          expandedDistance
+        );
+        
+        if (expandedDistance && expandedDistance !== originalMaxDistance) {
+          fallbackActivities.forEach(a => {
+            a._expandedRadius = true;
+            a._originalMaxDistance = originalMaxDistance;
+            a._expandedMaxDistance = expandedDistance;
+          });
+          distanceExpanded = true;
+        }
+      }
+      
+      if (fallbackActivities.length === 0) {
+        throw new Error(`No activities found for region: ${region}`);
+      }
+      
+      console.log(`✅ Level 3: Found ${fallbackActivities.length} activities (category-only match)`);
+      activities = fallbackActivities;
+    }
+    
+    // Log degradation summary
+    if (degradationLevel > 0) {
+      console.log(`📊 Degradation Summary: Level ${degradationLevel}, ${activities.length} activities found`);
+      if (distanceExpanded) {
+        console.log(`   ⚠️ Distance expanded from ${originalMaxDistance}km to ${activities[0]?._expandedMaxDistance}km`);
+      }
+    }
+    
+    // STEP 3: Additional fallback only if degradation didn't produce enough results
+    // This should rarely trigger now that we have 3-level degradation
+    if (activities.length < 3 && degradationLevel < 3) {
+      console.log(`⚠️ Only ${activities.length} activities after degradation, applying final fallback...`);
+      
+      // Use expanded distance if available, otherwise original
+      const effectiveMaxDistance = distanceExpanded 
+        ? (activities[0]?._expandedMaxDistance || originalMaxDistance)
+        : originalMaxDistance;
+      
+      const fallbackQuery = `
+        SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags,
+               a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
+               a.duration_min, a.duration_max, a.crowd_size, a.crowd_type,
+               a.group_suitability, a.price_tier
+        FROM activities a
+        WHERE ${locationMode === 'explore-outside' ? 'a.region != $1' : 
+                locationMode === 'in-city' ? 'a.region = $1' : 
+                '(a.region = \'București\' OR a.region IN (\'Prahova\', \'Brașov\', \'Ilfov\'))'}
         ${analysis.suggestedCategories.length > 0 ? `AND a.category = ANY(ARRAY[${analysis.suggestedCategories.map(c => `'${c}'`).join(',')}]::text[])` : ''}
         ORDER BY RANDOM()
         LIMIT 30
       `;
       
-      const { rows: fallbackActivities } = await pool.query(fallbackQuery);
-      console.log(`🔄 Fallback found ${fallbackActivities.length} additional activities`);
+      let { rows: fallbackActivities } = await pool.query(fallbackQuery);
+      console.log(`🔄 Final fallback found ${fallbackActivities.length} additional activities`);
       
-      // Apply keyword matching to fallback too
+      // Apply distance filtering with expanded distance if applicable
+      if (request.filters?.userLatitude && request.filters?.userLongitude) {
+        const beforeFallbackDistanceFilter = fallbackActivities.length;
+        fallbackActivities = filterByDistance(
+          fallbackActivities,
+          request.filters.userLatitude,
+          request.filters.userLongitude,
+          effectiveMaxDistance
+        );
+        console.log(`📍 Final fallback distance filter: ${fallbackActivities.length} activities (removed ${beforeFallbackDistanceFilter - fallbackActivities.length})`);
+        
+        // Mark with expanded radius if applicable
+        if (distanceExpanded) {
+          fallbackActivities.forEach(a => {
+            a._expandedRadius = true;
+            a._originalMaxDistance = originalMaxDistance;
+            a._expandedMaxDistance = effectiveMaxDistance;
+          });
+        }
+      }
+      
+      // Apply keyword matching to fallback
       if (analysis.keywordPrefer && analysis.keywordPrefer.length > 0) {
         const keywordMatches = fallbackActivities.filter((activity: any) => {
           const searchText = `${activity.name} ${activity.description || ''}`.toLowerCase();
@@ -486,27 +703,241 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
           );
         });
         activities.push(...keywordMatches);
-        console.log(`✅ Added ${keywordMatches.length} keyword-matching activities from fallback`);
+        console.log(`✅ Added ${keywordMatches.length} keyword-matching activities from final fallback`);
       } else {
         activities.push(...fallbackActivities.slice(0, 10));
       }
     }
     
-    // STEP 4: Select diverse final 5 activities (with feedback scoring)
-    const selectedActivities = selectDiverseActivities(activities, 5, analysis, feedbackScores);
+    // STEP 4: Score all activities and select top 5 by relevance
+    console.log('🎯 Scoring activities by relevance...');
     
-    // CRITICAL: If we still don't have 5, just take what we have
-    if (selectedActivities.length < 5 && activities.length > selectedActivities.length) {
-      console.log(`⚠️ Only selected ${selectedActivities.length}, adding more to reach 5...`);
-      const remaining = activities.filter(a => !selectedActivities.includes(a)).slice(0, 5 - selectedActivities.length);
-      selectedActivities.push(...remaining);
+    // Score each activity
+    activities.forEach(activity => {
+      activity._relevanceScore = scoreActivity(activity, analysis);
+    });
+    
+    // Sort by relevance score (highest first)
+    activities.sort((a, b) => (b._relevanceScore || 0) - (a._relevanceScore || 0));
+    
+    // Log analysis for debugging
+    console.log('🎯 Vibe Analysis:');
+    console.log(`   Primary Intent: ${analysis.primaryIntent}`);
+    console.log(`   Suggested Categories: ${analysis.suggestedCategories?.join(', ')}`);
+    console.log(`   Energy Level: ${analysis.energyLevel}`);
+    console.log(`   Confidence: ${analysis.confidence}`);
+    
+    // Log top scores for debugging
+    console.log('📊 Top 10 activities by relevance score:');
+    activities.slice(0, 10).forEach((a, i) => {
+      console.log(`   ${i+1}. ${a.name} - Score: ${a._relevanceScore} (${a.category}, ${a.energy_level})`);
+    });
+    
+    // STEP 4.4: Enforce variety for undefined filter mode (at least 1 local + 1 outside)
+    if (locationMode === 'variety' && activities.length > 0) {
+      console.log('🎯 Enforcing variety: ensuring mix of local + outside activities');
+      
+      const localActivities = activities.filter(a => a.region === userCity);
+      const outsideActivities = activities.filter(a => a.region !== userCity);
+      
+      console.log(`   Found: ${localActivities.length} local, ${outsideActivities.length} outside`);
+      
+      // Ensure at least 1 local AND 1 outside (if we have enough activities)
+      if (localActivities.length === 0 && outsideActivities.length > 0 && activities.length >= 2) {
+        console.log('⚠️ No local activities found, fetching some for variety...');
+        try {
+          const localQuery = `
+            SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags,
+                   a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
+                   a.duration_min, a.duration_max, a.crowd_size, a.crowd_type,
+                   a.group_suitability, a.price_tier
+            FROM activities a
+            WHERE a.region = $1
+            ORDER BY RANDOM()
+            LIMIT 2
+          `;
+          const { rows: localResults } = await pool.query(localQuery, [userCity]);
+          
+          if (localResults.length > 0) {
+            // Score the local activities
+            localResults.forEach(activity => {
+              activity._relevanceScore = scoreActivity(activity, analysis);
+            });
+            // Mix: keep top outside activities + add local ones
+            activities = [...localResults, ...outsideActivities.slice(0, 3)];
+            console.log(`✅ Added ${localResults.length} local activities for variety`);
+          }
+        } catch (error) {
+          console.log('⚠️ Could not fetch local activities:', error);
+        }
+      } else if (outsideActivities.length === 0 && localActivities.length > 0 && activities.length >= 2) {
+        console.log('⚠️ No outside activities found, fetching some for variety...');
+        try {
+          const outsideQuery = `
+            SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags,
+                   a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
+                   a.duration_min, a.duration_max, a.crowd_size, a.crowd_type,
+                   a.group_suitability, a.price_tier
+            FROM activities a
+            WHERE a.region != $1
+            ORDER BY RANDOM()
+            LIMIT 2
+          `;
+          const { rows: outsideResults } = await pool.query(outsideQuery, [userCity]);
+          
+          if (outsideResults.length > 0) {
+            // Score the outside activities
+            outsideResults.forEach(activity => {
+              activity._relevanceScore = scoreActivity(activity, analysis);
+            });
+            // Mix: keep top local activities + add outside ones
+            activities = [...localActivities.slice(0, 3), ...outsideResults];
+            console.log(`✅ Added ${outsideResults.length} outside activities for variety`);
+          }
+        } catch (error) {
+          console.log('⚠️ Could not fetch outside activities:', error);
+        }
+      }
+      
+      // Final variety mix: aim for balanced distribution
+      if (localActivities.length > 0 && outsideActivities.length > 0) {
+        const targetLocal = Math.ceil(5 * 0.6); // 3 local
+        const targetOutside = Math.floor(5 * 0.4); // 2 outside
+        
+        const finalLocal = localActivities.slice(0, targetLocal);
+        const finalOutside = outsideActivities.slice(0, targetOutside);
+        
+        // If we don't have enough of one type, fill with the other
+        const totalNeeded = 5;
+        const currentTotal = finalLocal.length + finalOutside.length;
+        
+        if (currentTotal < totalNeeded) {
+          const needed = totalNeeded - currentTotal;
+          if (finalLocal.length < targetLocal) {
+            finalOutside.push(...outsideActivities.slice(targetOutside, targetOutside + needed));
+          } else if (finalOutside.length < targetOutside) {
+            finalLocal.push(...localActivities.slice(targetLocal, targetLocal + needed));
+          }
+        }
+        
+        activities = [...finalLocal, ...finalOutside];
+        console.log(`✅ Variety enforced: ${finalLocal.length} local + ${finalOutside.length} outside`);
+      }
     }
+    
+    // STEP 4.5: Weather filtering (if user location provided)
+    let weatherFilteredActivities = activities;
+    let weatherWarnings: Map<number, string> = new Map();
+    
+    if (request.filters?.userLatitude && request.filters?.userLongitude) {
+      console.log('🌤️ Applying weather filtering...');
+      
+      // Get unique cities from activities
+      const activityCities = Array.from(new Set(
+        activities.map(a => a.region || a.city).filter(Boolean)
+      ));
+      
+      // Determine user's city (default to București)
+      const userCity = region || 'București';
+      
+      // Fetch weather for all locations
+      const weatherData = await multiLocationWeather.getWeatherForActivities(
+        userCity,
+        activityCities
+      );
+      
+      console.log(`✅ Fetched weather for ${weatherData.size} locations`);
+      
+      // Filter activities by weather suitability
+      const goodWeatherActivities: any[] = [];
+      const okWeatherActivities: any[] = [];
+      const badWeatherActivities: any[] = [];
+      
+      for (const activity of activities) {
+        const activityCity = activity.region || activity.city;
+        const cityWeather = weatherData.get(activityCity);
+        
+        if (!cityWeather) {
+          // No weather data, keep activity
+          goodWeatherActivities.push(activity);
+          continue;
+        }
+        
+        // Check if activity is weather-dependent
+        const isOutdoor = activity.indoor_outdoor === 'outdoor';
+        const isWeatherDependent = isOutdoor || 
+          ['adventure', 'nature', 'sports', 'water'].includes(activity.category);
+        
+        if (!isWeatherDependent) {
+          // Indoor/weather-independent activities always good
+          goodWeatherActivities.push(activity);
+          activity._weather = cityWeather;
+          continue;
+        }
+        
+        // Assess weather suitability for outdoor activities
+        const suitability = assessWeatherSuitability(activity.category, {
+          tMax: cityWeather.temperature,
+          precipMm: cityWeather.precipitation,
+          windMps: cityWeather.windSpeed / 3.6, // Convert km/h to m/s
+          condition: cityWeather.condition
+        });
+        
+        activity._weather = cityWeather;
+        activity._weatherSuitability = suitability.suitability;
+        
+        if (suitability.suitability === 'good') {
+          goodWeatherActivities.push(activity);
+        } else if (suitability.suitability === 'ok') {
+          okWeatherActivities.push(activity);
+          weatherWarnings.set(activity.id, `Weather may not be ideal: ${cityWeather.description}`);
+        } else {
+          badWeatherActivities.push(activity);
+          weatherWarnings.set(activity.id, `⚠️ Poor weather conditions: ${cityWeather.description}`);
+        }
+      }
+      
+      console.log(`🌤️ Weather filtering results:`);
+      console.log(`   Good weather: ${goodWeatherActivities.length} activities`);
+      console.log(`   OK weather: ${okWeatherActivities.length} activities`);
+      console.log(`   Bad weather: ${badWeatherActivities.length} activities`);
+      
+      // Prioritize good weather activities, then OK, then bad as fallback
+      weatherFilteredActivities = [
+        ...goodWeatherActivities,
+        ...okWeatherActivities,
+        ...badWeatherActivities
+      ];
+      
+      // If we filtered out too many, show warning
+      if (goodWeatherActivities.length < 3 && badWeatherActivities.length > 0) {
+        console.log('⚠️ Limited good-weather options, including activities with weather warnings');
+      }
+    }
+    
+    // CRITICAL: Remove duplicates by activity ID before selecting
+    const uniqueActivities = Array.from(
+      new Map(weatherFilteredActivities.map(a => [a.id, a])).values()
+    );
+    
+    if (uniqueActivities.length < weatherFilteredActivities.length) {
+      console.log(`🔄 Removed ${weatherFilteredActivities.length - uniqueActivities.length} duplicate activities`);
+    }
+    
+    // Select top 5 activities by relevance (after weather filtering and deduplication)
+    const selectedActivities = uniqueActivities.slice(0, 5);
+    
+    console.log(`✅ Selected top 5 unique activities by relevance score`);
+    selectedActivities.forEach((a, i) => {
+      console.log(`   ${i+1}. ${a.name} (ID: ${a.id}) - Score: ${a._relevanceScore} (${a.category}, ${a.energy_level})`);
+    });
     
     // STEP 4: For each selected activity, get venues
     const ideas = await Promise.all(
       selectedActivities.map(async (activity) => {
         const venuesQuery = `
-          SELECT v.id, v.name, v.city, v.rating
+          SELECT v.id, v.name, v.city, v.rating, v.website, v.phone, v.address, 
+                 v.latitude, v.longitude, v.price_tier, v.rating_count
           FROM venues v
           WHERE v.activity_id = $1
           ORDER BY v.rating DESC NULLS LAST
@@ -515,30 +946,83 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
         
         const { rows: venues } = await pool.query(venuesQuery, [activity.id]);
         
+        // Add weather data if available
+        const weatherInfo = activity._weather ? {
+          temperature: activity._weather.temperature,
+          condition: activity._weather.condition,
+          precipitation: activity._weather.precipitation,
+          suitability: activity._weatherSuitability || activity._weather.suitability,
+          icon: activity._weather.icon,
+          description: activity._weather.description,
+          warning: weatherWarnings.get(activity.id) || null
+        } : null;
+        
         return {
           activityId: activity.id,
           name: activity.name,
+          description: activity.description, // Add description
           bucket: activity.category,
           region: activity.region,
+          city: activity.city, // Add city
           energy_level: activity.energy_level,
           indoor_outdoor: activity.indoor_outdoor,
           distanceKm: activity.distanceKm, // Include if calculated
           durationMinutes: activity.duration_min, // Activity duration
+          duration_min: activity.duration_min, // Also include for compatibility
+          duration_max: activity.duration_max, // Also include for compatibility
           crowdSize: activity.crowd_size,
           groupSuitability: activity.group_suitability,
           priceTier: activity.price_tier,
+          website: activity.website, // Activity website (if available)
+          websiteUrl: activity.website, // Also as websiteUrl for compatibility
+          weather: weatherInfo, // NEW: Weather data for activity location
+          expandedRadius: activity._expandedRadius || false, // NEW: Indicates if distance was expanded
+          originalMaxDistance: activity._originalMaxDistance, // NEW: Original distance limit
+          expandedMaxDistance: activity._expandedMaxDistance, // NEW: Expanded distance limit
           venues: venues.map(v => ({
             venueId: v.id,
             name: v.name,
             city: v.city,
-            rating: v.rating
+            rating: v.rating,
+            website: v.website, // NOW INCLUDED!
+            phone: v.phone,
+            address: v.address,
+            location: (v.latitude && v.longitude) ? {
+              lat: parseFloat(v.latitude),
+              lng: parseFloat(v.longitude)
+            } : undefined,
+            priceTier: v.price_tier,
+            ratingCount: v.rating_count
           }))
         };
       })
     );
     
+    // Build UX messaging for degradation
+    let uxMessage = null;
+    if (degradationLevel > 0) {
+      if (degradationLevel === 1) {
+        uxMessage = 'We relaxed some filters to find more options for you.';
+      } else if (degradationLevel === 2) {
+        uxMessage = `We expanded the search radius to ${ideas[0]?.expandedMaxDistance}km to find these activities.`;
+      } else if (degradationLevel === 3) {
+        uxMessage = 'We broadened the search to show related activities in your area.';
+      }
+    }
+    
     console.log(`🎯 Returning ${ideas.length} final recommendations`);
-    return { ideas };
+    if (uxMessage) {
+      console.log(`💬 UX Message: ${uxMessage}`);
+    }
+    
+    return { 
+      ideas,
+      metadata: {
+        degradationLevel,
+        distanceExpanded,
+        uxMessage
+      }
+    };
     
   } catch (error) {
     console.error('❌ Database query error:', error);
@@ -694,6 +1178,7 @@ function selectDiverseActivities(activities: any[], count: number, analysis: any
 
 /**
  * Score activity based on how well it matches analysis
+ * HIGHER SCORE = BETTER MATCH
  */
 function scoreActivity(activity: any, analysis: any): number {
   let score = 0;
@@ -702,23 +1187,61 @@ function scoreActivity(activity: any, analysis: any): number {
     return score;
   }
   
-  // +2 points for each preferred tag
-  for (const preferredTag of analysis.preferredTags || []) {
-    if (activity.tags.includes(preferredTag)) {
-      score += 2;
-    }
-  }
-  
-  // +1 point for each suggested category
+  // CRITICAL: Category match is most important (100 points per match)
+  // This ensures activities in the requested category always rank highest
+  let categoryMatches = 0;
   for (const category of analysis.suggestedCategories || []) {
     if (activity.tags.includes(`category:${category}`)) {
-      score += 1;
+      score += 100;
+      categoryMatches++;
     }
   }
   
-  // +1 point for matching energy level
+  // Bonus for matching the PRIMARY category (first in list)
+  if (analysis.suggestedCategories && analysis.suggestedCategories.length > 0) {
+    const primaryCategory = analysis.suggestedCategories[0];
+    if (activity.category === primaryCategory) {
+      score += 50; // Extra 50 points for exact primary category match
+    }
+  }
+  
+  // Energy level match (30 points)
   if (activity.energy_level === analysis.energyLevel) {
-    score += 1;
+    score += 30;
+  }
+  
+  // Preferred tags (10 points each)
+  for (const preferredTag of analysis.preferredTags || []) {
+    if (activity.tags.includes(preferredTag)) {
+      score += 10;
+    }
+  }
+  
+  // Required tags match (20 points each)
+  for (const requiredTag of analysis.requiredTags || []) {
+    if (activity.tags.includes(requiredTag)) {
+      score += 20;
+    }
+  }
+  
+  // Keyword matches in name/description (15 points each)
+  if (analysis.keywordPrefer && analysis.keywordPrefer.length > 0) {
+    const searchText = `${activity.name} ${activity.description || ''}`.toLowerCase();
+    for (const keyword of analysis.keywordPrefer) {
+      if (searchText.includes(keyword.toLowerCase())) {
+        score += 15;
+      }
+    }
+  }
+  
+  // Feedback score multiplier (multiply by 0.5 to 1.5)
+  if (activity._feedbackScore) {
+    score = score * activity._feedbackScore;
+  }
+  
+  // Keyword match count boost (from earlier filtering)
+  if (activity._keywordMatchCount) {
+    score += activity._keywordMatchCount * 10;
   }
   
   return score;

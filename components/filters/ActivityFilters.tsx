@@ -84,8 +84,8 @@ const PRICE_OPTIONS = [
 ];
 
 export default function ActivityFilters({ onFiltersChange, userLocation, initialFilters }: ActivityFiltersProps) {
-  const [expanded, setExpanded] = useState(false);
-  const [selectedDistance, setSelectedDistance] = useState<number | null>(initialFilters?.maxDistanceKm || null);
+  const [expanded, setExpanded] = useState(true);
+  const [selectedDistance, setSelectedDistance] = useState<number | null>(initialFilters?.maxDistanceKm !== undefined ? initialFilters.maxDistanceKm : null);
   const [selectedDuration, setSelectedDuration] = useState<string>(initialFilters?.durationRange || 'any');
   const [selectedCrowdSizes, setSelectedCrowdSizes] = useState<string[]>(initialFilters?.crowdSize || []);
   const [selectedCrowdTypes, setSelectedCrowdTypes] = useState<string[]>(initialFilters?.crowdType || []);
@@ -153,43 +153,18 @@ export default function ActivityFilters({ onFiltersChange, userLocation, initial
     }
   };
 
-  if (!expanded) {
-    return (
-      <TouchableOpacity
-        style={styles.collapsedContainer}
-        onPress={() => setExpanded(true)}
-      >
-        <Ionicons name="options" size={20} color="#6366f1" />
-        <Text style={styles.collapsedText}>
-          {hasActiveFilters ? 'Filters Active' : 'Add Filters'}
-        </Text>
-        {hasActiveFilters && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              {[
-                selectedDistance !== null && '📍',
-                selectedDuration !== 'any' && '⏱️',
-                selectedCrowdSizes.length > 0 && '👥',
-                selectedGroups.length > 0 && '🎯',
-                selectedPrices.length > 0 && '💰',
-              ].filter(Boolean).join(' ')}
-            </Text>
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  }
+  // Auto-expanded, no collapsed state needed
 
   return (
     <View style={styles.expandedContainer}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Ionicons name="options" size={24} color="#6366f1" />
+          <Ionicons name="options" size={24} color="rgba(0, 217, 255, 0.9)" />
           <Text style={styles.headerTitle}>Filters</Text>
         </View>
-        <TouchableOpacity onPress={() => setExpanded(false)}>
-          <Ionicons name="close" size={24} color="#666" />
+        <TouchableOpacity onPress={() => onFiltersChange({})}>
+          <Ionicons name="close" size={24} color="rgba(255, 255, 255, 0.6)" />
         </TouchableOpacity>
       </View>
 
@@ -211,7 +186,7 @@ export default function ActivityFilters({ onFiltersChange, userLocation, initial
                   <Ionicons
                     name={option.icon as any}
                     size={24}
-                    color={selectedDistance === option.value ? '#6366f1' : '#666'}
+                    color={selectedDistance === option.value ? 'rgba(0, 217, 255, 0.95)' : 'rgba(255, 255, 255, 0.4)'}
                   />
                   <Text style={[
                     styles.optionLabel,
@@ -242,7 +217,7 @@ export default function ActivityFilters({ onFiltersChange, userLocation, initial
                 <Ionicons
                   name={option.icon as any}
                   size={24}
-                  color={selectedDuration === option.value ? '#6366f1' : '#666'}
+                  color={selectedDuration === option.value ? 'rgba(0, 217, 255, 0.95)' : 'rgba(255, 255, 255, 0.4)'}
                 />
                 <Text style={[
                   styles.optionLabel,
@@ -273,7 +248,7 @@ export default function ActivityFilters({ onFiltersChange, userLocation, initial
                 <Ionicons
                   name={option.icon as any}
                   size={24}
-                  color={selectedCrowdSizes.includes(option.value) ? '#6366f1' : '#666'}
+                  color={selectedCrowdSizes.includes(option.value) ? 'rgba(0, 217, 255, 0.95)' : 'rgba(255, 255, 255, 0.4)'}
                 />
                 <Text style={[
                   styles.optionLabel,
@@ -303,7 +278,7 @@ export default function ActivityFilters({ onFiltersChange, userLocation, initial
                 <Ionicons
                   name={option.icon as any}
                   size={24}
-                  color={selectedCrowdTypes.includes(option.value) ? '#6366f1' : '#666'}
+                  color={selectedCrowdTypes.includes(option.value) ? 'rgba(0, 217, 255, 0.95)' : 'rgba(255, 255, 255, 0.4)'}
                 />
                 <Text style={[
                   styles.optionLabel,
@@ -333,7 +308,7 @@ export default function ActivityFilters({ onFiltersChange, userLocation, initial
                 <Ionicons
                   name={option.icon as any}
                   size={24}
-                  color={selectedGroups.includes(option.value) ? '#6366f1' : '#666'}
+                  color={selectedGroups.includes(option.value) ? 'rgba(0, 217, 255, 0.95)' : 'rgba(255, 255, 255, 0.4)'}
                 />
                 <Text style={[
                   styles.optionLabel,
@@ -363,7 +338,7 @@ export default function ActivityFilters({ onFiltersChange, userLocation, initial
                 <Ionicons
                   name={option.icon as any}
                   size={24}
-                  color={selectedPrices.includes(option.value) ? '#6366f1' : '#666'}
+                  color={selectedPrices.includes(option.value) ? 'rgba(0, 217, 255, 0.95)' : 'rgba(255, 255, 255, 0.4)'}
                 />
                 <Text style={[
                   styles.optionLabel,
@@ -399,23 +374,23 @@ const styles = StyleSheet.create({
   collapsedContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9ff',
+    backgroundColor: 'rgba(0, 170, 255, 0.08)',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e0e7ff',
+    borderColor: 'rgba(0, 217, 255, 0.2)',
     marginBottom: 16,
   },
   collapsedText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6366f1',
+    color: 'rgba(0, 217, 255, 0.9)',
     marginLeft: 8,
     flex: 1,
   },
   badge: {
-    backgroundColor: '#6366f1',
+    backgroundColor: 'rgba(0, 217, 255, 0.3)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -425,14 +400,16 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   expandedContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 20,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.2)',
+    shadowColor: 'rgba(0, 217, 255, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
     maxHeight: '80%',
   },
   header: {
@@ -441,7 +418,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: 'rgba(0, 217, 255, 0.15)',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -450,7 +427,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: 'rgba(255, 255, 255, 0.95)',
     marginLeft: 12,
   },
   scrollView: {
@@ -459,17 +436,17 @@ const styles = StyleSheet.create({
   filterSection: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: 'rgba(0, 217, 255, 0.1)',
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: 'rgba(255, 255, 255, 0.9)',
     marginBottom: 8,
   },
   sectionHint: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: 'rgba(255, 255, 255, 0.5)',
     marginBottom: 12,
   },
   optionsGrid: {
@@ -479,30 +456,31 @@ const styles = StyleSheet.create({
   },
   optionCard: {
     width: '31%',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(0, 170, 255, 0.05)',
     borderRadius: 12,
     padding: 12,
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 217, 255, 0.15)',
   },
   optionCardSelected: {
-    backgroundColor: '#eef2ff',
-    borderColor: '#6366f1',
+    backgroundColor: 'rgba(0, 217, 255, 0.15)',
+    borderColor: 'rgba(0, 217, 255, 0.6)',
+    borderWidth: 2,
   },
   optionLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#4b5563',
+    color: 'rgba(255, 255, 255, 0.7)',
     marginTop: 8,
     textAlign: 'center',
   },
   optionLabelSelected: {
-    color: '#6366f1',
+    color: 'rgba(0, 217, 255, 0.95)',
   },
   optionSubtitle: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: 'rgba(255, 255, 255, 0.5)',
     marginTop: 2,
     textAlign: 'center',
   },
@@ -511,23 +489,25 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 12,
     borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
+    borderTopColor: 'rgba(0, 217, 255, 0.15)',
   },
   clearButton: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
   },
   clearButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6b7280',
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   applyButton: {
     flex: 2,
-    backgroundColor: '#6366f1',
+    backgroundColor: 'rgba(0, 217, 255, 0.9)',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
@@ -535,6 +515,6 @@ const styles = StyleSheet.create({
   applyButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: '#000',
   },
 });

@@ -13,7 +13,8 @@ export interface FilterOptions {
   // Location filters
   userLatitude?: number;
   userLongitude?: number;
-  maxDistanceKm?: number; // null = no limit
+  userCity?: string; // User's current city for location filtering
+  maxDistanceKm?: number | null; // undefined = variety mode, 20 = in city only, null = explore outside city
   
   // Duration filters
   durationRange?: 'quick' | 'short' | 'medium' | 'long' | 'full-day' | 'any';
@@ -35,6 +36,10 @@ export interface FilterOptions {
   energyLevel?: ('low' | 'medium' | 'high')[];
   indoorOutdoor?: ('indoor' | 'outdoor' | 'both')[];
   categories?: string[];
+  
+  // User preference filters
+  favoriteCategories?: string[]; // User's favorite categories for boosting
+  preferredEnergyLevels?: string[]; // User's preferred energy levels
 }
 
 export interface DurationPreset {

@@ -40,12 +40,23 @@ export class UserService {
   }
 
   /**
-   * Update user preferences
+   * Update user preferences (merges with existing preferences)
    */
   static async updatePreferences(userId: number, preferences: UserPreferences): Promise<void> {
+    // Get existing preferences first
+    const existing = await this.getPreferences(userId);
+    
+    // Merge new preferences with existing ones
+    const merged = {
+      ...existing,
+      ...preferences
+    };
+    
+    console.log('Updating preferences for user', userId, ':', merged);
+    
     await pool.query(
-      `UPDATE users SET preferences = $1 WHERE id = $2`,
-      [JSON.stringify(preferences), userId]
+      `UPDATE users SET preferences = $1, updated_at = NOW() WHERE id = $2`,
+      [JSON.stringify(merged), userId]
     );
   }
 

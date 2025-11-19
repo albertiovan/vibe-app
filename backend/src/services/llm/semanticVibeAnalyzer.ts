@@ -90,28 +90,71 @@ DEEP (✅ BETTER):
   * Preferred: energy:high, mood:adrenaline, context:friends
   * Avoid: energy:low, mood:relaxed
 
+NIGHTLIFE EXAMPLE:
+
+User vibe: "I want a pub" or "I want cocktails" or "I want to go to a bar"
+
+DEEP (✅ CORRECT):
+- PRIMARY INTENT: Social drinking experience at a bar/pub
+- EMOTIONAL CONTEXT: Wants to socialize over drinks, nightlife atmosphere
+- UNDERLYING NEEDS:
+  * Social interaction
+  * Drinks/beverages (not food focus)
+  * Nightlife atmosphere
+  * Casual, relaxed environment
+  
+- SUGGESTED CATEGORIES: nightlife, social (NOT culinary as primary)
+- ENERGY: medium
+- MOODS: social, relaxed
+- KEYWORD FILTERS:
+  * Preferred: "pub", "bar", "cocktail", "drinks", "beer", "nightlife"
+  * Avoid: None
+- TAGS:
+  * Required: category:nightlife OR category:social
+  * Preferred: mood:social, context:friends
+  * Avoid: category:wellness, category:learning
+- CONFIDENCE: 0.95 (specific request for bars/pubs)
+
 ⚠️ **CRITICAL: CONFIDENCE LEVELS FOR KEYWORD MATCHING**
 
 **CONFIDENCE >= 0.9 (HIGH SPECIFICITY):**
-Use for EXPLICIT activity name requests. Keywords become MANDATORY filters.
-Examples:
+Use ONLY for EXPLICIT activity name requests where user names a SPECIFIC activity type.
+Keywords become MANDATORY filters - ONLY return activities matching these keywords.
+
+✅ HIGH CONFIDENCE Examples (0.9-0.95):
 - "mountain biking" → confidence: 0.95, keywordPrefer: [mountain, biking, bike, MTB]
 - "rock climbing" → confidence: 0.95, keywordPrefer: [rock, climbing, climb, boulder]
 - "kayaking" → confidence: 0.95, keywordPrefer: [kayak, kayaking, paddling]
+- "I want to go rock climbing" → confidence: 0.95 (specific activity named)
 
-These requests get ONLY activities matching keywords (strict filtering).
+These get ONLY activities matching keywords (strict filtering).
 
-**CONFIDENCE < 0.9 (GENERAL REQUEST):**
-Use for broad/thematic requests. Keywords become PREFERRED (boosting, not filtering).
-Examples:
+**CONFIDENCE < 0.9 (GENERAL REQUEST / MOOD-BASED):**
+Use for mood states, energy levels, or broad themes. Keywords become PREFERRED (boosting, not filtering).
+This maintains VARIETY across the entire database.
+
+✅ GENERAL/MOOD Examples (0.5-0.85):
+- "feeling energetic" → confidence: 0.7, keywordPrefer: [active, energy, movement]
+- "feeling sporty" → confidence: 0.75, keywordPrefer: [sport, athletic, game]
+- "I'm bored" → confidence: 0.6, keywordPrefer: [fun, exciting, interesting]
 - "adventure in the mountains" → confidence: 0.75, keywordPrefer: [mountain, adventure, outdoor]
 - "something fun outdoors" → confidence: 0.6, keywordPrefer: [outdoor, fun, nature]
 - "relax in nature" → confidence: 0.7, keywordPrefer: [nature, relax, outdoor]
+- "I want sports" → confidence: 0.8, keywordPrefer: [sport, athletic, game]
+- "I want to work out" → confidence: 0.8, keywordPrefer: [workout, fitness, exercise, gym]
 
-These requests get activities WITH keywords first, then others (variety maintained).
+These get activities WITH keywords first, then others (variety maintained across ALL categories).
 
-**RULE:** If user says exact activity name → confidence 0.9+
-         If user describes vibe/theme → confidence < 0.9
+**CRITICAL DISTINCTION:**
+- "I want to go rock climbing" = HIGH (0.95) → ONLY rock climbing activities
+- "I'm feeling adventurous" = MEDIUM (0.7) → ALL adventure activities (climbing, hiking, biking, etc.)
+- "I want sports" = MEDIUM (0.8) → ALL sports activities (tennis, badminton, swimming, basketball, etc.)
+- "feeling energetic" = MEDIUM (0.7) → ALL high-energy activities across database
+
+**RULE:** 
+- Exact activity name (rock climbing, kayaking, pottery) → confidence 0.9+
+- Mood/energy state (feeling X, I'm bored, want adventure) → confidence < 0.9
+- Broad category (I want sports, I want fitness) → confidence 0.7-0.85 (NOT 0.9+)
 
 Example: "mountain biking"
 - primaryIntent: "Go mountain biking on trails"
@@ -151,14 +194,18 @@ DEEP (✅ CORRECT):
   * Preferred: mood:social, context:friends
   * Avoid: None (use keyword filtering instead)
 
-User vibe: "I want cocktails" or "wine tasting"
+User vibe: "I want cocktails" or "wine tasting" or "I want a pub"
 
 DEEP (✅ CORRECT):
-- PRIMARY INTENT: Wants DRINKS/BEVERAGES experiences
-- SUGGESTED CATEGORIES: culinary, social, nightlife
+- PRIMARY INTENT: Wants DRINKS/BEVERAGES experiences at bars/pubs
+- SUGGESTED CATEGORIES: nightlife, social, culinary (in that order)
 - KEYWORD FILTERS:
-  * Preferred: "cocktail", "wine", "beer", "mixology", "tasting", "bar", "spirits"
+  * Preferred: "cocktail", "wine", "beer", "mixology", "tasting", "bar", "pub", "spirits", "drinks"
   * Avoid keywords: None (include drink-focused activities)
+- TAGS:
+  * Required: category:nightlife OR category:social OR category:culinary
+  * Preferred: mood:social, context:friends
+  * Avoid: category:wellness, category:learning (unless explicitly about learning drinks)
 
 KEYWORD FILTERING RULES:
 - When user mentions FOOD-related words (food, hungry, eat, dining, meal, cuisine), add "keywordAvoid" for drinks

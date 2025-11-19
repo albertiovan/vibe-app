@@ -3,9 +3,9 @@
  * Frontend interface for user preferences and saved activities
  */
 
-const API_URL = __DEV__
-  ? 'http://10.103.30.198:3000/api'
-  : 'https://your-production-api.com/api';
+import { API_BASE_URL } from '../config/api';
+
+const API_URL = API_BASE_URL + '/api';
 
 export interface UserProfile {
   userId: number;

@@ -4,33 +4,7 @@
  * Handles YouTube videos, Wikipedia context, and Tavily web search
  */
 
-// Get API base URL - detect environment properly
-const getApiBaseUrl = () => {
-  // Check for explicit environment variable
-  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
-    return process.env.EXPO_PUBLIC_API_BASE_URL;
-  }
-  
-  // Check if we're in a web environment
-  if (typeof window !== 'undefined' && window.location) {
-    const hostname = window.location.hostname;
-    
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return '/api';
-    }
-    
-    if (hostname.startsWith('10.') || hostname.startsWith('192.168.')) {
-      return `http://10.103.30.198:3000/api`;
-    }
-    
-    return '/api';
-  }
-  
-  // Mobile/native fallback
-  return 'http://10.103.30.198:3000/api';
-};
-
-const API_BASE_URL = getApiBaseUrl();
+import { API_BASE_URL } from '../config/api';
 
 export interface YouTubeVideo {
   id: string;

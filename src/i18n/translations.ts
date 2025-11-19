@@ -1,0 +1,311 @@
+/**
+ * Translation Strings
+ * All user-facing text in English and Romanian
+ */
+
+export const translations = {
+  en: {
+    // Greeting
+    'greeting.hello': 'Hello',
+    'greeting.whats_the_vibe': "what's the vibe?",
+    
+    // Home Screen
+    'home.placeholder': 'Describe your vibe...',
+    'home.challenge_me': 'Challenge Me',
+    'home.filters': 'Filters',
+    'home.vibe_profiles': 'Vibe Profiles',
+    
+    // Filters
+    'filters.title': 'Filters',
+    'filters.apply': 'Apply Filters',
+    'filters.clear': 'Clear All',
+    'filters.energy_level': 'Energy Level',
+    'filters.energy.low': 'Low',
+    'filters.energy.medium': 'Medium',
+    'filters.energy.high': 'High',
+    'filters.indoor_outdoor': 'Indoor/Outdoor',
+    'filters.indoor': 'Indoor',
+    'filters.outdoor': 'Outdoor',
+    'filters.both': 'Both',
+    'filters.time_of_day': 'Time of Day',
+    'filters.time.morning': 'Morning',
+    'filters.time.afternoon': 'Afternoon',
+    'filters.time.evening': 'Evening',
+    'filters.time.night': 'Night',
+    'filters.budget': 'Budget',
+    'filters.budget.low': '$',
+    'filters.budget.medium': '$$',
+    'filters.budget.high': '$$$',
+    'filters.budget.luxury': '$$$$',
+    'filters.group_size': 'Group Size',
+    'filters.group.solo': 'Solo',
+    'filters.group.couple': 'Couple',
+    'filters.group.small': 'Small Group',
+    'filters.group.large': 'Large Group',
+    'filters.distance': 'Max Distance',
+    'filters.distance.nearby': 'Nearby (5km)',
+    'filters.distance.city': 'In City (15km)',
+    'filters.distance.day_trip': 'Day Trip (50km)',
+    'filters.distance.anywhere': 'Anywhere',
+    'filters.categories': 'Categories',
+    
+    // Categories
+    'category.wellness': 'Wellness',
+    'category.nature': 'Nature',
+    'category.culture': 'Culture',
+    'category.adventure': 'Adventure',
+    'category.learning': 'Learning',
+    'category.culinary': 'Culinary',
+    'category.water': 'Water',
+    'category.nightlife': 'Nightlife',
+    'category.social': 'Social',
+    'category.fitness': 'Fitness',
+    'category.sports': 'Sports',
+    'category.seasonal': 'Seasonal',
+    'category.romance': 'Romance',
+    'category.mindfulness': 'Mindfulness',
+    'category.creative': 'Creative',
+    
+    // Suggestions Screen
+    'suggestions.title': 'Activity Suggestions',
+    'suggestions.loading': 'Finding your vibe...',
+    'suggestions.empty': 'No activities found. Try a different vibe!',
+    'suggestions.explore_now': 'Explore Now',
+    'suggestions.ai_bar': 'Want something different?',
+    
+    // Activity Detail
+    'detail.learn_more': 'Learn More',
+    'detail.go_now': 'GO NOW',
+    'detail.nearest': 'Nearest',
+    'detail.multiple_venues': 'Multiple locations available',
+    'detail.duration': 'Duration',
+    'detail.distance': 'Distance',
+    'detail.location': 'Location',
+    
+    // Challenge Me
+    'challenge.title': 'Challenge Me',
+    'challenge.subtitle': 'Step outside your comfort zone',
+    'challenge.accept': 'Accept Challenge',
+    'challenge.decline': 'Maybe Later',
+    'challenge.generating': 'Finding your challenge...',
+    
+    // Vibe Profiles
+    'profiles.title': 'Vibe Profiles',
+    'profiles.create_new': 'Create New',
+    'profiles.saved': 'Saved Profiles',
+    'profiles.templates': 'Templates',
+    'profiles.name': 'Profile Name',
+    'profiles.emoji': 'Emoji',
+    'profiles.description': 'Description',
+    'profiles.save': 'Save Profile',
+    'profiles.delete': 'Delete',
+    'profiles.edit': 'Edit',
+    
+    // Onboarding
+    'onboarding.welcome': 'Welcome to Vibe',
+    'onboarding.welcome_subtitle': 'Discover activities that match your mood',
+    'onboarding.name': "What's your name?",
+    'onboarding.email': 'Email (optional)',
+    'onboarding.interests': 'What interests you?',
+    'onboarding.preferences': 'Your Preferences',
+    'onboarding.energy': 'Typical Energy Level',
+    'onboarding.indoor_outdoor': 'Indoor or Outdoor?',
+    'onboarding.adventurousness': 'How adventurous are you?',
+    'onboarding.next': 'Next',
+    'onboarding.finish': 'Get Started',
+    'onboarding.skip': 'Skip',
+    
+    // Training Mode
+    'training.title': 'Training Mode',
+    'training.subtitle': 'Help improve recommendations',
+    'training.enter_vibe': 'Enter a vibe',
+    'training.rate_activity': 'Rate this activity',
+    'training.good_match': 'Good Match',
+    'training.bad_match': 'Bad Match',
+    'training.progress': 'Progress',
+    'training.sessions_completed': 'sessions completed',
+    
+    // User Profile
+    'profile.title': 'Profile',
+    'profile.account': 'Account',
+    'profile.preferences': 'Preferences',
+    'profile.language': 'Language',
+    'profile.training_mode': 'Training Mode',
+    'profile.logout': 'Log Out',
+    'profile.clear_data': 'Clear All Data',
+    
+    // Common
+    'common.cancel': 'Cancel',
+    'common.save': 'Save',
+    'common.delete': 'Delete',
+    'common.edit': 'Edit',
+    'common.close': 'Close',
+    'common.back': 'Back',
+    'common.next': 'Next',
+    'common.done': 'Done',
+    'common.loading': 'Loading...',
+    'common.error': 'Error',
+    'common.retry': 'Retry',
+    'common.km': 'km',
+    'common.min': 'min',
+    'common.hours': 'hours',
+    
+    // Errors
+    'error.network': 'Network error. Please try again.',
+    'error.location': 'Unable to get your location',
+    'error.generic': 'Something went wrong',
+  },
+  ro: {
+    // Greeting
+    'greeting.hello': 'Salut',
+    'greeting.whats_the_vibe': 'care e vibe-ul?',
+    
+    // Home Screen
+    'home.placeholder': 'Descrie vibe-ul tău...',
+    'home.challenge_me': 'Provocă-mă',
+    'home.filters': 'Filtre',
+    'home.vibe_profiles': 'Profile Vibe',
+    
+    // Filters
+    'filters.title': 'Filtre',
+    'filters.apply': 'Aplică Filtre',
+    'filters.clear': 'Șterge Tot',
+    'filters.energy_level': 'Nivel de Energie',
+    'filters.energy.low': 'Scăzut',
+    'filters.energy.medium': 'Mediu',
+    'filters.energy.high': 'Ridicat',
+    'filters.indoor_outdoor': 'Interior/Exterior',
+    'filters.indoor': 'Interior',
+    'filters.outdoor': 'Exterior',
+    'filters.both': 'Ambele',
+    'filters.time_of_day': 'Momentul Zilei',
+    'filters.time.morning': 'Dimineață',
+    'filters.time.afternoon': 'După-amiază',
+    'filters.time.evening': 'Seară',
+    'filters.time.night': 'Noapte',
+    'filters.budget': 'Buget',
+    'filters.budget.low': '$',
+    'filters.budget.medium': '$$',
+    'filters.budget.high': '$$$',
+    'filters.budget.luxury': '$$$$',
+    'filters.group_size': 'Mărime Grup',
+    'filters.group.solo': 'Solo',
+    'filters.group.couple': 'Cuplu',
+    'filters.group.small': 'Grup Mic',
+    'filters.group.large': 'Grup Mare',
+    'filters.distance': 'Distanță Maximă',
+    'filters.distance.nearby': 'Aproape (5km)',
+    'filters.distance.city': 'În Oraș (15km)',
+    'filters.distance.day_trip': 'Excursie (50km)',
+    'filters.distance.anywhere': 'Oriunde',
+    'filters.categories': 'Categorii',
+    
+    // Categories
+    'category.wellness': 'Wellness',
+    'category.nature': 'Natură',
+    'category.culture': 'Cultură',
+    'category.adventure': 'Aventură',
+    'category.learning': 'Învățare',
+    'category.culinary': 'Culinar',
+    'category.water': 'Apă',
+    'category.nightlife': 'Viață de Noapte',
+    'category.social': 'Social',
+    'category.fitness': 'Fitness',
+    'category.sports': 'Sport',
+    'category.seasonal': 'Sezonier',
+    'category.romance': 'Romantic',
+    'category.mindfulness': 'Mindfulness',
+    'category.creative': 'Creativ',
+    
+    // Suggestions Screen
+    'suggestions.title': 'Sugestii de Activități',
+    'suggestions.loading': 'Găsesc vibe-ul tău...',
+    'suggestions.empty': 'Nu am găsit activități. Încearcă alt vibe!',
+    'suggestions.explore_now': 'Explorează Acum',
+    'suggestions.ai_bar': 'Vrei ceva diferit?',
+    
+    // Activity Detail
+    'detail.learn_more': 'Află Mai Mult',
+    'detail.go_now': 'MERGI ACUM',
+    'detail.nearest': 'Cel mai apropiat',
+    'detail.multiple_venues': 'Locații multiple disponibile',
+    'detail.duration': 'Durată',
+    'detail.distance': 'Distanță',
+    'detail.location': 'Locație',
+    
+    // Challenge Me
+    'challenge.title': 'Provocă-mă',
+    'challenge.subtitle': 'Ieși din zona de confort',
+    'challenge.accept': 'Accept Provocarea',
+    'challenge.decline': 'Poate Mai Târziu',
+    'challenge.generating': 'Găsesc provocarea ta...',
+    
+    // Vibe Profiles
+    'profiles.title': 'Profile Vibe',
+    'profiles.create_new': 'Creează Nou',
+    'profiles.saved': 'Profile Salvate',
+    'profiles.templates': 'Șabloane',
+    'profiles.name': 'Nume Profil',
+    'profiles.emoji': 'Emoji',
+    'profiles.description': 'Descriere',
+    'profiles.save': 'Salvează Profil',
+    'profiles.delete': 'Șterge',
+    'profiles.edit': 'Editează',
+    
+    // Onboarding
+    'onboarding.welcome': 'Bun venit la Vibe',
+    'onboarding.welcome_subtitle': 'Descoperă activități care se potrivesc stării tale',
+    'onboarding.name': 'Cum te cheamă?',
+    'onboarding.email': 'Email (opțional)',
+    'onboarding.interests': 'Ce te interesează?',
+    'onboarding.preferences': 'Preferințele Tale',
+    'onboarding.energy': 'Nivel Tipic de Energie',
+    'onboarding.indoor_outdoor': 'Interior sau Exterior?',
+    'onboarding.adventurousness': 'Cât de aventuros ești?',
+    'onboarding.next': 'Următorul',
+    'onboarding.finish': 'Începe',
+    'onboarding.skip': 'Sari',
+    
+    // Training Mode
+    'training.title': 'Mod Antrenament',
+    'training.subtitle': 'Ajută la îmbunătățirea recomandărilor',
+    'training.enter_vibe': 'Introdu un vibe',
+    'training.rate_activity': 'Evaluează această activitate',
+    'training.good_match': 'Potrivire Bună',
+    'training.bad_match': 'Potrivire Slabă',
+    'training.progress': 'Progres',
+    'training.sessions_completed': 'sesiuni completate',
+    
+    // User Profile
+    'profile.title': 'Profil',
+    'profile.account': 'Cont',
+    'profile.preferences': 'Preferințe',
+    'profile.language': 'Limbă',
+    'profile.training_mode': 'Mod Antrenament',
+    'profile.logout': 'Deconectare',
+    'profile.clear_data': 'Șterge Toate Datele',
+    
+    // Common
+    'common.cancel': 'Anulează',
+    'common.save': 'Salvează',
+    'common.delete': 'Șterge',
+    'common.edit': 'Editează',
+    'common.close': 'Închide',
+    'common.back': 'Înapoi',
+    'common.next': 'Următorul',
+    'common.done': 'Gata',
+    'common.loading': 'Se încarcă...',
+    'common.error': 'Eroare',
+    'common.retry': 'Reîncearcă',
+    'common.km': 'km',
+    'common.min': 'min',
+    'common.hours': 'ore',
+    
+    // Errors
+    'error.network': 'Eroare de rețea. Te rog încearcă din nou.',
+    'error.location': 'Nu pot obține locația ta',
+    'error.generic': 'Ceva nu a mers bine',
+  },
+};
+
+export type TranslationKey = keyof typeof translations.en;

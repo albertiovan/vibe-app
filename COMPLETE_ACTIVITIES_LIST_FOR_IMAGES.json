@@ -1,0 +1,12 @@
+[
+  {"id": 1, "name": "Therme București Wellness Day", "region": "București-Ilfov", "city": "Bucharest", "category": "wellness"},
+  {"id": 2, "name": "Peleș Castle Guided Visit", "region": "Prahova", "city": "Sinaia", "category": "culture"},
+  {"id": 3, "name": "Bran Castle (Dracula's Castle) Visit", "region": "Brașov", "city": "Bran", "category": "culture"},
+  {"id": 4, "name": "Brașov Old Town Walking Tour", "region": "Brașov", "city": "Brașov", "category": "culture"},
+  {"id": 5, "name": "Skiing in Poiana Brașov", "region": "Brașov", "city": "Poiana Brașov", "category": "sports"},
+  {"id": 6, "name": "Danube Delta Boat Safari from Tulcea", "region": "Tulcea", "city": "Tulcea", "category": "nature"},
+  {"id": 7, "name": "Wine Tasting in Dealu Mare", "region": "Prahova", "city": "Dealu Mare", "category": "culinary"},
+  {"id": 8, "name": "Transfăgărășan Scenic Day Tour", "region": "Sibiu", "city": "Sibiu", "category": "adventure"},
+  {"id": 9, "name": "Turda Salt Mine Underground Park", "region": "Cluj", "city": "Turda", "category": "culture"},
+  {"id": 10, "name": "Dimitrie Gusti National Village Museum", "region": "Bucharest", "city": "Bucharest", "category": "culture"}
+]

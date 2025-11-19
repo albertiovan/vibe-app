@@ -26,6 +26,8 @@ interface ChallengeActivity {
   duration_min: number;
   duration_max: number;
   tags: string[];
+  latitude: number;
+  longitude: number;
   challengeReason: string;
   challengeScore: number;
   isLocal: boolean; // true if in user's city, false if requires travel
@@ -244,7 +246,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
-      a.duration_min, a.duration_max
+      a.duration_min, a.duration_max, a.latitude, a.longitude
     FROM activities a
     WHERE a.category = ANY($1::text[])
       AND a.energy_level = $2
@@ -268,6 +270,8 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
       duration_min: activity.duration_min,
       duration_max: activity.duration_max,
       tags: activity.tags,
+      latitude: activity.latitude,
+      longitude: activity.longitude,
       challengeReason: generateChallengeReason(activity.category, userPattern, true),
       challengeScore: 0.7,
       isLocal: true,
@@ -280,7 +284,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
-      a.duration_min, a.duration_max
+      a.duration_min, a.duration_max, a.latitude, a.longitude
     FROM activities a
     WHERE a.category IN ('adventure', 'nature', 'sports', 'water')
       AND a.energy_level = 'high'
@@ -305,6 +309,8 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
       duration_min: activity.duration_min,
       duration_max: activity.duration_max,
       tags: activity.tags,
+      latitude: activity.latitude,
+      longitude: activity.longitude,
       challengeReason: `Explore ${activity.region} - perfect for an adventure outside București!`,
       challengeScore: 0.85,
       isLocal: false,
@@ -317,7 +323,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
-      a.duration_min, a.duration_max
+      a.duration_min, a.duration_max, a.latitude, a.longitude
     FROM activities a
     WHERE a.category NOT IN (SELECT unnest($1::text[]))
       AND a.energy_level != $2
@@ -341,6 +347,8 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
       duration_min: activity.duration_min,
       duration_max: activity.duration_max,
       tags: activity.tags,
+      latitude: activity.latitude,
+      longitude: activity.longitude,
       challengeReason: `Break out of your routine - try something completely new!`,
       challengeScore: 0.95,
       isLocal: activity.region === 'București',

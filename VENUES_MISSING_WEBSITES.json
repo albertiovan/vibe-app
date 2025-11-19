@@ -1,0 +1,57 @@
+[
+  {
+    "activity_id": 802,
+    "activity_name": "Cluj Tandem Paragliding at Feleacu",
+    "category": "adventure",
+    "venue_id": 240,
+    "venue_name": "Skyrush Paragliding",
+    "city": "Feleacu",
+    "latitude": 46.721711,
+    "longitude": 23.620992,
+    "website": ""
+  },
+  {
+    "activity_id": 1224,
+    "activity_name": "Adult Ceramics Starter (Școala Populară de Arte Cluj)",
+    "category": "creative",
+    "venue_id": 293,
+    "venue_name": "Școala Populară de Arte „Tudor Jarda,Str. Fabricii de Zahăr 51,Cluj-Napoca,Cluj,46.7877,23.6385,https://www.scoaladearte.ro/,https://www.scoaladearte.ro/,+40 264 592 414,$$,all,County arts school offering adult ceramics and fine-arts evening classes in small groups.,provided,booking-required,solo",
+    "city": "",
+    "latitude": null,
+    "longitude": null,
+    "website": ""
+  },
+  {
+    "activity_id": 316,
+    "activity_name": "Track Day Laps at MotorPark Romania",
+    "category": "motorsports",
+    "venue_id": 174,
+    "venue_name": "MotorPark Romania",
+    "city": "Adâncata",
+    "latitude": 44.779422,
+    "longitude": 26.471723,
+    "website": ""
+  },
+  {
+    "activity_id": 1747,
+    "activity_name": "Green Hours Live Jazz Night",
+    "category": "nightlife",
+    "venue_id": 340,
+    "venue_name": "Green Hours 22 Jazz-Café",
+    "city": "Bucharest",
+    "latitude": 44.442,
+    "longitude": 26.0968,
+    "website": ""
+  },
+  {
+    "activity_id": 1336,
+    "activity_name": "Runners Club Cluj – Social Run",
+    "category": "social",
+    "venue_id": 300,
+    "venue_name": "Runners Club",
+    "city": "team",
+    "latitude": null,
+    "longitude": null,
+    "website": ""
+  }
+]

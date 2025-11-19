@@ -47,13 +47,6 @@ export interface VibeContext {
   /** Available activities from the Romania ontology */
   activityOntology: ActivityIntent[];
   
-  /** Provider mapping hints for tool calls */
-  mappingHints: {
-    google: Record<string, any>;
-    osm: Record<string, any>;
-    otm: Record<string, any>;
-  };
-  
   /** Weather forecasts for relevant regions */
   weather: Array<{
     region: string;

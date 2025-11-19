@@ -1,0 +1,242 @@
+/**
+ * Multi-Location Weather Service
+ * 
+ * Fetches weather for multiple Romanian cities simultaneously
+ * Caches results to avoid excessive API calls
+ */
+
+import { OpenMeteoService } from './openmeteo.js';
+
+interface CityWeather {
+  city: string;
+  lat: number;
+  lng: number;
+  temperature: number;
+  condition: string;
+  precipitation: number;
+  windSpeed: number;
+  suitability: 'good' | 'ok' | 'bad';
+  icon: string;
+  description: string;
+}
+
+interface WeatherCache {
+  data: Map<string, CityWeather>;
+  timestamp: number;
+}
+
+/**
+ * Major Romanian cities with coordinates
+ */
+export const ROMANIAN_CITIES = {
+  'București': { lat: 44.4268, lng: 26.1025 },
+  'Brașov': { lat: 45.6427, lng: 25.5887 },
+  'Cluj-Napoca': { lat: 46.7712, lng: 23.6236 },
+  'Timișoara': { lat: 45.7489, lng: 21.2087 },
+  'Iași': { lat: 47.1585, lng: 27.6014 },
+  'Constanța': { lat: 44.1598, lng: 28.6348 },
+  'Sibiu': { lat: 45.7983, lng: 24.1256 },
+  'Sinaia': { lat: 45.3500, lng: 25.5500 },
+  'Poiana Brașov': { lat: 45.5833, lng: 25.5667 },
+  'Bucegi': { lat: 45.4000, lng: 25.4500 },
+  'Danube Delta': { lat: 45.2500, lng: 29.0000 },
+  'Apuseni': { lat: 46.5000, lng: 22.8000 },
+  'Prahova': { lat: 45.1000, lng: 26.0000 },
+  'Tulcea': { lat: 45.1667, lng: 28.8000 }
+} as const;
+
+export class MultiLocationWeatherService {
+  private weatherService: OpenMeteoService;
+  private cache: WeatherCache;
+  private cacheDuration = 30 * 60 * 1000; // 30 minutes
+
+  constructor() {
+    this.weatherService = new OpenMeteoService();
+    this.cache = {
+      data: new Map(),
+      timestamp: 0
+    };
+  }
+
+  /**
+   * Get weather for a specific city
+   */
+  async getWeatherForCity(cityName: string): Promise<CityWeather | null> {
+    const city = ROMANIAN_CITIES[cityName as keyof typeof ROMANIAN_CITIES];
+    if (!city) {
+      console.warn(`⚠️ Unknown city: ${cityName}`);
+      return null;
+    }
+
+    // Check cache first
+    const cached = this.getCachedWeather(cityName);
+    if (cached) {
+      console.log(`✅ Using cached weather for ${cityName}`);
+      return cached;
+    }
+
+    // Fetch fresh weather
+    console.log(`🌤️ Fetching weather for ${cityName}...`);
+    const weather = await this.weatherService.getCurrentWeather(city.lat, city.lng);
+    
+    if (!weather) {
+      return null;
+    }
+
+    const cityWeather: CityWeather = {
+      city: cityName,
+      lat: city.lat,
+      lng: city.lng,
+      temperature: Math.round(weather.temperature),
+      condition: weather.conditions,
+      precipitation: weather.precipitation,
+      windSpeed: weather.windSpeed,
+      suitability: this.determineSuitability(weather),
+      icon: this.getWeatherIcon(weather.conditions),
+      description: this.formatWeatherDescription(weather)
+    };
+
+    // Cache the result
+    this.cache.data.set(cityName, cityWeather);
+    this.cache.timestamp = Date.now();
+
+    return cityWeather;
+  }
+
+  /**
+   * Get weather for multiple cities
+   */
+  async getWeatherForCities(cityNames: string[]): Promise<Map<string, CityWeather>> {
+    const results = new Map<string, CityWeather>();
+
+    // Fetch all cities in parallel
+    const promises = cityNames.map(async (cityName) => {
+      const weather = await this.getWeatherForCity(cityName);
+      if (weather) {
+        results.set(cityName, weather);
+      }
+    });
+
+    await Promise.all(promises);
+
+    console.log(`✅ Fetched weather for ${results.size}/${cityNames.length} cities`);
+    return results;
+  }
+
+  /**
+   * Get weather for user location + all activity venue locations
+   */
+  async getWeatherForActivities(
+    userCity: string,
+    activityCities: string[]
+  ): Promise<Map<string, CityWeather>> {
+    // Combine user city with activity cities (remove duplicates)
+    const allCities = Array.from(new Set([userCity, ...activityCities]));
+    
+    console.log(`🌍 Fetching weather for ${allCities.length} locations:`, allCities);
+    return await this.getWeatherForCities(allCities);
+  }
+
+  /**
+   * Get cached weather if still valid
+   */
+  private getCachedWeather(cityName: string): CityWeather | null {
+    const now = Date.now();
+    const cacheAge = now - this.cache.timestamp;
+
+    if (cacheAge > this.cacheDuration) {
+      // Cache expired
+      this.cache.data.clear();
+      return null;
+    }
+
+    return this.cache.data.get(cityName) || null;
+  }
+
+  /**
+   * Determine weather suitability for outdoor activities
+   */
+  private determineSuitability(weather: any): 'good' | 'ok' | 'bad' {
+    const gating = this.weatherService.analyzeWeatherGating(weather);
+    
+    if (gating.recommendation === 'outdoor') {
+      return 'good';
+    } else if (gating.recommendation === 'covered') {
+      return 'ok';
+    } else {
+      return 'bad';
+    }
+  }
+
+  /**
+   * Get weather icon emoji
+   */
+  private getWeatherIcon(condition: string): string {
+    const icons: Record<string, string> = {
+      'clear': '☀️',
+      'mainly_clear': '🌤️',
+      'partly_cloudy': '⛅',
+      'overcast': '☁️',
+      'fog': '🌫️',
+      'drizzle': '🌦️',
+      'rain': '🌧️',
+      'heavy_rain': '⛈️',
+      'snow': '🌨️',
+      'thunderstorm': '⛈️'
+    };
+
+    // Find matching icon
+    for (const [key, icon] of Object.entries(icons)) {
+      if (condition.toLowerCase().includes(key)) {
+        return icon;
+      }
+    }
+
+    return '🌤️'; // Default
+  }
+
+  /**
+   * Format weather description for display
+   */
+  private formatWeatherDescription(weather: any): string {
+    const temp = Math.round(weather.temperature);
+    const condition = weather.conditions.replace(/_/g, ' ');
+    
+    let description = `${temp}°C`;
+    
+    if (weather.precipitation > 0) {
+      description += `, ${weather.precipitation.toFixed(1)}mm rain`;
+    } else {
+      description += `, ${condition}`;
+    }
+    
+    return description;
+  }
+
+  /**
+   * Clear cache (useful for testing)
+   */
+  clearCache(): void {
+    this.cache.data.clear();
+    this.cache.timestamp = 0;
+    console.log('🗑️ Weather cache cleared');
+  }
+
+  /**
+   * Get cache status
+   */
+  getCacheStatus(): { size: number; age: number; valid: boolean } {
+    const now = Date.now();
+    const age = now - this.cache.timestamp;
+    const valid = age <= this.cacheDuration;
+
+    return {
+      size: this.cache.data.size,
+      age: Math.round(age / 1000), // seconds
+      valid
+    };
+  }
+}
+
+// Singleton instance
+export const multiLocationWeather = new MultiLocationWeatherService();

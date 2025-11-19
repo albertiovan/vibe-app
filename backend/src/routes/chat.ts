@@ -94,6 +94,13 @@ router.post('/message', async (req, res) => {
       return res.status(404).json({ error: 'conversation_not_found' });
     }
 
+    // Get user preferences to personalize recommendations
+    const userId = conversation.user_id;
+    const preferences = await UserService.getPreferences(userId);
+    const favoriteCategories = await UserService.getFavoriteCategories(userId);
+    
+    console.log('User preferences for recommendations:', { userId, favoriteCategories, preferences });
+
     // If this is the first message, generate a title
     if (conversation.messages?.length === 1) {
       const title = ConversationHistoryService.generateTitle(message);
@@ -104,11 +111,23 @@ router.post('/message', async (req, res) => {
     let vibeState = ContextualPromptsService.detectVibeState(message);
     await ConversationHistoryService.updateVibeState(conversationId, vibeState);
 
-    // Get AI recommendations using the MCP recommender (with filters)
+    // Merge user's favorite categories into filters
+    const enhancedFilters = {
+      ...filters,
+      favoriteCategories: favoriteCategories.length > 0 ? favoriteCategories : undefined,
+      preferredEnergyLevels: preferences.preferredEnergyLevels
+    };
+
+    // Get AI recommendations using the MCP recommender (with filters and preferences)
     const recommendations = await mcpRecommender.getMCPRecommendations({
       vibe: message,
       city: location?.city || 'Bucharest',
-      filters: filters || undefined // Pass user filters if provided
+      filters: {
+        ...enhancedFilters,
+        userCity: location?.city || 'București', // Pass user's current city for location filtering
+        userLatitude: location?.lat,
+        userLongitude: location?.lng
+      }
     });
 
     // Generate response text based on ACTUAL activities returned, not assumed vibe

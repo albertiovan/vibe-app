@@ -34,15 +34,7 @@ import {
   ALL_REGIONS,
   filterActivities 
 } from '../domain/activities/index.js';
-import { 
-  GOOGLE_PLACES_MAPPING 
-} from '../domain/activities/mapping/google-places-mapping.js';
-import { 
-  OSM_TAGS_MAPPING 
-} from '../domain/activities/mapping/osm-tags-mapping.js';
-import { 
-  OPENTRIPMAP_MAPPING 
-} from '../domain/activities/mapping/opentripmap-mapping.js';
+// Removed unused provider mappings - app now uses database only
 import type { VibeContext } from '../services/llm/schemas.js';
 
 const router = Router();
@@ -679,11 +671,6 @@ async function buildVibeContext(params: {
     },
     regionsSeed,
     activityOntology: ALL_ROMANIA_ACTIVITIES,
-    mappingHints: {
-      google: GOOGLE_PLACES_MAPPING,
-      osm: OSM_TAGS_MAPPING,
-      otm: OPENTRIPMAP_MAPPING
-    },
     weather,
     timeContext: {
       currentTime: now.toISOString(),

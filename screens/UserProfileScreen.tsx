@@ -12,13 +12,16 @@ import {
   StyleSheet,
   Switch,
   Alert,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Device from 'expo-device';
 import { GlassCard } from '../components/design-system/GlassCard';
 import { GradientButton } from '../components/design-system/GradientButton';
+import { ProfileCustomization } from '../components/ProfileCustomization';
 import { userApi, UserProfile } from '../src/services/userApi';
+import { userStorage, UserAccount } from '../src/services/userStorage';
 import { colors, getTimeGradient } from '../src/design-system/colors';
 import { tokens } from '../src/design-system/tokens';
 
@@ -44,10 +47,12 @@ export const UserProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const [deviceId, setDeviceId] = useState<string>('');
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [userAccount, setUserAccount] = useState<UserAccount | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [motionSensitivity, setMotionSensitivity] = useState(false);
+  const [showCustomization, setShowCustomization] = useState(false);
   
   const gradient = getTimeGradient();
 
@@ -59,6 +64,10 @@ export const UserProfileScreen: React.FC = () => {
     try {
       const id = Device.modelId || `device-${Math.random().toString(36).substr(2, 9)}`;
       setDeviceId(id);
+      
+      // Load user account from storage
+      const account = await userStorage.getAccount();
+      setUserAccount(account);
       
       const userProfile = await userApi.getProfile(id);
       setProfile(userProfile);
@@ -149,6 +158,55 @@ export const UserProfileScreen: React.FC = () => {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profile & Settings</Text>
         </View>
+
+        {/* Profile Header Card */}
+        {userAccount && (
+          <GlassCard style={styles.profileHeaderCard} padding="lg" radius="md">
+            <View style={styles.profileHeader}>
+              <TouchableOpacity
+                style={styles.avatarContainer}
+                onPress={() => setShowCustomization(true)}
+                activeOpacity={0.8}
+              >
+                {userAccount.profilePicture ? (
+                  <Image
+                    source={{ uri: userAccount.profilePicture }}
+                    style={styles.avatar}
+                  />
+                ) : (
+                  <View style={styles.avatarPlaceholder}>
+                    <Text style={styles.avatarPlaceholderText}>
+                      {(userAccount.nickname || userAccount.name).charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+                <View style={styles.avatarEditBadge}>
+                  <Text style={styles.avatarEditIcon}>✏️</Text>
+                </View>
+              </TouchableOpacity>
+
+              <View style={styles.profileInfo}>
+                <Text style={styles.profileName}>
+                  {userAccount.nickname || userAccount.name}
+                </Text>
+                {userAccount.nickname && (
+                  <Text style={styles.profileRealName}>{userAccount.name}</Text>
+                )}
+                {userAccount.email && (
+                  <Text style={styles.profileEmail}>{userAccount.email}</Text>
+                )}
+              </View>
+
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => setShowCustomization(true)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.editButtonText}>Edit Profile</Text>
+              </TouchableOpacity>
+            </View>
+          </GlassCard>
+        )}
 
         {/* Stats Card */}
         {profile && (
@@ -319,6 +377,21 @@ export const UserProfileScreen: React.FC = () => {
           style={styles.saveButton}
         />
       </ScrollView>
+
+      {/* Profile Customization Modal */}
+      {userAccount && showCustomization && (
+        <ProfileCustomization
+          account={userAccount}
+          onUpdate={async (updates) => {
+            // Update local state
+            setUserAccount({ ...userAccount, ...updates });
+            // Reload profile to reflect changes
+            await loadProfile();
+          }}
+          onClose={() => setShowCustomization(false)}
+          isModal={true}
+        />
+      )}
     </View>
   );
 };
@@ -512,5 +585,85 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: tokens.spacing.md,
+  },
+  profileHeaderCard: {
+    marginBottom: tokens.spacing.lg,
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    position: 'relative',
+    marginRight: tokens.spacing.md,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: colors.accent.primary,
+  },
+  avatarPlaceholder: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: colors.accent.primary + '40',
+    borderWidth: 2,
+    borderColor: colors.accent.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarPlaceholderText: {
+    fontSize: 36,
+    fontWeight: tokens.typography.fontWeight.bold,
+    color: colors.text.primary,
+  },
+  avatarEditBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.accent.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.base.canvas,
+  },
+  avatarEditIcon: {
+    fontSize: 14,
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    fontSize: tokens.typography.fontSize.xl,
+    fontWeight: tokens.typography.fontWeight.bold,
+    color: colors.text.primary,
+    marginBottom: 2,
+  },
+  profileRealName: {
+    fontSize: tokens.typography.fontSize.sm,
+    color: colors.text.secondary,
+    marginBottom: 2,
+  },
+  profileEmail: {
+    fontSize: tokens.typography.fontSize.xs,
+    color: colors.text.tertiary,
+  },
+  editButton: {
+    paddingHorizontal: tokens.spacing.md,
+    paddingVertical: tokens.spacing.sm,
+    backgroundColor: 'rgba(0, 170, 255, 0.2)',
+    borderRadius: tokens.radius.sm,
+    borderWidth: 1,
+    borderColor: colors.accent.primary,
+  },
+  editButtonText: {
+    fontSize: tokens.typography.fontSize.sm,
+    fontWeight: tokens.typography.fontWeight.semibold,
+    color: colors.accent.primary,
   },
 });

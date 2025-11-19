@@ -36,13 +36,15 @@
     "test:ontology": "jest __tests__/ontology.spec.ts",
     "test:apis": "tsx scripts/test-apis.ts",
     "db:migrate": "/opt/homebrew/opt/postgresql@16/bin/psql $DATABASE_URL -f database/migrations/001_create_activities_and_venues.sql",
+    "db:migrate:romanian": "/opt/homebrew/opt/postgresql@16/bin/psql $DATABASE_URL -f database/migrations/014_romanian_translations.sql",
     "db:seed": "tsx database/seed.ts",
     "db:reset": "npm run db:migrate && npm run db:seed",
     "db:status": "/opt/homebrew/opt/postgresql@16/bin/psql $DATABASE_URL -c '\\dt'",
     "test:database": "tsx scripts/test-database-direct.ts",
     "test:mcp": "tsx scripts/test-mcp-recommendations.ts",
     "csv:convert": "tsx scripts/csv-to-seed-json.ts",
-    "csv:import": "npm run csv:convert && npm run db:reset"
+    "csv:import": "npm run csv:convert && npm run db:reset",
+    "translate:romanian": "tsx scripts/translate-activities-to-romanian.ts"
   },
   "keywords": [
     "vibe",

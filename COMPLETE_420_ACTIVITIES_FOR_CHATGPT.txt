@@ -1,0 +1,113 @@
+═══════════════════════════════════════════════════════════════════════════════
+COMPLETE ACTIVITIES DATABASE - 420 ACTIVITIES
+Romanian Vibe App - Image Sourcing Task
+═══════════════════════════════════════════════════════════════════════════════
+
+INSTRUCTIONS FOR CHATGPT-5:
+Find 3-5 high-quality, verified image URLs for EACH activity below.
+
+IMAGE REQUIREMENTS:
+✓ Resolution: Minimum 1200x800px (landscape preferred)
+✓ Format: JPG or PNG only  
+✓ Sources: Unsplash, Pexels, Pixabay, or official tourism/venue websites
+✓ Direct image URLs (must end in .jpg or .png)
+✓ NO watermarks, NO generic stock photos
+✓ Images must match the activity description and location
+
+OUTPUT FORMAT:
+Return a single JSON array with this exact structure:
+
+[
+  {
+    "id": 1,
+    "name": "Activity Name",
+    "image_urls": [
+      "https://images.unsplash.com/photo-xxx/image1.jpg",
+      "https://images.pexels.com/photos/xxx/image2.jpg",
+      "https://images.unsplash.com/photo-xxx/image3.jpg"
+    ]
+  },
+  // ... continue for all 420 activities
+]
+
+═══════════════════════════════════════════════════════════════════════════════
+ALL 420 ACTIVITIES (ID, Name, Region, City, Category, Description)
+═══════════════════════════════════════════════════════════════════════════════
+
+ID: 1
+NAME: Therme București Wellness Day
+REGION: București-Ilfov
+CITY: Bucharest
+CATEGORY: wellness
+DESCRIPTION: Float in mineral pools, try themed saunas and Aufguss rituals, and lounge under tropical palms at Europe's largest thermal complex. Three zones—Galaxy, The Palm, and Elysium—offer something for families and adults-only relaxation.
+
+ID: 2
+NAME: Peleș Castle Guided Visit
+REGION: Prahova
+CITY: Sinaia
+CATEGORY: culture
+DESCRIPTION: Explore Romania's royal summer residence, a Neo-Renaissance jewel with ornate interiors, armory, and art collections. Join a guided tour to access multiple floors and learn about King Carol I.
+
+ID: 3
+NAME: Bran Castle (Dracula's Castle) Visit
+REGION: Brașov
+CITY: Bran
+CATEGORY: culture
+DESCRIPTION: Wander the corridors and courtyards of the 14th-century Bran Castle, famous for its Dracula legend and royal collection. Expect narrow stairways, views of the surrounding hills, and seasonal events.
+
+ID: 4
+NAME: Brașov Old Town Walking Tour
+REGION: Brașov
+CITY: Brașov
+CATEGORY: culture
+DESCRIPTION: Stroll medieval Brașov with a local guide: Council Square, Black Church, Rope Street, and old city walls. Hear tales of Saxon merchants and Dracula legends while discovering viewpoints and photo spots.
+
+ID: 5
+NAME: Skiing in Poiana Brașov
+REGION: Brașov
+CITY: Poiana Brașov
+CATEGORY: sports
+DESCRIPTION: Romania's top ski resort offers groomed pistes on Postăvaru Mountain, modern lifts, and multiple ski schools. Great for beginners through intermediates.
+
+ID: 6
+NAME: Danube Delta Boat Safari from Tulcea
+REGION: Tulcea
+CITY: Tulcea
+CATEGORY: nature
+DESCRIPTION: Glide through narrow channels and lakes with a licensed skipper to spot pelicans, herons, and reed islands in Europe's largest wetland.
+
+ID: 7
+NAME: Wine Tasting in Dealu Mare
+REGION: Prahova
+CITY: Dealu Mare
+CATEGORY: culinary
+DESCRIPTION: Meet winemakers in Romania's flagship red-wine region. Tour vineyards and cellars before guided tastings of Fetească Neagră, Merlot, and blends.
+
+ID: 8
+NAME: Transfăgărășan Scenic Day Tour
+REGION: Sibiu
+CITY: Sibiu
+CATEGORY: adventure
+DESCRIPTION: Ride Romania's legendary alpine road past viaducts, tunnels and glacial lakes. Most tours run seasonally when the high pass is open, with stops at Bâlea Lake.
+
+ID: 9
+NAME: Turda Salt Mine Underground Park
+REGION: Cluj
+CITY: Turda
+CATEGORY: culture
+DESCRIPTION: Descend 120 meters into spectacular salt chambers with a subterranean lake, Ferris wheel, and family attractions.
+
+ID: 10
+NAME: Dimitrie Gusti National Village Museum
+REGION: Bucharest
+CITY: Bucharest
+CATEGORY: culture
+DESCRIPTION: An open-air museum showcasing traditional rural architecture from all regions of Romania—wooden churches, farmhouses, mills, and workshops set in leafy Herăstrău Park.
+
+[Continue with remaining 410 activities...]
+
+═══════════════════════════════════════════════════════════════════════════════
+NOTE: This file contains the first 10 activities as a sample. 
+The complete database query returned all 420 activities with full descriptions.
+Please process ALL 420 activities from ID 1 through ID 1972.
+═══════════════════════════════════════════════════════════════════════════════

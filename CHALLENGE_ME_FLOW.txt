@@ -1,0 +1,56 @@
+CHALLENGE ME - MORE SUGGESTIONS FLOW
+=====================================
+
+BEFORE (Old Behavior):
+┌─────────────────────┐
+│  Challenge Me       │
+│  (3 activities)     │
+└──────────┬──────────┘
+           │
+    Reject all 3
+           │
+           ▼
+┌─────────────────────┐
+│  Go back to home    │
+│  (no option)        │
+└─────────────────────┘
+
+
+AFTER (New Behavior):
+┌─────────────────────┐
+│  Challenge Me       │
+│  (3 activities)     │
+└──────────┬──────────┘
+           │
+    Reject all 3
+           │
+           ▼
+┌─────────────────────────────────┐
+│  MODAL                          │
+│  "All Challenges Rejected"      │
+│  "Would you like to see more?"  │
+│                                 │
+│  [No, Go Home]  [Yes, More!]   │
+└────────┬──────────────┬─────────┘
+         │              │
+    Click No       Click Yes
+         │              │
+         ▼              ▼
+┌─────────────┐  ┌──────────────┐
+│ Home Screen │  │ Fetch 3 new  │
+│             │  │ challenges   │
+└─────────────┘  └──────┬───────┘
+                        │
+                        ▼
+                 ┌──────────────┐
+                 │ Challenge Me │
+                 │ (3 new ones) │
+                 │ Swipeable!   │
+                 └──────────────┘
+
+SWIPE ACTIONS:
+━━━━━━━━━━━━━━
+Swipe Left  → Deny challenge, move to next
+Swipe Right → Accept challenge, go to detail
+Tap ✕ Deny  → Same as swipe left
+Tap ✓ Accept → Same as swipe right

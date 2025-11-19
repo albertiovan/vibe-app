@@ -18,15 +18,15 @@ const getApiBaseUrl = () => {
     
     // If accessing from network IP, use direct connection to backend
     if (hostname.startsWith('10.') || hostname.startsWith('192.168.')) {
-      return `http://10.103.30.198:3000/api`;
+      return process.platform === 'ios' ? 'http://localhost:3000/api' : 'http://10.103.30.198:3000/api';
     }
     
     // Fallback for web
     return '/api';
   }
   
-  // Mobile/native fallback - use network IP for physical devices
-  return 'http://10.103.30.198:3000/api';
+  // Mobile/native fallback - use localhost for iOS Simulator
+  return 'http://localhost:3000/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();

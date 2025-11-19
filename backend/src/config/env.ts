@@ -33,14 +33,11 @@ export function loadEnvironment(): void {
   // Debug key environment variables (without exposing values)
   const keyVars = [
     'CLAUDE_API_KEY',
-    'OPENAI_API_KEY', 
-    'OPENTRIPMAP_API_KEY',
     'DATABASE_URL',
     'NODE_ENV',
     'PORT',
     'LLM_PROVIDER',
-    'CORS_ORIGINS',
-    'PHOTOS_MAX_WIDTH'
+    'CORS_ORIGINS'
   ];
 
   console.log('🔧 Environment variables status:');
