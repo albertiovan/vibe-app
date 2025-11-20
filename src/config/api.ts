@@ -6,13 +6,16 @@
 // 🔥 UPDATE THIS with your ngrok URL (e.g., https://abc123.ngrok-free.app)
 const NGROK_URL = 'https://connectively-unrecurrent-dusti.ngrok-free.dev';
 
+// For standalone builds on same Wi-Fi (your Mac's LAN IP)
+const LOCAL_NETWORK_URL = 'http://10.103.30.198:3000';
+
 // For production deployment (Railway, Render, etc.)
 const PRODUCTION_URL = 'https://your-production-api.com';
 
-// Use ngrok in development, production URL in production builds
+// Use ngrok in dev, local network for Release builds (until deployed)
 export const API_BASE_URL = __DEV__ 
   ? NGROK_URL 
-  : PRODUCTION_URL;
+  : LOCAL_NETWORK_URL;
 
 export const API_ENDPOINTS = {
   user: `${API_BASE_URL}/api/user`,

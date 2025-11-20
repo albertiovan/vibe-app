@@ -66,12 +66,17 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
     setLoading(true);
     try {
       // Use platform-specific API URL
-      const API_URL = Platform.OS === 'android' 
-        ? 'http://10.0.2.2:3000'
-        : 'http://localhost:3000';
+      const getApiUrl = () => {
+        if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
+        if (__DEV__) {
+          return Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
+        }
+        // For standalone builds on same Wi-Fi (your Mac's LAN IP)
+        return 'http://10.103.30.198:3000';
+      };
         
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || API_URL}/api/challenges/me?deviceId=${deviceId}`
+        `${getApiUrl()}/api/challenges/me?deviceId=${deviceId}`
       );
       
       if (!response.ok) {
@@ -103,8 +108,14 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
     
     // Record response
     try {
+      const getApiUrl = () => {
+        if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
+        if (__DEV__) return 'http://localhost:3000';
+        return 'http://10.103.30.198:3000';
+      };
+      
       await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/challenges/respond`,
+        `${getApiUrl()}/api/challenges/respond`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -151,8 +162,14 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
     
     // Record response
     try {
+      const getApiUrl = () => {
+        if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
+        if (__DEV__) return 'http://localhost:3000';
+        return 'http://10.103.30.198:3000';
+      };
+      
       await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/challenges/respond`,
+        `${getApiUrl()}/api/challenges/respond`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

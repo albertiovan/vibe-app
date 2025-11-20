@@ -19,8 +19,8 @@ const getApiUrl = () => {
       : 'http://localhost:3000';
   }
   
-  // Production URL (configure this when deploying)
-  return 'https://your-production-api.com';
+  // For standalone builds on same Wi-Fi (your Mac's LAN IP)
+  return 'http://10.103.30.198:3000';
 };
 
 const API_URL = getApiUrl();
