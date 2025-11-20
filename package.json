@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "update": "eas update --auto",
+    "update:preview": "eas update --branch preview --message",
+    "update:production": "eas update --branch production --message"
   },
   "dependencies": {
     "@expo/ngrok": "^4.1.3",
@@ -23,6 +26,7 @@
     "expo-linear-gradient": "~15.0.7",
     "expo-location": "~19.0.7",
     "expo-status-bar": "~3.0.8",
+    "expo-updates": "~29.0.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-native": "0.81.4",
