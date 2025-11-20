@@ -62,6 +62,7 @@ Thumbs.db
 **/API_KEY*
 **/*secret*
 **/*key*
+!SMART_KEYWORD_MATCHING_EXPLAINED.md
 
 # Database
 *.db
