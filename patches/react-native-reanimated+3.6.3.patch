@@ -1,0 +1,26 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/Fabric/ReanimatedMountHook.h b/node_modules/react-native-reanimated/Common/cpp/Fabric/ReanimatedMountHook.h
+index f5b8976..df133a5 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/Fabric/ReanimatedMountHook.h
++++ b/node_modules/react-native-reanimated/Common/cpp/Fabric/ReanimatedMountHook.h
+@@ -21,7 +21,7 @@ class ReanimatedMountHook : public UIManagerMountHook {
+ 
+   void shadowTreeDidMount(
+       RootShadowNode::Shared const &rootShadowNode,
+-      double mountTime) noexcept override;
++      double mountTime) noexcept;
+ 
+  private:
+   const std::shared_ptr<PropsRegistry> propsRegistry_;
+diff --git a/node_modules/react-native-reanimated/Common/cpp/Fabric/ShadowTreeCloner.cpp b/node_modules/react-native-reanimated/Common/cpp/Fabric/ShadowTreeCloner.cpp
+index f913ceb..805022a 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/Fabric/ShadowTreeCloner.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/Fabric/ShadowTreeCloner.cpp
+@@ -22,7 +22,7 @@ ShadowNode::Unshared cloneShadowTreeWithNewProps(
+   PropsParserContext propsParserContext{
+       source->getSurfaceId(), *source->getContextContainer()};
+   const auto props = source->getComponentDescriptor().cloneProps(
+-      propsParserContext, source->getProps(), rawProps);
++      propsParserContext, source->getProps(), RawProps(rawProps));
+ 
+   auto newChildNode = source->clone({/* .props = */ props});
+ 

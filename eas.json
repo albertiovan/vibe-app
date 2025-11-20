@@ -23,7 +23,8 @@
         "buildType": "apk"
       },
       "ios": {
-        "simulator": false
+        "simulator": false,
+        "buildConfiguration": "Release"
       }
     }
   },

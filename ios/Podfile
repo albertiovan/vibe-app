@@ -56,15 +56,5 @@ target 'VIBEDEBUG' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
-    
-    # Fix for Folly coroutine header issue with Reanimated
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        # Disable Folly coroutines to avoid missing header
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_NO_CONFIG'
-        config.build_settings['FOLLY_HAVE_COROUTINES'] = '0'
-      end
-    end
   end
 end
