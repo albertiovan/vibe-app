@@ -1,0 +1,36 @@
+# BATCH 5: Activities 201-250
+# Total: 33 activities
+
+203. Tennis Lesson Or Court (Herăstrău) - Bucharest, București - sports
+204. Footvolley/Beach Football On Sand - Bucharest, București - sports
+205. Rugby Intro Session (Non-contact Basics) - Bucharest, București - sports
+206. Ultimate Frisbee Pickup Night - Bucharest, București - sports
+207. Dodgeball League Night - Bucharest, București - sports
+208. Handball Pickup (Full-Court) - Bucharest, București - sports
+210. Muay Thai/Kickboxing Class - Bucharest, București - sports
+211. 50m Lap Swim (Olympic Pool) - Otopeni, Ilfov - sports
+212. Track Session (Iolanda Balaș-Soter) - Bucharest, București - sports
+213. Fencing Intro: Foil Basics - Bucharest, București - sports
+214. Table Tennis Club Session - Bucharest, București - racket_sports
+215. Pickleball Social Play - Bucharest, București - racket_sports
+216. Beach Tennis Doubles - Constanța, Constanța - racket_sports
+217. Guided Mountain Biking — Postăvarul Peak - Brașov, Brașov - adventure
+218. Outdoor Rock Climbing Day - Cheile Turzii, Cluj - adventure
+219. Via Ferrata “Casa Zmeului” - Vadu Crișului, Bihor - adventure
+220. Guided Hike — Omu Peak (Bucegi) - Bucegi, Dâmbovița - adventure
+221. Trail Running Clinic (Brașov) - Brașov, Brașov - adventure
+222. Park Orienteering Challenge - Bucharest, București - sports
+223. Bungee Jump (Râșnoavei Gorge) - Râșnov, Brașov - adventure
+224. Paragliding Tandem (Bunloc) - Săcele, Brașov - adventure
+225. ATV/Quad Biking (Cernica Forest) - Cernica, Ilfov - adventure
+226. Paintball Skirmish (Woodland Maps) - Balotești, Ilfov - adventure
+227. Boxing Fitness (No Sparring) - Bucharest, București - fitness
+228. Indoor Cycling (Beat-Driven Ride) - Bucharest, București - fitness
+229. Outdoor Bootcamp (Total Body) - Bucharest, București - fitness
+230. F45 HIIT Team Training - Bucharest, București - fitness
+231. Zumba Dance Fitness - Bucharest, București - fitness
+232. Calisthenics Park Training (Parc Tei) - Bucharest, București - fitness
+233. Obstacle Course/Ninja Training - Bucharest, București - fitness
+234. Stand-Up Paddle (City Session) - Bucharest, București - water
+235. Surfing Lesson (Black Sea) - Constanța, Constanța - water
+236. Windsurfing Intro (Mamaia) - Mamaia, Constanța - water

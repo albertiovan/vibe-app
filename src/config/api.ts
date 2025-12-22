@@ -7,15 +7,13 @@
 const NGROK_URL = 'https://connectively-unrecurrent-dusti.ngrok-free.dev';
 
 // For standalone builds on same Wi-Fi (your Mac's LAN IP)
-const LOCAL_NETWORK_URL = 'http://10.103.30.198:3000';
+const LOCAL_NETWORK_URL = 'http://192.168.88.199:3000';
 
-// For production deployment (Railway, Render, etc.)
-const PRODUCTION_URL = 'https://your-production-api.com';
+// For production deployment (EC2)
+const PRODUCTION_URL = 'http://3.79.12.161:3000';
 
-// Use ngrok in dev, local network for Release builds (until deployed)
-export const API_BASE_URL = __DEV__ 
-  ? NGROK_URL 
-  : LOCAL_NETWORK_URL;
+// Use EC2 for both dev and production (backend running on AWS)
+export const API_BASE_URL = PRODUCTION_URL;
 
 export const API_ENDPOINTS = {
   user: `${API_BASE_URL}/api/user`,

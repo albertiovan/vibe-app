@@ -25,6 +25,7 @@ import { LoadingShimmer } from '../ui/components/LoadingShimmer';
 import { theme } from '../ui/theme/tokens';
 import { chatApi } from '../src/services/chatApi';
 import { FilterOptions } from '../components/filters/ActivityFilters';
+import { useLanguage } from '../src/i18n/LanguageContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -47,6 +48,7 @@ export const SuggestionsScreenShell: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'SuggestionsScreenShell'>>();
   const { conversationId, deviceId, userMessage, filters, userLocation } = route.params;
+  const { t } = useLanguage();
 
   const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,12 +84,12 @@ export const SuggestionsScreenShell: React.FC = () => {
         setActivities(response.activities);
         console.log(`✅ Loaded ${response.activities.length} activities`);
       } else {
-        Alert.alert('No Activities', 'No activities found for your search. Try different filters.');
+        Alert.alert(t('suggestions.title'), t('suggestions.empty'));
         navigation.goBack();
       }
     } catch (error) {
       console.error('❌ Failed to load activities:', error);
-      Alert.alert('Error', 'Failed to load activities. Please try again.');
+      Alert.alert(t('common.error'), t('error.generic'));
       navigation.goBack();
     } finally {
       setLoading(false);

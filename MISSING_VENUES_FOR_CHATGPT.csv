@@ -1,0 +1,224 @@
+activity_id,activity_name,city,region,category
+8,Transfăgărășan Scenic Day Tour,Bucharest,Sibiu,adventure
+15,Electronic Club Night in Bucharest,Bucharest,București,nightlife
+16,Cluj Live Music & Club Night,Cluj-Napoca,Cluj,nightlife
+17,Timisoara Club Night,Timișoara,Timiș,nightlife
+18,Iași Night Out (Bars & Clubs),Iași,Iași,nightlife
+19,Bucharest Escape Room Challenge,Bucharest,București,social
+20,Cluj Escape Room Adventure,Cluj-Napoca,Cluj,social
+21,Bucharest Yoga Class (Vinyasa/Hatha),Bucharest,București,fitness
+22,CrossFit Session in Cluj,Cluj-Napoca,Cluj,fitness
+23,CrossFit Session in Bucharest,Bucharest,București,fitness
+24,Oradea Thermal Aqua Day (Aquaparks),Oradea,Bihor,wellness
+25,Sovata Bear Lake & Spa Day,Sovata,Mureș,wellness
+26,Balvanyos Forest Spa Ritual,Balvanyos,Covasna,wellness
+27,Black Sea Coastal Kayaking Coaching,Constanța,Constanța,water
+28,Wakeboarding Session near Bucharest,Snagov,Ilfov,water
+29,Intro to Golf in Transylvania,Apahida,Cluj,sports
+30,Romantic Boat Ride on Herăstrău Lake,Bucharest,București,romance
+31,Hot Air Balloon Flight near Cluj,Cluj-Napoca,Cluj,romance
+32,Christmas Market Sibiu (Piața Mare),Sibiu,Sibiu,seasonal
+33,Christmas Market Cluj-Napoca (Piața Unirii),Cluj-Napoca,Cluj,seasonal
+34,Christmas Market Bucharest (Constitution Square),Bucharest,București,seasonal
+35,Christmas Market Timișoara (Victory Square),Bucharest,Timiș,seasonal
+38,Cluj-Napoca Street Food & Market Tasting,Cluj-Napoca,Cluj,culinary
+39,Sibiu Old Town Food Tour,Sibiu,Sibiu,culinary
+40,Timișoara Craft Beer Tasting Crawl,Timișoara,Timiș,culinary
+41,Gramma Winery Visit & Tasting (Iași),Vișan,Iași,culinary
+42,Domeniul Bogdan Organic Winery Tour,Medgidia,Constanța,culinary
+43,Dealu Mare Winery Trio (Lacerta/Serve/Budureasca),Fințești,Prahova,culinary
+44,Constanța Seafood Tasting Experience,Constanța,Constanța,culinary
+45,Improvisation Theatre Workshop (Bucharest),Bucharest,București,creative
+46,Salsa/Bachata Beginner Class (Bucharest),Bucharest,București,creative
+47,Cyanotype & Alternative Photography Workshop,Bucharest,București,creative
+48,Screen Printing Basics (Bucharest),Bucharest,București,creative
+49,Icon on Glass Workshop (ASTRA Museum),Sibiu,Sibiu,creative
+50,Weaving on the Loom (ASTRA Museum),Sibiu,Sibiu,creative
+51,Romanian Language Crash Course (Bucharest),Bucharest,București,learning
+52,Specialty Coffee Brewing Class (Bucharest),Bucharest,București,learning
+53,Barista Basics Workshop (Cluj),Cluj-Napoca,Cluj,learning
+54,Sibiu Traditional Cooking Class,Sibiu,Sibiu,learning
+55,Intro to Romanian Wine (Bucharest),Bucharest,București,learning
+56,Sound Bath & Breathwork (Bucharest),Bucharest,București,mindfulness
+57,Halotherapy & Mindful Walk – Turda Salt Mine,Turda,Cluj,mindfulness
+58,Salt Mine Wellness Session – Praid,Praid,Harghita,mindfulness
+59,Therme Sauna Rituals & Mindful Heat,Balotești,Ilfov,mindfulness
+66,Retezat National Park Day Hike,Nucșoara,Hunedoara,nature
+71,Bucharest Language Exchange Social,Bucharest,București,social
+76,Couples' Photoshoot in Old Town,Bucharest,București,romance
+98,Contemporary Jewelry Making (Assamblage Institute),Bucharest,București,creative
+99,Stained Glass (Tiffany Technique) Workshop,Bucharest,București,creative
+100,Intro to Woodworking (NOD Makerspace),Bucharest,București,creative
+103,Specialty Coffee Cupping Session,Bucharest,București,learning
+104,Bucharest Pub Quiz Night,Bucharest,București,social
+105,Karaoke Night in Bucharest,Bucharest,București,social
+106,Board Game Café Evening (Bucharest),Bucharest,București,social
+107,Bucharest Trivia Night at a Craft Beer Bar,Bucharest,București,social
+108,Painting & Wine Night (Bucharest),Bucharest,București,creative
+109,Pottery Wheel Taster (Bucharest),Bucharest,București,creative
+110,Candle-Making Workshop (Bucharest),Bucharest,București,creative
+111,Bucharest Graffiti & Street Art Tour,Bucharest,București,creative
+112,Couples' Massage at a Spa (Bucharest),Bucharest,București,romance
+113,Sunset Picnic in Herăstrău Park,Bucharest,București,romance
+114,Rooftop Dinner with City Views (Bucharest),Bucharest,București,romance
+115,Private Cooking Class for Two (Bucharest),Bucharest,București,romance
+116,Stargazing Night near Bucharest,Snagov,Ilfov,romance
+117,Bucharest Ghost Tour (Old Town),Bucharest,București,social
+118,Bucharest Food Market Tour (Obor/Dorobanți),Bucharest,București,culinary
+119,Bucharest Vintage Shopping Tour,Bucharest,București,social
+120,Bucharest Architectural Walking Tour,Bucharest,București,learning
+121,Bucharest Communist History Tour,Bucharest,București,learning
+122,Bucharest Jewish Heritage Tour,Bucharest,București,learning
+123,Bucharest Bike Tour (Parks & Landmarks),Bucharest,București,fitness
+124,Bucharest Running Club Meetup,Bucharest,București,fitness
+125,Outdoor Bootcamp in Herăstrău Park,Bucharest,București,fitness
+126,Pilates Class (Bucharest),Bucharest,București,fitness
+127,Barre Fitness Class (Bucharest),Bucharest,București,fitness
+128,Spin Class (Bucharest),Bucharest,București,fitness
+129,Zumba Class (Bucharest),Bucharest,București,fitness
+130,Kickboxing Class (Bucharest),Bucharest,București,fitness
+131,Muay Thai Session (Bucharest),Bucharest,București,fitness
+132,Brazilian Jiu-Jitsu Intro (Bucharest),Bucharest,București,fitness
+133,Bucharest Climbing Gym Session,Bucharest,București,fitness
+134,Trampoline Park Session (Bucharest),Bucharest,București,fitness
+135,Ice Skating at Bucharest Mall,Bucharest,București,fitness
+136,Bowling Night (Bucharest),Bucharest,București,social
+137,Laser Tag Session (Bucharest),Bucharest,București,social
+138,VR Gaming Experience (Bucharest),Bucharest,București,social
+139,Go-Karting near Bucharest,Snagov,Ilfov,sports
+140,Paintball Session near Bucharest,Snagov,Ilfov,sports
+141,Archery Lesson (Bucharest),Bucharest,București,sports
+142,Tennis Court Booking (Bucharest),Bucharest,București,sports
+143,Badminton Court Booking (Bucharest),Bucharest,București,sports
+144,Squash Court Booking (Bucharest),Bucharest,București,sports
+145,Padel Tennis Session (Bucharest),Bucharest,București,sports
+146,Beach Volleyball at Therme (Bucharest),Balotești,Ilfov,sports
+147,Futsal Court Booking (Bucharest),Bucharest,București,sports
+148,Basketball Court Booking (Bucharest),Bucharest,București,sports
+149,Bucharest Parkour Workshop,Bucharest,București,fitness
+150,Slackline Session in Herăstrău Park,Bucharest,București,fitness
+151,Outdoor Yoga in Herăstrău Park,Bucharest,București,fitness
+152,Tai Chi in Cișmigiu Park,Bucharest,București,mindfulness
+153,Meditation Session (Bucharest),Bucharest,București,mindfulness
+154,Reiki Healing Session (Bucharest),Bucharest,București,mindfulness
+155,Acupuncture Session (Bucharest),Bucharest,București,wellness
+156,Thai Massage (Bucharest),Bucharest,București,wellness
+157,Swedish Massage (Bucharest),Bucharest,București,wellness
+158,Deep Tissue Massage (Bucharest),Bucharest,București,wellness
+159,Hot Stone Massage (Bucharest),Bucharest,București,wellness
+160,Aromatherapy Session (Bucharest),Bucharest,București,wellness
+161,Facial Treatment (Bucharest),Bucharest,București,wellness
+162,Manicure & Pedicure (Bucharest),Bucharest,București,wellness
+163,Hair Styling Session (Bucharest),Bucharest,București,wellness
+164,Makeup Workshop (Bucharest),Bucharest,București,creative
+165,Personal Styling Consultation (Bucharest),Bucharest,București,learning
+166,Photography Walk in Bucharest,Bucharest,București,creative
+167,Film Photography Workshop (Bucharest),Bucharest,București,creative
+168,Drone Photography Lesson (Bucharest),Bucharest,București,creative
+169,Video Editing Workshop (Bucharest),Bucharest,București,creative
+170,Podcasting Basics (Bucharest),Bucharest,București,creative
+171,Music Production Workshop (Bucharest),Bucharest,București,creative
+172,DJ Basics Class (Bucharest),Bucharest,București,creative
+173,Guitar Lesson (Bucharest),Bucharest,București,creative
+174,Piano Lesson (Bucharest),Bucharest,București,creative
+175,Singing Lesson (Bucharest),Bucharest,București,creative
+176,Drumming Workshop (Bucharest),Bucharest,București,creative
+177,Ukulele Lesson (Bucharest),Bucharest,București,creative
+178,Harmonica Lesson (Bucharest),Bucharest,București,creative
+179,Violin Lesson (Bucharest),Bucharest,București,creative
+180,Cello Lesson (Bucharest),Bucharest,București,creative
+181,Flute Lesson (Bucharest),Bucharest,București,creative
+182,Saxophone Lesson (Bucharest),Bucharest,București,creative
+183,Trumpet Lesson (Bucharest),Bucharest,București,creative
+184,Quiet bench: Theodor Aman Museum,Bucharest,București,mindfulness
+185,Quiet bench: Parcul Circului (Lotus Lake),Bucharest,București,mindfulness
+186,Quiet bench: Grădina Icoanei,Bucharest,București,mindfulness
+187,Photo spot & sit: Izvor Park Parliament view,Bucharest,București,mindfulness
+188,Mini-walk & overlook: Tineretului Park,Bucharest,București,mindfulness
+189,Botanical Garden: Palmhouse & remedy garden loop,Bucharest,București,nature
+190,Pottery basics: hand-building & glazing,Bucharest,București,creative
+191,Wheel-throwing taster at CUBUL,Bucharest,București,creative
+192,Evening acrylic painting class (Rodia Art Studio),Bucharest,București,creative
+193,Paint-your-own pottery (MadeByYou),Bucharest,București,creative
+194,Calligraphy & lettering workshop,Bucharest,București,creative
+195,Knitting & crochet at a textile atelier,Bucharest,București,creative
+196,Wellness visit: Salina Turda (salt mine),Turda,Cluj,wellness
+198,Basketball Court Booking (Full Court Run),Bucharest,București,sports
+1893,Alt & Electronic Nights at Control Club,Bucharest,București,nightlife
+1894,Tech-House Marathon at Kristal Glam Club,Bucharest,București,nightlife
+1895,Student Night at Kulturhaus Bucharest,Bucharest,București,nightlife
+1896,BOA (Beat of Angels) Hip-Hop & R&B Night,Bucharest,Herăstrău / Kiseleff,nightlife
+1897,House Night at Fratelli Lounge & Club,Bucharest,Herăstrău,nightlife
+1898,Rooftop Cocktails at NOMAD Skybar,Bucharest,Old Town,nightlife
+1899,Rooftop Sundowners at Linea / Closer to the Moon,Bucharest,Old Town,nightlife
+1900,Live Band & Karaoke at Mojo Music Club,Bucharest,Old Town,nightlife
+1901,Intimate Jazz Night at Green Hours,Bucharest,Old Town,nightlife
+1902,Stand-Up Night at The Fool Comedy Club,Bucharest,Centru,social
+1903,KIKI Lounge & Bar (LGBTQ+ friendly) Cocktails,Bucharest,Old Town,nightlife
+1904,Queens Club LGBTQ+ Night,Bucharest,Centru,nightlife
+1905,Berăria H Beer Hall & Live Shows,Bucharest,Old Town,nightlife
+1906,Hookah & Lounge at Macca-Villacrosse (Hugo),Bucharest,Old Town,social
+1907,Board-Game Evening at Snakes & Wizards,Bucharest,Centru,social
+1908,Craft Beers at Beer O'Clock,Bucharest,Lipscani,nightlife
+1909,Sports & Pints at St. Patrick Irish Pub,Bucharest,Lipscani,nightlife
+1910,Alt-Rock & Indie Nights at Expirat,Bucharest,Centru,nightlife
+1911,Live Jazz Sessions at The JAZZ BOOK,Bucharest,Old Town,nightlife
+1912,Live Anthems at Hard Rock Cafe Bucharest,Bucharest,Old Town,nightlife
+1913,Peak Weekend at FACE Club,Bucharest,Centru,nightlife
+1914,Foraged Cocktails at FIX Me a Drink,Bucharest,Centru,nightlife
+1915,Origo Cocktail Evenings (Old Town),Bucharest,Old Town,nightlife
+1916,High-Gloss Nights at E3 by Entourage,Bucharest,Herăstrău,nightlife
+1917,Uanderful: Floreasca Lounge & Late Drinks,Bucharest,Floreasca,nightlife
+1918,City-High Cocktails at NOR Sky (SkyTower),Bucharest,Floreasca,nightlife
+1919,Sunset Rooftops at 18 Lounge (City Gate),Bucharest,Barbu Văcărescu,nightlife
+1920,LINEA / Closer to the Moon Rooftop,Bucharest,Old Town,nightlife
+1921,Mojo: Karaoke & Live Band Nights,Bucharest,Old Town,nightlife
+1922,SHOTERIA Old Town: Rapid-Fire Shots,Bucharest,Old Town,nightlife
+1923,Beluga: Music & Cocktails (Old Town),Bucharest,Lipscani,nightlife
+1924,Fire Club: Rock & Alternative,Bucharest,Lipscani,nightlife
+1925,St. Patrick Irish Pub: Sports & Pints,Bucharest,Lipscani,nightlife
+1926,Beer O'Clock: Craft & Imports,Bucharest,Lipscani,nightlife
+1927,Bruno Wine Bar: Cellar Vibes,Bucharest,Lipscani,nightlife
+1928,Club Șurubelnița: Underground Party Bar,Bucharest,Universitate,nightlife
+1929,Quantic: Rock & Metal Live,Bucharest,Cotroceni,nightlife
+1930,Infinity Hookah Lounge (Eminescu),Bucharest,Obor & Romana,social
+1931,Nova Lounge & Hookah (Ferdinand),Bucharest,Obor & Romana,social
+1933,Trickshot AFI Cotroceni: Lanes & Cocktails,Bucharest,Cotroceni,social
+1935,KLANdestin: IOR Park View Drinks,Bucharest,Titan,social
+1936,Sports Bar Titan: Billiards & Darts,Bucharest,Titan,social
+1937,Pura Vida Sky Bar (Old Town),Bucharest,Old Town,nightlife
+1938,Halftime Sports Pub (Gabroveni),Bucharest,Lipscani,nightlife
+1939,Evening Lanes at Dinamo Olympic Pool,Bucharest,Floreasca,social
+1940,Sunset Splash at Magic Place Aqua Park,Bucharest,Crângași,social
+1941,Club Swim & Sun at Stejarii Country Club,Bucharest,Băneasa / Herăstrău,social
+1942,After-Work Dip at Daimon Wellness (Tineretului),Bucharest,Tineretului,social
+1943,Laps & Steam at Crowne Plaza ANA Spa,Bucharest,Romexpo / Herăstrău,social
+1944,City-Centre Swim at Novotel Wellness,Bucharest,City Centre / Universitate,social
+1945,Campus Swim at Carol Davila Pool (Cotroceni),Bucharest,Cotroceni / Eroilor,social
+1946,Affordable Lengths at Olimpia (Iancului),Bucharest,Iancului / Muncii,social
+1947,Semi-Olympic Session at World Class Mega Mall (Pantelimon),Bucharest,Pantelimon / Arena Națională,social
+1948,Grand Lanes at World Class The Grand (JW Marriott),Bucharest,Cotroceni / 13 Septembrie,social
+1949,Flying Circus Alt Nights,Cluj-Napoca,Centru,nightlife
+1950,Steampunk Cocktails at Joben,Cluj-Napoca,Centru,nightlife
+1951,D'Arc Unirii Sessions,Timișoara,Cetate,nightlife
+1952,Scârț Loc Lejer Living-Room Lounge,Timișoara,Elisabetin,social
+1953,Viniloteca: Wine & Wax Nights,Timișoara,Central,nightlife
+1954,Moszkva Oradea Alt Scene,Oradea,Centru,nightlife
+1955,Lokal Oradea Rooftop Sundowners,Oradea,Centru,nightlife
+1956,Music Pub Sibiu Rock Nights,Sibiu,Centru,nightlife
+1957,Underground The Pub: Iași Rock Cellar,Iași,Centru,nightlife
+1958,Jazz & Blues Club Târgu Mureș,Târgu Mureș,Centru,nightlife
+1959,EGO Mamaia Beach Club Nights,Constanța (Mamaia),Mamaia,nightlife
+1960,Expirat Vama Veche Beach Sessions,Vama Veche,Beachfront,nightlife
+1961,Tipografia Culture Bar,Brașov,Centru,nightlife
+1962,Yolka Skybar Sundowners,Cluj-Napoca,Centru,nightlife
+1963,VIP Glam Night at BOA - Beat of Angels,Bucharest,Herăstrău / Kiseleff,nightlife
+1964,Premium Party at NOA – Nest of Angels,Cluj-Napoca,Republicii / Zorilor,nightlife
+1965,High-End Night at Epic Society,Timișoara,Cetate / Str. Miresei,nightlife
+1966,Metal Nights at Rockstadt,Brașov,Centru (Nicolae Titulescu),nightlife
+1967,Live Jazz at Jazz & Blues Club,Târgu Mureș,Str. Sinaia,nightlife
+1968,Concert Night at Doors Club,Constanța,Str. Traian / Centru,nightlife
+1969,Beach Club Night at EGO Mamaia,Mamaia,Mamaia Nord,nightlife
+1970,Fratelli Beach & Club – House by the Sea,Mamaia (Constanța),Mamaia Nord,nightlife
+1971,Fratelli Iași – Luxe Mixed Music Night,Iași,Palas / Morilor,nightlife
+1972,Euphoria Music Hall – Big-Room Live & Party,Cluj-Napoca,Bulgaria / 1 Decembrie 1918,nightlife

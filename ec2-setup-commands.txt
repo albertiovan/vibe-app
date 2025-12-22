@@ -1,0 +1,20 @@
+# EC2 Setup Commands - Copy and paste these into your EC2 terminal
+
+# 1. Create backend directory
+mkdir -p ~/backend
+cd ~/backend
+
+# 2. Initialize npm project
+npm init -y
+
+# 3. Install all dependencies
+npm install express pg dotenv cors helmet express-rate-limit @anthropic-ai/sdk @aws-sdk/client-s3 @aws-sdk/s3-request-presigner bcrypt jsonwebtoken tsx
+
+# 4. Create directory structure
+mkdir -p src/routes src/services src/middleware src/config database/migrations
+
+# 5. Verify Node.js version
+node --version
+
+# After this, we'll create the files manually or use git clone
+echo "Setup complete! Ready for file upload."

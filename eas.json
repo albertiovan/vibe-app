@@ -19,13 +19,11 @@
     },
     "standalone": {
       "distribution": "internal",
-      "channel": "production",
       "android": {
         "buildType": "apk"
       },
       "ios": {
-        "simulator": false,
-        "buildConfiguration": "Release"
+        "simulator": false
       }
     }
   },

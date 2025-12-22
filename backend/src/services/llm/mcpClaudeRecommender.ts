@@ -263,22 +263,23 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     if (locationFilter === undefined) {
       // NO FILTER: Variety mode - mix of local and outside activities
       locationMode = 'variety';
-      whereClause = '1=1'; // Get all activities, will enforce variety in post-processing
+      // Use $1 in a way that doesn't filter but helps PostgreSQL infer type
+      whereClause = '($1::text IS NOT NULL OR $1::text IS NULL)'; // Always true, but uses $1
       console.log(`🌍 Location Mode: VARIETY (mix of ${userCity} + outside)`);
     } else if (locationFilter === 20) {
       // IN CITY: Only activities in user's current city
       locationMode = 'in-city';
-      whereClause = `a.region = $1`; // Strict city match
+      whereClause = `a.region = $1::text`; // Strict city match
       console.log(`📍 Location Mode: IN CITY ONLY (${userCity})`);
     } else if (locationFilter === null) {
       // EXPLORE ROMANIA: Only activities OUTSIDE user's city
       locationMode = 'explore-outside';
-      whereClause = `a.region != $1`; // Exclude user's city
+      whereClause = `a.region != $1::text`; // Exclude user's city
       console.log(`🗺️  Location Mode: EXPLORE OUTSIDE (exclude ${userCity})`);
     } else {
       // Fallback for other distance values
       locationMode = 'variety';
-      whereClause = '1=1';
+      whereClause = '($1::text IS NOT NULL OR $1::text IS NULL)'; // Always true, but uses $1
       console.log(`🌍 Location Mode: CUSTOM DISTANCE (${locationFilter}km)`);
     }
     
@@ -298,7 +299,7 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     `;
     
     // Always include region as $1 for ORDER BY ranking, even when not used in WHERE
-    const queryParams: any[] = [region];
+    const queryParams: (string | string[] | number)[] = [region];
     let paramIndex = 2;
     
     // Split required tags into category tags and non-category tags
@@ -399,7 +400,7 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
         // Explore Romania: PREFER activities outside current city
         activitiesQuery += `
           ORDER BY 
-            CASE WHEN a.region != $1 THEN 0 ELSE 1 END,  -- Outside city first
+            CASE WHEN a.region != $1::text THEN 0 ELSE 1 END,  -- Outside city first
             RANDOM()
         `;
       } else {
@@ -416,6 +417,8 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     console.log(`📊 Query limit: ${queryLimit} activities`);
     
     console.log('🔍 Executing intelligent query...');
+    console.log('📝 Query:', activitiesQuery);
+    console.log('📝 Params:', queryParams);
     let { rows: activities } = await pool.query(activitiesQuery, queryParams);
     
     console.log(`✅ Found ${activities.length} semantically matched activities`);

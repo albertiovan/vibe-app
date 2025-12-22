@@ -20,6 +20,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../src/design-system/colors';
 import { tokens } from '../src/design-system/tokens';
 import { userStorage, UserPreferences } from '../src/services/userStorage';
+import { useLanguage } from '../src/i18n/LanguageContext';
 
 interface OnboardingScreenProps {
   onComplete: () => void;
@@ -37,7 +38,8 @@ const INTERESTS = [
 ];
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
-  const [step, setStep] = useState(1);
+  const { t, language, setLanguage } = useLanguage();
+  const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -48,11 +50,11 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
   const handleNext = () => {
     if (step === 1 && !name.trim()) {
-      alert('Please enter your name');
+      alert(t('onboarding.name_required'));
       return;
     }
-    if (step === 2 && selectedInterests.length === 0) {
-      alert('Please select at least one interest');
+    if (step === 3 && selectedInterests.length === 0) {
+      alert(t('onboarding.interests_required'));
       return;
     }
     setStep(step + 1);
@@ -107,9 +109,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          {/* Progress Indicator */}
+          {/* Progress Dots */}
           <View style={styles.progressContainer}>
-            {[1, 2, 3, 4].map((s) => (
+            {[0, 1, 2, 3, 4].map((s) => (
               <View
                 key={s}
                 style={[
@@ -121,20 +123,81 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             ))}
           </View>
 
+          {/* Step 0: Language Selection */}
+          {step === 0 && (
+            <View style={styles.stepContainer}>
+              <Text style={styles.emoji}>🌍</Text>
+              <Text style={styles.title}>Choose Your Language</Text>
+              <Text style={styles.subtitle}>
+                Select your preferred language. You can change this later in Settings.
+              </Text>
+
+              <View style={styles.languageOptions}>
+                <TouchableOpacity
+                  style={[
+                    styles.languageCard,
+                    language === 'en' && styles.languageCardSelected,
+                  ]}
+                  onPress={() => setLanguage('en')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.languageFlag}>🇬🇧</Text>
+                  <Text style={[
+                    styles.languageLabel,
+                    language === 'en' && styles.languageLabelSelected,
+                  ]}>
+                    English
+                  </Text>
+                  {language === 'en' && (
+                    <View style={styles.selectedBadge}>
+                      <Ionicons name="checkmark-circle" size={24} color="#00D9FF" />
+                    </View>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.languageCard,
+                    language === 'ro' && styles.languageCardSelected,
+                  ]}
+                  onPress={() => setLanguage('ro')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.languageFlag}>🇷🇴</Text>
+                  <Text style={[
+                    styles.languageLabel,
+                    language === 'ro' && styles.languageLabelSelected,
+                  ]}>
+                    Română
+                  </Text>
+                  {language === 'ro' && (
+                    <View style={styles.selectedBadge}>
+                      <Ionicons name="checkmark-circle" size={24} color="#00D9FF" />
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.helperText}>
+                💡 You can change your language preference anytime in Profile → Settings
+              </Text>
+            </View>
+          )}
+
           {/* Step 1: Basic Info */}
           {step === 1 && (
             <View style={styles.stepContainer}>
               <Text style={styles.emoji}>👋</Text>
-              <Text style={styles.title}>Welcome to Vibe!</Text>
+              <Text style={styles.title}>{t('onboarding.welcome')}</Text>
               <Text style={styles.subtitle}>
-                Let's create your account to personalize your experience
+                {t('onboarding.welcome_subtitle')}
               </Text>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>What's your name? *</Text>
+                <Text style={styles.label}>{t('onboarding.name_label')}</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your name"
+                  placeholder={t('onboarding.name')}
                   placeholderTextColor="rgba(255,255,255,0.5)"
                   value={name}
                   onChangeText={setName}
@@ -143,10 +206,10 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               </View>
 
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Email (optional)</Text>
+                <Text style={styles.label}>{t('onboarding.email_label')}</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="your@email.com"
+                  placeholder={t('onboarding.email')}
                   placeholderTextColor="rgba(255,255,255,0.5)"
                   value={email}
                   onChangeText={setEmail}
@@ -161,9 +224,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
           {step === 2 && (
             <View style={styles.stepContainer}>
               <Text style={styles.emoji}>🎯</Text>
-              <Text style={styles.title}>What are you into?</Text>
+              <Text style={styles.title}>{t('onboarding.interests')}</Text>
               <Text style={styles.subtitle}>
-                Select your interests so we can personalize recommendations
+                {t('onboarding.interests_subtitle')}
               </Text>
 
               <View style={styles.interestsGrid}>
@@ -193,7 +256,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                           styles.interestLabelSelected,
                       ]}
                     >
-                      {interest.label}
+                      {t(`onboarding.interests.${interest.value}`)}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -205,13 +268,13 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
           {step === 3 && (
             <View style={styles.stepContainer}>
               <Text style={styles.emoji}>⚡</Text>
-              <Text style={styles.title}>Your Vibe</Text>
+              <Text style={styles.title}>{t('onboarding.preferences')}</Text>
               <Text style={styles.subtitle}>
-                Tell us about your activity preferences
+                {t('onboarding.preferences_subtitle')}
               </Text>
 
               <View style={styles.preferenceSection}>
-                <Text style={styles.preferenceLabel}>Energy Level</Text>
+                <Text style={styles.preferenceLabel}>{t('onboarding.energy')}</Text>
                 <View style={styles.optionsRow}>
                   {(['low', 'medium', 'high'] as const).map((level) => (
                     <TouchableOpacity
@@ -228,7 +291,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                           energyLevel === level && styles.optionTextSelected,
                         ]}
                       >
-                        {level.charAt(0).toUpperCase() + level.slice(1)}
+                        {t(`onboarding.energy.${level}`)}
                       </Text>
                     </TouchableOpacity>
                   ))}
@@ -236,7 +299,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               </View>
 
               <View style={styles.preferenceSection}>
-                <Text style={styles.preferenceLabel}>Indoor or Outdoor?</Text>
+                <Text style={styles.preferenceLabel}>{t('onboarding.indoor_outdoor')}</Text>
                 <View style={styles.optionsRow}>
                   {(['indoor', 'outdoor', 'both'] as const).map((pref) => (
                     <TouchableOpacity
@@ -253,7 +316,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                           indoorOutdoor === pref && styles.optionTextSelected,
                         ]}
                       >
-                        {pref.charAt(0).toUpperCase() + pref.slice(1)}
+                        {t(`onboarding.indoor_outdoor.${pref}`)}
                       </Text>
                     </TouchableOpacity>
                   ))}
@@ -266,15 +329,15 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
           {step === 4 && (
             <View style={styles.stepContainer}>
               <Text style={styles.emoji}>🌟</Text>
-              <Text style={styles.title}>How adventurous are you?</Text>
+              <Text style={styles.title}>{t('onboarding.adventurousness')}</Text>
               <Text style={styles.subtitle}>
-                Rate your willingness to try new things
+                {t('onboarding.adventurousness_subtitle')}
               </Text>
 
               <View style={styles.sliderContainer}>
                 <View style={styles.scaleLabels}>
-                  <Text style={styles.scaleLabel}>Play it safe</Text>
-                  <Text style={styles.scaleLabel}>Always exploring!</Text>
+                  <Text style={styles.scaleLabel}>{t('onboarding.adventurousness_scale.low')}</Text>
+                  <Text style={styles.scaleLabel}>{t('onboarding.adventurousness_scale.high')}</Text>
                 </View>
                 
                 <View style={styles.scaleButtons}>
@@ -301,19 +364,19 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               </View>
 
               <Text style={styles.helperText}>
-                This helps us suggest challenges that match your comfort level
+                {t('onboarding.adventurousness_helper')}
               </Text>
             </View>
           )}
 
           {/* Navigation Buttons */}
           <View style={styles.buttonContainer}>
-            {step > 1 && (
+            {step > 0 && (
               <TouchableOpacity
                 style={styles.backButton}
                 onPress={() => setStep(step - 1)}
               >
-                <Text style={styles.backButtonText}>Back</Text>
+                <Text style={styles.buttonText}>{t('onboarding.back')}</Text>
               </TouchableOpacity>
             )}
 
@@ -322,7 +385,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 style={styles.nextButton}
                 onPress={handleNext}
               >
-                <Text style={styles.nextButtonText}>Next</Text>
+                <Text style={styles.buttonText}>{t('onboarding.next')}</Text>
                 <Ionicons name="arrow-forward" size={20} color="#fff" />
               </TouchableOpacity>
             ) : (
@@ -565,8 +628,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   completeButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
     color: '#667EEA',
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  languageOptions: {
+    width: '100%',
+    gap: tokens.spacing.md,
+    marginVertical: tokens.spacing.xl,
+  },
+  languageCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: tokens.spacing.lg,
+    borderRadius: tokens.radius.lg,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.3)',
+    gap: tokens.spacing.md,
+  },
+  languageCardSelected: {
+    backgroundColor: 'rgba(0, 217, 255, 0.2)',
+    borderColor: '#00D9FF',
+  },
+  languageFlag: {
+    fontSize: 48,
+  },
+  languageLabel: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.9)',
+  },
+  languageLabelSelected: {
+    color: '#fff',
+  },
+  selectedBadge: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

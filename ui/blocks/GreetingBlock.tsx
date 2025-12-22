@@ -26,9 +26,9 @@ export const GreetingBlock: React.FC<GreetingBlockProps> = ({
     <View style={styles.container}>
       <TextShimmer
         duration={3}
-        baseColor={colors.fg.secondary}
-        shimmerColor={colors.fg.primary}
-        style={[typo.titleXL, styles.greeting]}
+        baseColor="rgba(255, 255, 255, 0.7)"
+        shimmerColor="rgba(253, 221, 16, 1.0)" // #FDDD10 yellow shimmer
+        style={{ ...typo.titleXL, ...styles.greeting }}
       >
         {greetingText}
       </TextShimmer>

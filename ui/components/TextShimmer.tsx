@@ -1,100 +1,71 @@
-/**
- * TextShimmer Component
- * 
- * Animated text with a shimmer/glow effect
- * React Native version using react-native-reanimated
- * 
- * Usage:
- * <TextShimmer duration={2}>
- *   Hello {firstName}, what's the vibe?
- * </TextShimmer>
- */
-
 import React, { useEffect } from 'react';
-import { Text, StyleSheet, TextStyle, View } from 'react-native';
+import { StyleSheet, TextStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
-  withTiming,
   withSequence,
-  Easing,
-  interpolate,
+  withTiming,
   interpolateColor,
+  Easing,
 } from 'react-native-reanimated';
 
 interface TextShimmerProps {
   children: string;
-  style?: TextStyle | TextStyle[];
-  duration?: number; // Duration in seconds for one shimmer cycle
-  baseColor?: string; // Base text color
-  shimmerColor?: string; // Shimmer highlight color
+  style?: TextStyle;
+  duration?: number;
+  baseColor?: string;
+  shimmerColor?: string;
 }
 
-export function TextShimmer({
-  children,
+export function TextShimmer({ 
+  children, 
   style,
-  duration = 2,
-  baseColor = '#a1a1aa',
-  shimmerColor = '#ffffff',
+  duration = 3,
+  baseColor = 'rgba(255, 255, 255, 0.7)',
+  shimmerColor = 'rgba(253, 221, 16, 1.0)',
 }: TextShimmerProps) {
-  const shimmerProgress = useSharedValue(0);
+  const progress = useSharedValue(0);
 
   useEffect(() => {
-    // Animate shimmer effect infinitely
-    shimmerProgress.value = withRepeat(
+    progress.value = withRepeat(
       withSequence(
         withTiming(1, {
-          duration: duration * 1000,
+          duration: duration * 500,
           easing: Easing.inOut(Easing.ease),
         }),
         withTiming(0, {
-          duration: duration * 1000,
+          duration: duration * 500,
           easing: Easing.inOut(Easing.ease),
         })
       ),
-      -1, // Infinite repeat
+      -1,
       false
     );
   }, [duration]);
 
-  const animatedTextStyle = useAnimatedStyle(() => {
-    // Interpolate between base color and shimmer color
+  const animatedStyle = useAnimatedStyle(() => {
     const color = interpolateColor(
-      shimmerProgress.value,
-      [0, 0.5, 1],
-      [baseColor, shimmerColor, baseColor]
-    );
-
-    // Add subtle scale effect
-    const scale = interpolate(
-      shimmerProgress.value,
-      [0, 0.5, 1],
-      [1, 1.02, 1]
+      progress.value,
+      [0, 1],
+      [baseColor, shimmerColor]
     );
 
     return {
       color,
-      transform: [{ scale }],
     };
   });
 
   return (
-    <View style={styles.container}>
-      <Animated.Text style={[styles.text, style, animatedTextStyle]}>
-        {children}
-      </Animated.Text>
-    </View>
+    <Animated.Text style={[styles.text, style, animatedStyle]}>
+      {children}
+    </Animated.Text>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   text: {
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '400',
   },
 });

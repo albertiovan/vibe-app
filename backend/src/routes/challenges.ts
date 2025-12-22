@@ -30,9 +30,33 @@ interface ChallengeActivity {
   longitude: number;
   challengeReason: string;
   challengeScore: number;
-  isLocal: boolean; // true if in user's city, false if requires travel
+  isLocal: boolean;
+  photo?: string;
   venues: any[];
 }
+
+// Day trip regions (outside București)
+const DAY_TRIP_REGIONS = ['Brașov', 'Prahova', 'Constanța', 'Sibiu', 'Cluj', 'Sinaia'];
+
+// Category display info
+const CATEGORY_INFO: Record<string, { emoji: string; label: string }> = {
+  'sports': { emoji: '🏃', label: 'Sports' },
+  'adventure': { emoji: '🧗', label: 'Adventure' },
+  'nature': { emoji: '🌲', label: 'Nature' },
+  'creative': { emoji: '🎨', label: 'Creative' },
+  'culinary': { emoji: '🍳', label: 'Food' },
+  'wellness': { emoji: '🧘', label: 'Wellness' },
+  'culture': { emoji: '🏛️', label: 'Culture' },
+  'nightlife': { emoji: '🌙', label: 'Nightlife' },
+  'fitness': { emoji: '💪', label: 'Fitness' },
+  'water': { emoji: '🏊', label: 'Water' },
+  'mindfulness': { emoji: '🧘', label: 'Mindfulness' },
+  'learning': { emoji: '📚', label: 'Learning' },
+  'social': { emoji: '👥', label: 'Social' },
+  'romance': { emoji: '💕', label: 'Romance' },
+  'winter': { emoji: '❄️', label: 'Winter' },
+  'seasonal': { emoji: '🍂', label: 'Seasonal' },
+};
 
 /**
  * GET /api/challenges/me
@@ -95,7 +119,7 @@ router.get('/me', async (req: Request, res: Response) => {
  */
 router.post('/respond', async (req: Request, res: Response) => {
   try {
-    const { deviceId, userId, activityId, response, challengeReason } = req.body;
+    const { deviceId, userId, activityId, response, challengeReason, declineReason } = req.body;
     const userIdentifier = userId || deviceId;
 
     if (!userIdentifier || !activityId || !response) {
@@ -106,9 +130,9 @@ router.post('/respond', async (req: Request, res: Response) => {
 
     // Store challenge response for future learning
     await pool.query(`
-      INSERT INTO challenge_responses (user_identifier, activity_id, response, challenge_reason, created_at)
-      VALUES ($1, $2, $3, $4, NOW())
-    `, [userIdentifier, activityId, response, challengeReason]);
+      INSERT INTO challenge_responses (user_identifier, activity_id, response, challenge_reason, decline_reason, created_at)
+      VALUES ($1, $2, $3, $4, $5, NOW())
+    `, [userIdentifier, activityId, response, challengeReason, declineReason || null]);
 
     // If accepted, create a pending activity for the user
     if (response === 'accepted') {
@@ -246,7 +270,8 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
-      a.duration_min, a.duration_max, a.latitude, a.longitude
+      a.duration_min, a.duration_max, a.latitude, a.longitude,
+      a.hero_image_url
     FROM activities a
     WHERE a.category = ANY($1::text[])
       AND a.energy_level = $2
@@ -275,6 +300,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
       challengeReason: generateChallengeReason(activity.category, userPattern, true),
       challengeScore: 0.7,
       isLocal: true,
+      photo: activity.hero_image_url,
       venues: []
     });
   }
@@ -284,7 +310,8 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
-      a.duration_min, a.duration_max, a.latitude, a.longitude
+      a.duration_min, a.duration_max, a.latitude, a.longitude,
+      a.hero_image_url
     FROM activities a
     WHERE a.category IN ('adventure', 'nature', 'sports', 'water')
       AND a.energy_level = 'high'
@@ -314,6 +341,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
       challengeReason: `Explore ${activity.region} - perfect for an adventure outside București!`,
       challengeScore: 0.85,
       isLocal: false,
+      photo: activity.hero_image_url,
       venues: []
     });
   }
@@ -323,7 +351,8 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
-      a.duration_min, a.duration_max, a.latitude, a.longitude
+      a.duration_min, a.duration_max, a.latitude, a.longitude,
+      a.hero_image_url
     FROM activities a
     WHERE a.category NOT IN (SELECT unnest($1::text[]))
       AND a.energy_level != $2
@@ -352,6 +381,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
       challengeReason: `Break out of your routine - try something completely new!`,
       challengeScore: 0.95,
       isLocal: activity.region === 'București',
+      photo: activity.hero_image_url,
       venues: []
     });
   }
@@ -450,6 +480,305 @@ function generateChallengeReason(category: string, userPattern: any, isLocal: bo
   const locationNote = isLocal ? 'Right here in your city!' : 'Worth the trip!';
 
   return `${baseReason} ${locationNote}`;
+}
+
+// ============================================
+// NEW CHALLENGE ME TAB ENDPOINTS
+// ============================================
+
+/**
+ * GET /api/challenges/day-trips
+ * Get adventure challenges outside the city (worth the drive)
+ */
+router.get('/day-trips', async (req: Request, res: Response) => {
+  try {
+    const { limit = 3 } = req.query;
+    
+    const result = await pool.query(`
+      SELECT 
+        a.id as activity_id, a.name, a.category, a.city, a.region, 
+        a.description, a.energy_level, a.indoor_outdoor,
+        a.duration_min, a.duration_max, a.latitude, a.longitude,
+        a.hero_image_url, a.image_urls
+      FROM activities a
+      WHERE a.region != 'București'
+        AND a.region != 'bucurești'
+        AND a.category IN ('adventure', 'nature', 'sports', 'water', 'winter')
+        AND a.hero_image_url IS NOT NULL
+      ORDER BY RANDOM()
+      LIMIT $1
+    `, [parseInt(limit as string)]);
+
+    const dayTrips = result.rows.map(activity => ({
+      activityId: activity.activity_id,
+      name: activity.name,
+      category: activity.category,
+      region: activity.region,
+      city: activity.city,
+      description: activity.description,
+      energy_level: activity.energy_level,
+      photo: activity.hero_image_url || (activity.image_urls && activity.image_urls[0]),
+      duration_min: activity.duration_min,
+      duration_max: activity.duration_max,
+      latitude: activity.latitude,
+      longitude: activity.longitude,
+      // Simple distance estimate from București center (44.4268, 26.1025)
+      distanceKm: activity.latitude && activity.longitude 
+        ? Math.round(haversineDistance(44.4268, 26.1025, activity.latitude, activity.longitude))
+        : null,
+      challengeReason: `Escape the city! ${activity.region} awaits with ${activity.category} adventures.`,
+    }));
+
+    console.log(`🚗 Found ${dayTrips.length} day trip challenges`);
+    return res.json({ dayTrips });
+
+  } catch (error) {
+    console.error('❌ Day trips error:', error);
+    return res.status(500).json({ error: 'Failed to fetch day trips' });
+  }
+});
+
+/**
+ * GET /api/challenges/weather-window
+ * Get a weather-appropriate activity suggestion
+ */
+router.get('/weather-window', async (req: Request, res: Response) => {
+  try {
+    // Fetch current weather from OpenMeteo (București)
+    let weather = { temp: 15, condition: 'clear', isGoodOutdoor: true };
+    
+    try {
+      const weatherRes = await fetch(
+        'https://api.open-meteo.com/v1/forecast?latitude=44.4268&longitude=26.1025&current=temperature_2m,weather_code'
+      );
+      const weatherData = await weatherRes.json() as { current?: { temperature_2m?: number; weather_code?: number } };
+      
+      const temp = weatherData.current?.temperature_2m ?? 15;
+      const weatherCode = weatherData.current?.weather_code ?? 0;
+      
+      // Determine if good for outdoor (not raining, not too hot/cold)
+      const isRaining = weatherCode >= 51 && weatherCode <= 99;
+      const isGoodOutdoor = !isRaining && temp >= 5 && temp <= 30;
+      
+      weather = {
+        temp: Math.round(temp),
+        condition: isRaining ? 'rainy' : weatherCode >= 45 ? 'cloudy' : 'clear',
+        isGoodOutdoor
+      };
+    } catch (e) {
+      console.log('⚠️ Weather fetch failed, using defaults');
+    }
+
+    // Query activity based on weather
+    const indoorOutdoor = weather.isGoodOutdoor ? 'outdoor' : 'indoor';
+    const categories = weather.isGoodOutdoor 
+      ? ['nature', 'adventure', 'sports', 'water']
+      : ['creative', 'wellness', 'culinary', 'culture', 'learning'];
+
+    const result = await pool.query(`
+      SELECT 
+        a.id as activity_id, a.name, a.category, a.city, a.region, 
+        a.description, a.energy_level, a.indoor_outdoor,
+        a.hero_image_url, a.duration_min, a.duration_max
+      FROM activities a
+      WHERE a.category = ANY($1::text[])
+        AND a.region = 'București'
+        AND a.hero_image_url IS NOT NULL
+      ORDER BY RANDOM()
+      LIMIT 1
+    `, [categories]);
+
+    if (result.rows.length === 0) {
+      return res.json({ 
+        weather,
+        suggestion: null,
+        message: 'No weather-appropriate activities found'
+      });
+    }
+
+    const activity = result.rows[0];
+    const weatherEmoji = weather.condition === 'clear' ? '☀️' : weather.condition === 'cloudy' ? '☁️' : '🌧️';
+
+    return res.json({
+      weather: {
+        ...weather,
+        emoji: weatherEmoji,
+        display: `${weatherEmoji} ${weather.temp}°C`
+      },
+      suggestion: {
+        activityId: activity.activity_id,
+        name: activity.name,
+        category: activity.category,
+        description: activity.description,
+        photo: activity.hero_image_url,
+        energy_level: activity.energy_level,
+        duration_min: activity.duration_min,
+        duration_max: activity.duration_max,
+        challengeReason: weather.isGoodOutdoor 
+          ? `Perfect weather for ${activity.category}! Get outside and enjoy.`
+          : `Great indoor activity for today's weather.`
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Weather window error:', error);
+    return res.status(500).json({ error: 'Failed to fetch weather window' });
+  }
+});
+
+/**
+ * GET /api/challenges/categories
+ * Get available categories for "Challenge Me In..." feature
+ */
+router.get('/categories', async (_req: Request, res: Response) => {
+  try {
+    const result = await pool.query(`
+      SELECT category, COUNT(*) as count 
+      FROM activities 
+      WHERE category IS NOT NULL
+      GROUP BY category 
+      HAVING COUNT(*) >= 5
+      ORDER BY count DESC
+    `);
+
+    const categories = result.rows.map(row => ({
+      id: row.category,
+      label: CATEGORY_INFO[row.category]?.label || row.category,
+      emoji: CATEGORY_INFO[row.category]?.emoji || '🎯',
+      count: parseInt(row.count)
+    }));
+
+    return res.json({ categories });
+
+  } catch (error) {
+    console.error('❌ Categories error:', error);
+    return res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
+/**
+ * GET /api/challenges/by-category/:category
+ * Get a challenge in a specific category
+ */
+router.get('/by-category/:category', async (req: Request, res: Response) => {
+  try {
+    const { category } = req.params;
+    const { deviceId, userId } = req.query;
+
+    const result = await pool.query(`
+      SELECT 
+        a.id as activity_id, a.name, a.category, a.city, a.region, 
+        a.description, a.energy_level, a.indoor_outdoor,
+        a.hero_image_url, a.duration_min, a.duration_max,
+        a.latitude, a.longitude
+      FROM activities a
+      WHERE a.category = $1
+        AND a.hero_image_url IS NOT NULL
+      ORDER BY RANDOM()
+      LIMIT 1
+    `, [category]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ 
+        error: 'No activities found',
+        message: `No activities found in category: ${category}`
+      });
+    }
+
+    const activity = result.rows[0];
+    const categoryInfo = CATEGORY_INFO[category] || { emoji: '🎯', label: category };
+
+    return res.json({
+      challenge: {
+        activityId: activity.activity_id,
+        name: activity.name,
+        category: activity.category,
+        categoryEmoji: categoryInfo.emoji,
+        region: activity.region,
+        city: activity.city,
+        description: activity.description,
+        energy_level: activity.energy_level,
+        photo: activity.hero_image_url,
+        duration_min: activity.duration_min,
+        duration_max: activity.duration_max,
+        latitude: activity.latitude,
+        longitude: activity.longitude,
+        challengeReason: `You asked for ${categoryInfo.label.toLowerCase()}. Here's your challenge!`,
+        isLocal: activity.region === 'București'
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ By-category error:', error);
+    return res.status(500).json({ error: 'Failed to fetch category challenge' });
+  }
+});
+
+/**
+ * GET /api/challenges/history
+ * Get user's challenge history (accepted and declined)
+ */
+router.get('/history', async (req: Request, res: Response) => {
+  try {
+    const { deviceId, userId, limit = 10 } = req.query;
+    const userIdentifier = userId || deviceId;
+
+    if (!userIdentifier) {
+      return res.status(400).json({ error: 'User identifier required' });
+    }
+
+    const result = await pool.query(`
+      SELECT 
+        cr.id,
+        cr.response,
+        cr.decline_reason,
+        cr.created_at,
+        a.id as activity_id,
+        a.name,
+        a.category,
+        a.region,
+        a.hero_image_url
+      FROM challenge_responses cr
+      JOIN activities a ON a.id = cr.activity_id
+      WHERE cr.user_identifier = $1
+      ORDER BY cr.created_at DESC
+      LIMIT $2
+    `, [userIdentifier, parseInt(limit as string)]);
+
+    const history = result.rows.map(row => ({
+      id: row.id,
+      activityId: row.activity_id,
+      name: row.name,
+      category: row.category,
+      categoryEmoji: CATEGORY_INFO[row.category]?.emoji || '🎯',
+      region: row.region,
+      photo: row.hero_image_url,
+      response: row.response,
+      declineReason: row.decline_reason,
+      date: row.created_at
+    }));
+
+    return res.json({ history });
+
+  } catch (error) {
+    console.error('❌ History error:', error);
+    return res.status(500).json({ error: 'Failed to fetch challenge history' });
+  }
+});
+
+/**
+ * Haversine formula to calculate distance between two points
+ */
+function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 
 export default router;

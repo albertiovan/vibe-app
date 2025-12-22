@@ -17,6 +17,10 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { userStorage } from '../src/services/userStorage';
+import { useTheme } from '../src/contexts/ThemeContext';
+import { useVibe } from '../src/contexts/VibeContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -44,8 +48,13 @@ export const MinimalActivityDetailScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'ActivityDetailScreenShell'>>();
   const { activity, userLocation } = route.params;
+  const { resolvedTheme, colors: themeColors } = useTheme();
+  const { currentVibe, getVibeColors } = useVibe();
 
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  
+  // Get vibe colors for accents
+  const vibeColors = getVibeColors();
 
   useEffect(() => {
     selectNearestVenue();
@@ -146,7 +155,32 @@ export const MinimalActivityDetailScreen: React.FC = () => {
     }
   };
 
-  const handleGoNow = () => {
+  const handleGoNow = async () => {
+    // Log activity instance for completion tracking
+    try {
+      const account = await userStorage.getAccount();
+      if (account?.userId) {
+        await fetch(
+          `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activity-completion/log`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: account.userId,
+              activityId: activity.id,
+              actionType: 'go_now',
+              venueId: selectedVenue?.venueId || selectedVenue?.id,
+            }),
+          }
+        );
+        console.log('✅ Activity GO NOW logged for completion tracking');
+      }
+    } catch (error) {
+      console.error('Error logging GO NOW:', error);
+      // Continue with navigation even if logging fails
+    }
+
+    // Open maps
     if (selectedVenue?.mapsUrl) {
       Linking.openURL(selectedVenue.mapsUrl);
     } else if (selectedVenue?.location) {
@@ -159,7 +193,7 @@ export const MinimalActivityDetailScreen: React.FC = () => {
   };
 
   const formatDistance = (distance?: number) => {
-    if (!distance) return 'Nearby';
+    if (!distance || distance === 0) return null; // Don't show distance if not calculated
     if (distance < 1) return `${Math.round(distance * 1000)}m`;
     return `${distance.toFixed(1)}km`;
   };
@@ -173,7 +207,7 @@ export const MinimalActivityDetailScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         {/* Hero Image with Overlay */}
         <View style={styles.heroContainer}>
@@ -210,9 +244,9 @@ export const MinimalActivityDetailScreen: React.FC = () => {
           {/* Nearest Venue Info */}
           {selectedVenue && (
             <View style={styles.venueCard}>
-              <Text style={styles.venueLabel}>NEAREST</Text>
-              <Text style={styles.venueName}>{selectedVenue.name}</Text>
-              <Text style={styles.venueDistance}>
+              <Text style={[styles.venueLabel, { color: themeColors.text.secondary }]}>NEAREST</Text>
+              <Text style={[styles.venueName, { color: themeColors.text.primary }]}>{selectedVenue.name}</Text>
+              <Text style={[styles.venueDistance, { color: themeColors.text.secondary }]}>
                 📍 {formatDistance(selectedVenue.distance)}
               </Text>
             </View>
@@ -220,7 +254,7 @@ export const MinimalActivityDetailScreen: React.FC = () => {
 
           {/* Description */}
           <View style={styles.section}>
-            <Text style={styles.description}>{activity.description}</Text>
+            <Text style={[styles.description, { color: themeColors.text.primary }]}>{activity.description}</Text>
           </View>
 
           {/* Meta Information */}
@@ -229,8 +263,8 @@ export const MinimalActivityDetailScreen: React.FC = () => {
               <View style={styles.metaItem}>
                 <Text style={styles.metaIcon}>⏱</Text>
                 <View>
-                  <Text style={styles.metaLabel}>Duration</Text>
-                  <Text style={styles.metaValue}>
+                  <Text style={[styles.metaLabel, { color: themeColors.text.secondary }]}>Duration</Text>
+                  <Text style={[styles.metaValue, { color: themeColors.text.primary }]}>
                     {formatDuration(activity.duration_min, activity.duration_max)}
                   </Text>
                 </View>
@@ -241,8 +275,8 @@ export const MinimalActivityDetailScreen: React.FC = () => {
               <View style={styles.metaItem}>
                 <Text style={styles.metaIcon}>⚡</Text>
                 <View>
-                  <Text style={styles.metaLabel}>Energy</Text>
-                  <Text style={styles.metaValue}>
+                  <Text style={[styles.metaLabel, { color: themeColors.text.secondary }]}>Energy</Text>
+                  <Text style={[styles.metaValue, { color: themeColors.text.primary }]}>
                     {activity.energy_level || 'Medium'}
                   </Text>
                 </View>
@@ -253,8 +287,8 @@ export const MinimalActivityDetailScreen: React.FC = () => {
               <View style={styles.metaItem}>
                 <Text style={styles.metaIcon}>📌</Text>
                 <View>
-                  <Text style={styles.metaLabel}>Location</Text>
-                  <Text style={styles.metaValue}>
+                  <Text style={[styles.metaLabel, { color: themeColors.text.secondary }]}>Location</Text>
+                  <Text style={[styles.metaValue, { color: themeColors.text.primary }]}>
                     {activity.city || activity.region || 'Bucharest'}
                   </Text>
                 </View>
@@ -265,20 +299,47 @@ export const MinimalActivityDetailScreen: React.FC = () => {
           {/* Action Buttons */}
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
-              style={styles.learnMoreButton}
+              style={[
+                styles.learnMoreButton,
+                vibeColors && {
+                  borderColor: vibeColors.primary,
+                  borderWidth: 2,
+                }
+              ]}
               onPress={handleLearnMore}
               activeOpacity={0.7}
             >
-              <Text style={styles.learnMoreText}>Learn More</Text>
+              <Text style={[
+                styles.learnMoreText,
+                vibeColors && { color: vibeColors.primary }
+              ]}>
+                Learn More
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.goNowButton}
-              onPress={handleGoNow}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.goNowText}>GO NOW</Text>
-            </TouchableOpacity>
+            {vibeColors ? (
+              <TouchableOpacity
+                onPress={handleGoNow}
+                activeOpacity={0.7}
+              >
+                <LinearGradient
+                  colors={[vibeColors.gradient.start, vibeColors.gradient.end]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.goNowButton}
+                >
+                  <Text style={styles.goNowText}>GO NOW</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[styles.goNowButton, { backgroundColor: '#FFFFFF' }]}
+                onPress={handleGoNow}
+                activeOpacity={0.7}
+              >
+                <Text style={[styles.goNowText, { color: '#000000' }]}>GO NOW</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Bottom Padding */}

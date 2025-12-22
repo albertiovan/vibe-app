@@ -22,7 +22,7 @@ import { GradientButton } from '../components/design-system/GradientButton';
 import { ProfileCustomization } from '../components/ProfileCustomization';
 import { userApi, UserProfile } from '../src/services/userApi';
 import { userStorage, UserAccount } from '../src/services/userStorage';
-import { colors, getTimeGradient } from '../src/design-system/colors';
+import { useTheme } from '../src/contexts/ThemeContext';
 import { tokens } from '../src/design-system/tokens';
 
 const CATEGORIES = [
@@ -45,6 +45,7 @@ const CATEGORIES = [
 
 export const UserProfileScreen: React.FC = () => {
   const navigation = useNavigation();
+  const { colors, resolvedTheme } = useTheme();
   const [deviceId, setDeviceId] = useState<string>('');
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userAccount, setUserAccount] = useState<UserAccount | null>(null);
@@ -54,6 +55,14 @@ export const UserProfileScreen: React.FC = () => {
   const [motionSensitivity, setMotionSensitivity] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
   
+  // Time-based gradient colors
+  const getTimeGradient = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return { start: '#FF6B6B', end: '#FFA94D' };
+    if (hour >= 12 && hour < 17) return { start: '#4ECDC4', end: '#9B59B6' };
+    if (hour >= 17 && hour < 22) return { start: '#6C5CE7', end: '#FD79A8' };
+    return { start: '#74B9FF', end: '#00B894' };
+  };
   const gradient = getTimeGradient();
 
   useEffect(() => {
@@ -128,6 +137,8 @@ export const UserProfileScreen: React.FC = () => {
       ]
     );
   };
+
+  const styles = createStyles(colors);
 
   if (loading) {
     return (
@@ -339,6 +350,20 @@ export const UserProfileScreen: React.FC = () => {
             <Text style={styles.actionButtonText}>Discover Activities</Text>
             <Text style={styles.actionButtonIcon}>🔍 →</Text>
           </TouchableOpacity>
+
+          {__DEV__ && (
+            <TouchableOpacity
+              style={[styles.actionButton, { borderWidth: 2, borderColor: colors.accent.primary }]}
+              onPress={() => navigation.navigate('ComponentShowcase' as never)}
+              activeOpacity={0.7}
+            >
+              <View>
+                <Text style={styles.actionButtonText}>Component Showcase</Text>
+                <Text style={styles.trainingButtonSubtext}>Test new UI components</Text>
+              </View>
+              <Text style={styles.actionButtonIcon}>🎨 →</Text>
+            </TouchableOpacity>
+          )}
         </GlassCard>
 
         {/* Actions */}
@@ -396,14 +421,14 @@ export const UserProfileScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.base.canvas,
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: colors.base.canvas,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -433,12 +458,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: tokens.typography.fontSize.lg,
     fontWeight: tokens.typography.fontWeight.bold,
-    color: colors.text.primary,
+    color: colors.text.onGlass.primary,
     marginBottom: tokens.spacing.sm,
   },
   sectionDescription: {
     fontSize: tokens.typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.text.onGlass.secondary,
     marginBottom: tokens.spacing.md,
     lineHeight: tokens.typography.fontSize.sm * tokens.typography.lineHeight.relaxed,
   },
@@ -458,7 +483,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: tokens.typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.text.onGlass.secondary,
   },
   favoriteCategory: {
     flexDirection: 'row',
@@ -467,11 +492,11 @@ const styles = StyleSheet.create({
     marginTop: tokens.spacing.sm,
     paddingTop: tokens.spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderTopColor: colors.border,
   },
   favoriteCategoryLabel: {
     fontSize: tokens.typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.text.onGlass.secondary,
     marginRight: tokens.spacing.xs,
   },
   favoriteCategoryValue: {
@@ -494,9 +519,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: tokens.spacing.md,
     paddingVertical: tokens.spacing.sm,
     borderRadius: tokens.radius.sm,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: colors.border,
   },
   categoryChipSelected: {
     backgroundColor: colors.accent.primary + '30',
@@ -508,11 +533,11 @@ const styles = StyleSheet.create({
   },
   categoryLabel: {
     fontSize: tokens.typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.text.onGlass.secondary,
     fontWeight: tokens.typography.fontWeight.medium,
   },
   categoryLabelSelected: {
-    color: colors.text.primary,
+    color: colors.text.onGlass.primary,
   },
   settingRow: {
     flexDirection: 'row',
@@ -520,7 +545,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: tokens.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
+    borderBottomColor: colors.border,
   },
   settingInfo: {
     flex: 1,
@@ -529,12 +554,12 @@ const styles = StyleSheet.create({
   settingLabel: {
     fontSize: tokens.typography.fontSize.md,
     fontWeight: tokens.typography.fontWeight.medium,
-    color: colors.text.primary,
+    color: colors.text.onGlass.primary,
     marginBottom: 4,
   },
   settingDescription: {
     fontSize: tokens.typography.fontSize.xs,
-    color: colors.text.tertiary,
+    color: colors.text.onGlass.tertiary,
   },
   actionButton: {
     flexDirection: 'row',
@@ -542,13 +567,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: tokens.spacing.md,
     paddingHorizontal: tokens.spacing.md,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: colors.surface,
     borderRadius: tokens.radius.sm,
     marginBottom: tokens.spacing.md,
   },
   actionButtonText: {
     fontSize: tokens.typography.fontSize.md,
-    color: colors.text.primary,
+    color: colors.text.onGlass.primary,
   },
   actionButtonIcon: {
     fontSize: 20,
@@ -560,27 +585,27 @@ const styles = StyleSheet.create({
   },
   trainingButtonSubtext: {
     fontSize: tokens.typography.fontSize.xs,
-    color: colors.text.secondary,
+    color: colors.text.onGlass.secondary,
     marginTop: 2,
   },
   deviceInfo: {
     paddingTop: tokens.spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
+    borderTopColor: colors.border,
   },
   deviceInfoLabel: {
     fontSize: tokens.typography.fontSize.xs,
-    color: colors.text.tertiary,
+    color: colors.text.onGlass.tertiary,
     marginBottom: 4,
   },
   deviceInfoValue: {
     fontSize: tokens.typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.text.onGlass.secondary,
     fontFamily: 'monospace',
   },
   aboutText: {
     fontSize: tokens.typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.text.onGlass.secondary,
     lineHeight: tokens.typography.fontSize.sm * tokens.typography.lineHeight.relaxed,
   },
   saveButton: {
@@ -617,7 +642,7 @@ const styles = StyleSheet.create({
   avatarPlaceholderText: {
     fontSize: 36,
     fontWeight: tokens.typography.fontWeight.bold,
-    color: colors.text.primary,
+    color: colors.text.onGlass.primary,
   },
   avatarEditBadge: {
     position: 'absolute',
@@ -630,7 +655,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.base.canvas,
+    borderColor: colors.background,
   },
   avatarEditIcon: {
     fontSize: 14,
@@ -641,22 +666,22 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: tokens.typography.fontSize.xl,
     fontWeight: tokens.typography.fontWeight.bold,
-    color: colors.text.primary,
+    color: colors.text.onGlass.primary,
     marginBottom: 2,
   },
   profileRealName: {
     fontSize: tokens.typography.fontSize.sm,
-    color: colors.text.secondary,
+    color: colors.text.onGlass.secondary,
     marginBottom: 2,
   },
   profileEmail: {
     fontSize: tokens.typography.fontSize.xs,
-    color: colors.text.tertiary,
+    color: colors.text.onGlass.tertiary,
   },
   editButton: {
     paddingHorizontal: tokens.spacing.md,
     paddingVertical: tokens.spacing.sm,
-    backgroundColor: 'rgba(0, 170, 255, 0.2)',
+    backgroundColor: colors.surface,
     borderRadius: tokens.radius.sm,
     borderWidth: 1,
     borderColor: colors.accent.primary,

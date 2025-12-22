@@ -31,24 +31,21 @@ import { SavedActivitiesScreen } from './screens/SavedActivitiesScreen';
 import EnhancedExperienceDetailScreen from './screens/EnhancedExperienceDetailScreen';
 import { TrainingModeScreen } from './screens/TrainingModeScreen';
 import { OnboardingScreen as NewUserOnboarding } from './screens/OnboardingScreen';
-import { DevMenu } from './components/DevMenu';
+import { ActivityCompletionWrapper } from './components/ActivityCompletionWrapper';
 import { userStorage } from './src/services/userStorage';
 import * as Location from 'expo-location';
 import { LanguageProvider } from './src/i18n/LanguageContext';
-// New Visual Shell Screens
-import { NewChatHomeScreen } from './screens/NewChatHomeScreen';
-import { ActivitySuggestionsScreen } from './screens/ActivitySuggestionsScreen';
-import { ActivityDetailScreen } from './screens/ActivityDetailScreen';
-import { DevPreviewScreen } from './screens/DevPreviewScreen';
-import { HomeScreenShell } from './screens/HomeScreenShell';
+import { ThemeProvider } from './src/contexts/ThemeContext';
+import { VibeProvider } from './src/contexts/VibeContext';
+// New Minimalistic UI - Pure Black, No Orb, Sidequests
 import { HomeScreenMinimal } from './screens/HomeScreenMinimal';
-import { SuggestionsScreenShell } from './screens/SuggestionsScreenShell';
+import { NewHomeScreen } from './screens/NewHomeScreen';
 import { MinimalSuggestionsScreen } from './screens/MinimalSuggestionsScreen';
-import { ActivityDetailScreenShell } from './screens/ActivityDetailScreenShell';
 import { MinimalActivityDetailScreen } from './screens/MinimalActivityDetailScreen';
-import { ChallengeMeScreen } from './screens/ChallengeMeScreen';
 import { MinimalChallengeMeScreen } from './screens/MinimalChallengeMeScreen';
 import { ActivityAcceptedScreen } from './screens/ActivityAcceptedScreen';
+import { ComponentShowcaseScreen } from './screens/ComponentShowcaseScreen';
+import CommunityScreen from './screens/CommunityScreen';
 import { isFeatureEnabled } from './config/featureFlags';
 
 // Define navigation types
@@ -57,6 +54,7 @@ type RootStackParamList = {
   NewChatHome: undefined; // New visual shell home (old)
   HomeScreenShell: undefined; // New visual shell home (Prompt B)
   HomeScreenMinimal: undefined; // Minimal ChatGPT-style home
+  NewHomeScreen: undefined; // Redesigned home with smooth animations
   SuggestionsScreenShell: { // New suggestions screen (Prompt C)
     conversationId: number;
     deviceId: string;
@@ -94,6 +92,7 @@ type RootStackParamList = {
     initialMessage?: string;
   };
   UserProfile: undefined;
+  Community: undefined;
   Discovery: undefined;
   SavedActivities: undefined;
   TrainingMode: undefined;
@@ -102,6 +101,7 @@ type RootStackParamList = {
   };
   Onboarding: undefined;
   Home: undefined;
+  ComponentShowcase: undefined;
   Results: {
     places: any[];
     vibeAnalysis: any;
@@ -963,121 +963,137 @@ export default function App() {
 
   if (!isOnboarded) {
     return (
-      <LanguageProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <StatusBar style="light" />
-          <NewUserOnboarding onComplete={handleOnboardingComplete} />
-          <DevMenu />
-        </GestureHandlerRootView>
-      </LanguageProvider>
+      <ThemeProvider>
+        <VibeProvider>
+          <LanguageProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <StatusBar style="light" />
+              <NewUserOnboarding onComplete={handleOnboardingComplete} />
+            </GestureHandlerRootView>
+          </LanguageProvider>
+        </VibeProvider>
+      </ThemeProvider>
     );
   }
 
-  // Use minimal home screen
-  const initialRoute = 'HomeScreenMinimal';
+  // Use the new redesigned home screen with smooth animations
+  const initialRoute = 'NewHomeScreen';
 
   return (
-    <LanguageProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider>
-          <NavigationContainer>
-            <StatusBar style="light" />
-        <Stack.Navigator
-          initialRouteName={initialRoute}
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: '#0A0E17' },
-          }}
-        >
-          {/* Minimal Home Screen */}
-          <Stack.Screen name="HomeScreenMinimal" component={HomeScreenMinimal} options={{ headerShown: false }} />
-          
-          {/* New Visual Shell Screens (Prompt B, C & D) */}
-          <Stack.Screen name="HomeScreenShell" component={HomeScreenShell} options={{ headerShown: false }} />
-          <Stack.Screen name="SuggestionsScreenShell" component={MinimalSuggestionsScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ChallengeMeScreen" component={MinimalChallengeMeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ActivityAcceptedScreen" component={ActivityAcceptedScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ActivityDetailScreenShell" component={MinimalActivityDetailScreen} options={{ headerShown: false }} />
-          
-          {/* New Visual Shell Screens (Previous) */}
-          <Stack.Screen name="NewChatHome" component={NewChatHomeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ActivitySuggestions" component={ActivitySuggestionsScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ActivityDetail" component={ActivityDetailScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="DevPreview" component={DevPreviewScreen} options={{ headerShown: false }} />
-          
-          {/* Original Chat Interface Screens */}
-          <Stack.Screen name="ChatHome" component={ChatHomeScreen} />
-          <Stack.Screen 
-            name="ChatConversation" 
-            component={ChatConversationScreen}
-            options={{
-              headerShown: true,
-              headerTitle: 'Chat',
-              headerStyle: {
-                backgroundColor: '#0A0E17',
-              },
-              headerTintColor: '#FFFFFF',
-              headerBackTitle: 'Back',
-            }}
-          />
-          <Stack.Screen 
-            name="UserProfile" 
-            component={MinimalUserProfileScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen 
-            name="TrainingMode" 
-            component={TrainingModeScreen}
-            options={{
-              headerShown: true,
-              headerTitle: '🎯 Training Mode',
-              headerStyle: {
-                backgroundColor: '#0A0E17',
-              },
-              headerTintColor: '#FFFFFF',
-              headerBackTitle: 'Back',
-            }}
-          />
-          <Stack.Screen 
-            name="Discovery" 
-            component={MinimalDiscoveryScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen 
-            name="SavedActivities" 
-            component={SavedActivitiesScreen}
-            options={{
-              headerShown: true,
-              headerTitle: 'Saved',
-              headerStyle: {
-                backgroundColor: '#0A0E17',
-              },
-              headerTintColor: '#FFFFFF',
-              headerBackTitle: 'Back',
-            }}
-          />
-          <Stack.Screen 
-            name="EnhancedExperienceDetail" 
-            component={EnhancedExperienceDetailScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          
-          {/* Original Screens */}
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Results" component={ResultsScreen} />
-          <Stack.Screen name="ExperienceDetail" component={ExperienceDetailScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-      </SafeAreaProvider>
-        <DevMenu />
+    <ThemeProvider>
+      <VibeProvider>
+        <LanguageProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <SafeAreaProvider>
+              <ActivityCompletionWrapper>
+                <NavigationContainer>
+                <StatusBar style="auto" />
+                <Stack.Navigator
+                initialRouteName={initialRoute}
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: 'transparent' },
+                }}
+              >
+              {/* Pure Minimalistic Screens - Black Background, No Orb, Sidequests */}
+              <Stack.Screen name="NewHomeScreen" component={NewHomeScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="HomeScreenMinimal" component={HomeScreenMinimal} options={{ headerShown: false }} />
+              <Stack.Screen name="SuggestionsScreenShell" component={MinimalSuggestionsScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="ChallengeMeScreen" component={MinimalChallengeMeScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="ActivityAcceptedScreen" component={ActivityAcceptedScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="ActivityDetailScreenShell" component={MinimalActivityDetailScreen} options={{ headerShown: false }} />
+              
+              {/* Original Chat Interface Screens */}
+              <Stack.Screen name="ChatHome" component={ChatHomeScreen} />
+              <Stack.Screen 
+                name="ChatConversation" 
+                component={ChatConversationScreen}
+                options={{
+                  headerShown: true,
+                  headerTitle: 'Chat',
+                  headerStyle: {
+                    backgroundColor: '#0A0E17',
+                  },
+                  headerTintColor: '#FFFFFF',
+                  headerBackTitle: 'Back',
+                }}
+              />
+              <Stack.Screen 
+                name="UserProfile" 
+                component={MinimalUserProfileScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen 
+                name="Community" 
+                component={CommunityScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen 
+                name="TrainingMode" 
+                component={TrainingModeScreen}
+                options={{
+                  headerShown: true,
+                  headerTitle: '🎯 Training Mode',
+                  headerStyle: {
+                    backgroundColor: '#0A0E17',
+                  },
+                  headerTintColor: '#FFFFFF',
+                  headerBackTitle: 'Back',
+                }}
+              />
+              <Stack.Screen 
+                name="Discovery" 
+                component={MinimalDiscoveryScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen 
+                name="SavedActivities" 
+                component={SavedActivitiesScreen}
+                options={{
+                  headerShown: true,
+                  headerTitle: 'Saved',
+                  headerStyle: {
+                    backgroundColor: '#0A0E17',
+                  },
+                  headerTintColor: '#FFFFFF',
+                  headerBackTitle: 'Back',
+                }}
+              />
+              <Stack.Screen 
+                name="EnhancedExperienceDetail" 
+                component={EnhancedExperienceDetailScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              
+              {/* Component Showcase */}
+              <Stack.Screen 
+                name="ComponentShowcase" 
+                component={ComponentShowcaseScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              
+              {/* Original Screens */}
+              <Stack.Screen name="Home" component={HomeScreen} />
+              <Stack.Screen name="Results" component={ResultsScreen} />
+              <Stack.Screen name="ExperienceDetail" component={ExperienceDetailScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+          </ActivityCompletionWrapper>
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     </LanguageProvider>
+    </VibeProvider>
+    </ThemeProvider>
   );
 }
 

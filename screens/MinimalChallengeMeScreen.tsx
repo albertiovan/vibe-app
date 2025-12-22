@@ -24,6 +24,9 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useTheme } from '../src/contexts/ThemeContext';
+import { useVibe } from '../src/contexts/VibeContext';
+import { AnimatedGradientBackground } from '../ui/components/AnimatedGradientBackground';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.9;
@@ -66,6 +69,8 @@ export const MinimalChallengeMeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<ChallengeMeScreenRouteProp>();
   const { deviceId, userLocation } = route.params;
+  const { currentVibe, getVibeColors } = useVibe();
+  const { resolvedTheme, colors: themeColors } = useTheme();
 
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -196,11 +201,23 @@ export const MinimalChallengeMeScreen: React.FC = () => {
     ],
   }));
 
+  // Get background gradient colors
+  const vibeColors = getVibeColors();
+  const backgroundColors = vibeColors
+    ? [vibeColors.gradient.start, vibeColors.gradient.end, themeColors.background]
+    : resolvedTheme === 'light'
+    ? ['#F5F5F5', '#E5E5E5', '#EFEFEF']
+    : [themeColors.background, themeColors.background, themeColors.background];
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#FFFFFF" />
-        <Text style={styles.loadingText}>Finding your challenges...</Text>
+        <AnimatedGradientBackground
+          colors={backgroundColors as [string, string, string]}
+          duration={currentVibe ? 8000 : 15000}
+        />
+        <ActivityIndicator size="large" color={themeColors.text.secondary} />
+        <Text style={[styles.loadingText, { color: themeColors.text.secondary }]}>Finding your challenges...</Text>
       </View>
     );
   }
@@ -208,17 +225,21 @@ export const MinimalChallengeMeScreen: React.FC = () => {
   if (challenges.length === 0) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <AnimatedGradientBackground
+          colors={backgroundColors as [string, string, string]}
+          duration={currentVibe ? 8000 : 15000}
+        />
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backText}>←</Text>
+            <Text style={[styles.backText, { color: themeColors.text.primary }]}>←</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Challenge Me</Text>
+          <Text style={[styles.headerTitle, { color: themeColors.text.primary }]}>Challenge Me</Text>
           <View style={styles.headerSpacer} />
         </View>
         <View style={styles.centerContent}>
-          <Text style={styles.emptyText}>No challenges available</Text>
+          <Text style={[styles.emptyText, { color: themeColors.text.secondary }]}>No challenges available</Text>
           <TouchableOpacity style={styles.retryButton} onPress={fetchChallenges}>
-            <Text style={styles.retryButtonText}>Try Again</Text>
+            <Text style={[styles.retryButtonText, { color: themeColors.text.primary }]}>Try Again</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -230,6 +251,10 @@ export const MinimalChallengeMeScreen: React.FC = () => {
 
   return (
     <GestureHandlerRootView style={styles.container}>
+      <AnimatedGradientBackground
+        colors={backgroundColors as [string, string, string]}
+        duration={currentVibe ? 8000 : 15000}
+      />
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         {/* Header */}
         <View style={styles.header}>
@@ -237,12 +262,12 @@ export const MinimalChallengeMeScreen: React.FC = () => {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Text style={styles.backText}>←</Text>
+            <Text style={[styles.backText, { color: themeColors.text.primary }]}>←</Text>
           </TouchableOpacity>
           
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>⚡ CHALLENGE ME</Text>
-            <Text style={styles.headerSubtitle}>
+            <Text style={[styles.headerTitle, { color: themeColors.text.primary }]}>⚡ CHALLENGE ME</Text>
+            <Text style={[styles.headerSubtitle, { color: themeColors.text.secondary }]}>
               {remainingCount} challenge{remainingCount !== 1 ? 's' : ''} remaining
             </Text>
           </View>
@@ -256,42 +281,42 @@ export const MinimalChallengeMeScreen: React.FC = () => {
             <Animated.View style={[styles.card, cardAnimatedStyle]}>
               {/* Challenge Badge */}
               <View style={styles.challengeBadge}>
-                <Text style={styles.challengeBadgeText}>
+                <Text style={[styles.challengeBadgeText, { color: themeColors.text.tertiary }]}>
                   CHALLENGE #{currentIndex + 1}
                 </Text>
               </View>
 
               {/* Activity Name */}
-              <Text style={styles.activityName}>
+              <Text style={[styles.activityName, { color: themeColors.text.primary }]}>
                 {currentChallenge.name}
               </Text>
 
               {/* Challenge Reason */}
               <View style={styles.reasonContainer}>
-                <Text style={styles.reasonText}>
+                <Text style={[styles.reasonText, { color: themeColors.text.secondary }]}>
                   💪 {currentChallenge.challengeReason}
                 </Text>
               </View>
 
               {/* Description */}
-              <Text style={styles.description}>
+              <Text style={[styles.description, { color: themeColors.text.secondary }]}>
                 {currentChallenge.description}
               </Text>
 
               {/* Meta Info */}
               <View style={styles.metaRow}>
                 <View style={styles.metaItem}>
-                  <Text style={styles.metaLabel}>CATEGORY</Text>
-                  <Text style={styles.metaValue} numberOfLines={2}>{currentChallenge.category}</Text>
+                  <Text style={[styles.metaLabel, { color: themeColors.text.tertiary }]}>CATEGORY</Text>
+                  <Text style={[styles.metaValue, { color: themeColors.text.primary }]} numberOfLines={2}>{currentChallenge.category}</Text>
                 </View>
                 <View style={styles.metaItem}>
-                  <Text style={styles.metaLabel}>ENERGY</Text>
-                  <Text style={styles.metaValue} numberOfLines={1}>{currentChallenge.energy_level}</Text>
+                  <Text style={[styles.metaLabel, { color: themeColors.text.tertiary }]}>ENERGY</Text>
+                  <Text style={[styles.metaValue, { color: themeColors.text.primary }]} numberOfLines={1}>{currentChallenge.energy_level}</Text>
                 </View>
                 <View style={styles.metaItem}>
-                  <Text style={styles.metaLabel}>LOCATION</Text>
+                  <Text style={[styles.metaLabel, { color: themeColors.text.tertiary }]}>LOCATION</Text>
                   <Text 
-                    style={styles.metaValue} 
+                    style={[styles.metaValue, { color: themeColors.text.primary }]} 
                     numberOfLines={2}
                     adjustsFontSizeToFit
                     minimumFontScale={0.7}
@@ -302,7 +327,7 @@ export const MinimalChallengeMeScreen: React.FC = () => {
               </View>
 
               {/* Swipe Hint */}
-              <Text style={styles.swipeHint}>
+              <Text style={[styles.swipeHint, { color: themeColors.text.tertiary }]}>
                 Swipe left to deny • Swipe right to accept
               </Text>
             </Animated.View>
@@ -316,7 +341,7 @@ export const MinimalChallengeMeScreen: React.FC = () => {
             onPress={handleDeny}
             activeOpacity={0.7}
           >
-            <Text style={styles.denyButtonText}>✕ Deny</Text>
+            <Text style={[styles.denyButtonText, { color: themeColors.text.secondary }]}>✕ Deny</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -324,7 +349,7 @@ export const MinimalChallengeMeScreen: React.FC = () => {
             onPress={handleAccept}
             activeOpacity={0.7}
           >
-            <Text style={styles.acceptButtonText}>✓ Accept</Text>
+            <Text style={[styles.acceptButtonText, { color: themeColors.text.primary }]}>✓ Accept</Text>
           </TouchableOpacity>
         </View>
 
@@ -336,9 +361,9 @@ export const MinimalChallengeMeScreen: React.FC = () => {
           onRequestClose={handleGoHome}
         >
           <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>All Challenges Rejected</Text>
-              <Text style={styles.modalMessage}>
+            <View style={[styles.modalContent, { backgroundColor: themeColors.surface }]}>
+              <Text style={[styles.modalTitle, { color: themeColors.text.primary }]}>All Challenges Rejected</Text>
+              <Text style={[styles.modalMessage, { color: themeColors.text.secondary }]}>
                 Would you like to see more suggestions?
               </Text>
               
@@ -348,7 +373,7 @@ export const MinimalChallengeMeScreen: React.FC = () => {
                   onPress={handleGoHome}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.modalButtonSecondaryText}>No, Go Home</Text>
+                  <Text style={[styles.modalButtonSecondaryText, { color: themeColors.text.secondary }]}>No, Go Home</Text>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
@@ -356,7 +381,7 @@ export const MinimalChallengeMeScreen: React.FC = () => {
                   onPress={handleMoreSuggestions}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.modalButtonPrimaryText}>Yes, More!</Text>
+                  <Text style={[styles.modalButtonPrimaryText, { color: themeColors.text.primary }]}>Yes, More!</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -370,7 +395,7 @@ export const MinimalChallengeMeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
   },
   centerContent: {
     flex: 1,

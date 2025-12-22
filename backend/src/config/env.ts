@@ -11,11 +11,13 @@ import { resolve } from 'path';
  * Load environment variables with proper error handling
  */
 export function loadEnvironment(): void {
-  // Find .env file
-  const envPath = resolve(process.cwd(), '.env');
+  // Determine which .env file to load based on NODE_ENV
+  const nodeEnv = process.env.NODE_ENV || 'development';
+  const envFileName = nodeEnv === 'production' ? '.env.production' : '.env';
+  const envPath = resolve(process.cwd(), envFileName);
   
   if (!existsSync(envPath)) {
-    console.warn('⚠️ No .env file found at:', envPath);
+    console.warn(`⚠️ No ${envFileName} file found at:`, envPath);
     console.warn('⚠️ Environment variables will be loaded from system environment only');
     return;
   }

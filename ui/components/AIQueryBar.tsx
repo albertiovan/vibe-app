@@ -89,8 +89,8 @@ export const AIQueryBar: React.FC<AIQueryBarProps> = ({
               submitButtonText ? styles.sendButtonText : styles.sendButton,
               {
                 backgroundColor: query.trim()
-                  ? 'rgba(0, 217, 255, 0.9)' // Brighter cyan when active
-                  : 'rgba(0, 170, 255, 0.12)', // Very transparent when disabled
+                  ? 'rgba(253, 221, 16, 0.95)' // #FDDD10 yellow when active
+                  : 'rgba(253, 221, 16, 0.15)', // Very transparent when disabled
               },
             ]}
             accessibilityRole="button"
@@ -98,12 +98,12 @@ export const AIQueryBar: React.FC<AIQueryBarProps> = ({
             accessibilityState={{ disabled: !query.trim() }}
           >
             {submitButtonText ? (
-              <RNText style={[styles.buttonLabel, { color: colors.fg.primary, opacity: query.trim() ? 1 : 0.5 }]}>
+              <RNText style={[styles.buttonLabel, { color: query.trim() ? '#000000' : 'rgba(0, 0, 0, 0.4)' }]}>
                 {submitButtonText}
               </RNText>
             ) : (
               <View style={styles.sendIcon}>
-                <View style={[styles.arrow, { borderLeftColor: colors.fg.primary }]} />
+                <View style={[styles.arrow, { borderLeftColor: query.trim() ? '#000000' : colors.fg.primary }]} />
               </View>
             )}
           </TouchableOpacity>

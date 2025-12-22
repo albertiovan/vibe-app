@@ -13,7 +13,7 @@ export interface FeatureFlags {
  * Set to false for production, true for development
  */
 const defaultFlags: FeatureFlags = {
-  shell_refresh: __DEV__, // Enabled in dev by default
+  shell_refresh: false, // Temporarily disabled to debug
 };
 
 /**

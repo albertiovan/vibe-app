@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { useTheme } from '../../src/contexts/ThemeContext';
 
 export interface FilterOptions {
   // Location
@@ -36,6 +37,7 @@ const PRICE_OPTIONS = [
 ];
 
 export default function MinimalActivityFilters({ onFiltersChange }: MinimalActivityFiltersProps) {
+  const { colors: themeColors, resolvedTheme } = useTheme();
   const [selectedDistance, setSelectedDistance] = useState<number | null | undefined>(undefined);
   const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
 
@@ -82,13 +84,21 @@ export default function MinimalActivityFilters({ onFiltersChange }: MinimalActiv
     <View style={styles.container}>
       {/* Distance Filter */}
       <View style={styles.filterSection}>
-        <Text style={styles.sectionTitle}>Distance</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.text.tertiary }]}>Distance</Text>
         <View style={styles.optionsRow}>
           {DISTANCE_OPTIONS.map((option) => (
             <TouchableOpacity
               key={option.value?.toString() || 'any'}
               style={[
                 styles.optionButton,
+                {
+                  backgroundColor: selectedDistance === option.value
+                    ? (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.08)' : '#FFFFFF')
+                    : (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.03)' : 'rgba(255, 255, 255, 0.05)'),
+                  borderColor: selectedDistance === option.value
+                    ? (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.2)' : '#FFFFFF')
+                    : (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.2)'),
+                },
                 selectedDistance === option.value && styles.optionButtonSelected,
               ]}
               onPress={() => setSelectedDistance(option.value)}
@@ -96,6 +106,7 @@ export default function MinimalActivityFilters({ onFiltersChange }: MinimalActiv
             >
               <Text style={[
                 styles.optionLabel,
+                { color: selectedDistance === option.value ? themeColors.text.primary : themeColors.text.secondary },
                 selectedDistance === option.value && styles.optionLabelSelected
               ]}>
                 {option.label}
@@ -107,13 +118,21 @@ export default function MinimalActivityFilters({ onFiltersChange }: MinimalActiv
 
       {/* Price Filter */}
       <View style={styles.filterSection}>
-        <Text style={styles.sectionTitle}>Price</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.text.tertiary }]}>Price</Text>
         <View style={styles.optionsColumn}>
           {PRICE_OPTIONS.map((option) => (
             <TouchableOpacity
               key={option.value}
               style={[
                 styles.priceOption,
+                {
+                  backgroundColor: selectedPrices.includes(option.value)
+                    ? (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.1)')
+                    : (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.03)' : 'rgba(255, 255, 255, 0.05)'),
+                  borderColor: selectedPrices.includes(option.value)
+                    ? (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.4)')
+                    : (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.2)'),
+                },
                 selectedPrices.includes(option.value) && styles.priceOptionSelected,
               ]}
               onPress={() => togglePrice(option.value)}
@@ -122,20 +141,29 @@ export default function MinimalActivityFilters({ onFiltersChange }: MinimalActiv
               <View style={styles.priceContent}>
                 <Text style={[
                   styles.priceLabel,
+                  { color: selectedPrices.includes(option.value) ? themeColors.text.primary : themeColors.text.secondary },
                   selectedPrices.includes(option.value) && styles.priceLabelSelected
                 ]}>
                   {option.label}
                 </Text>
                 {option.subtitle && (
-                  <Text style={styles.priceSubtitle}>{option.subtitle}</Text>
+                  <Text style={[styles.priceSubtitle, { color: themeColors.text.tertiary }]}>{option.subtitle}</Text>
                 )}
               </View>
               <View style={[
                 styles.checkbox,
+                {
+                  backgroundColor: selectedPrices.includes(option.value)
+                    ? (resolvedTheme === 'light' ? '#000000' : '#FFFFFF')
+                    : 'transparent',
+                  borderColor: selectedPrices.includes(option.value)
+                    ? (resolvedTheme === 'light' ? '#000000' : '#FFFFFF')
+                    : (resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.3)'),
+                },
                 selectedPrices.includes(option.value) && styles.checkboxSelected
               ]}>
                 {selectedPrices.includes(option.value) && (
-                  <Text style={styles.checkmark}>✓</Text>
+                  <Text style={[styles.checkmark, { color: resolvedTheme === 'light' ? '#FFFFFF' : '#000000' }]}>✓</Text>
                 )}
               </View>
             </TouchableOpacity>
@@ -150,7 +178,7 @@ export default function MinimalActivityFilters({ onFiltersChange }: MinimalActiv
           onPress={clearAllFilters}
           activeOpacity={0.7}
         >
-          <Text style={styles.clearButtonText}>Clear All</Text>
+          <Text style={[styles.clearButtonText, { color: themeColors.text.secondary }]}>Clear All</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -159,7 +187,7 @@ export default function MinimalActivityFilters({ onFiltersChange }: MinimalActiv
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
     paddingVertical: 20,
     paddingHorizontal: 20,
     gap: 24,

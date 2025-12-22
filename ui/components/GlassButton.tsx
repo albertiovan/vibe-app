@@ -45,7 +45,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
               style={[
                 typo.button,
                 styles.label,
-                { color: colors.fg.primary },
+                kind === 'primary' || kind === 'secondary' ? { color: '#000000' } : { color: colors.fg.primary },
                 disabled && styles.labelDisabled,
               ]}
             >
@@ -60,8 +60,8 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
       return (
         <LinearGradient
           colors={[
-            'rgba(0, 217, 255, 0.9)', // Bright cyan
-            'rgba(0, 170, 255, 0.85)', // Electric blue
+            'rgba(253, 221, 16, 0.95)', // Bright yellow #FDDD10
+            'rgba(253, 221, 16, 0.85)', // Slightly transparent yellow
           ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
@@ -77,8 +77,8 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
         <BlurView intensity={8} tint="dark" style={styles.glassContainer}>
           <LinearGradient
             colors={[
-              'rgba(0, 217, 255, 0.2)',
-              'rgba(110, 231, 249, 0.15)',
+              'rgba(253, 221, 16, 0.25)', // Yellow with transparency
+              'rgba(253, 221, 16, 0.15)',
             ]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     borderRadius: radius['2xl'],
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(0, 217, 255, 0.3)', // Cyan border
+    borderColor: 'rgba(253, 221, 16, 0.4)', // Yellow border
   },
   gradientContainer: {
     flexDirection: 'row',

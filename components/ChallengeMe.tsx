@@ -22,6 +22,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../src/design-system/colors';
 import { tokens } from '../src/design-system/tokens';
+import { useLanguage } from '../src/i18n/LanguageContext';
 
 interface Challenge {
   activityId: number;
@@ -48,6 +49,7 @@ interface ChallengeMeProps {
 }
 
 export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeAccepted }) => {
+  const { t } = useLanguage();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [loading, setLoading] = useState(false);
   const [acceptedChallengeId, setAcceptedChallengeId] = useState<number | null>(null);
@@ -243,7 +245,7 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
             style={styles.acceptedGradient}
           >
             <Ionicons name="checkmark-circle" size={80} color="#fff" />
-            <Text style={styles.acceptedTitle}>Challenge Accepted!</Text>
+            <Text style={styles.acceptedTitle}>{t('challenge.accept_full')}</Text>
             <Text style={styles.acceptedSubtitle}>{selectedChallenge.name}</Text>
             <Text style={styles.acceptedLocation}>
               {selectedChallenge.isLocal ? '📍 In your city' : `✈️ ${selectedChallenge.region}`}
@@ -270,9 +272,9 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
               <Ionicons name="flash" size={24} color="#fff" style={styles.headerIcon} />
-              <Text style={styles.headerTitle}>Challenge Me</Text>
+              <Text style={styles.headerTitle}>{t('challenge.title')}</Text>
             </View>
-            <Text style={styles.headerSubtitle}>Try something new!</Text>
+            <Text style={styles.headerSubtitle}>{t('challenge.subtitle')}</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -280,7 +282,7 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#667EEA" />
-          <Text style={styles.loadingText}>Finding your perfect challenges...</Text>
+          <Text style={styles.loadingText}>{t('challenge.generating')}</Text>
         </View>
       )}
 
@@ -357,7 +359,7 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
                     disabled={acceptedChallengeId !== null}
                   >
                     <Ionicons name="close-circle" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Pass</Text>
+                    <Text style={styles.buttonText}>{t('challenge.decline')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -366,7 +368,7 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
                     disabled={acceptedChallengeId !== null}
                   >
                     <Ionicons name="checkmark-circle" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Accept</Text>
+                    <Text style={styles.buttonText}>{t('challenge.accept')}</Text>
                   </TouchableOpacity>
                 </View>
               </LinearGradient>
@@ -378,7 +380,7 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
       {!loading && challenges.length === 0 && (
         <View style={styles.emptyState}>
           <Ionicons name="flash-outline" size={48} color={colors.text.secondary} />
-          <Text style={styles.emptyText}>Tap to discover new challenges!</Text>
+          <Text style={styles.emptyText}>{t('challenge.generating')}</Text>
         </View>
       )}
     </View>

@@ -22,6 +22,10 @@ import { ActivityCarousel } from '../ui/blocks/ActivityCarousel';
 import { ActivityMeta } from '../ui/blocks/ActivityMeta';
 import { theme } from '../ui/theme/tokens';
 import { Activity } from '../ui/blocks/ActivityMiniCard';
+import { useVibe } from '../src/contexts/VibeContext';
+import { useTheme } from '../src/contexts/ThemeContext';
+import { AnimatedGradientBackground } from '../ui/components/AnimatedGradientBackground';
+import { useLanguage } from '../src/i18n/LanguageContext';
 
 type RootStackParamList = {
   ActivityDetailScreenShell: {
@@ -47,6 +51,9 @@ export const ActivityDetailScreenShell: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RootStackParamList, 'ActivityDetailScreenShell'>>();
   const { activity, userLocation } = route.params;
+  const { currentVibe, getVibeColors } = useVibe();
+  const { resolvedTheme, colors: themeColors } = useTheme();
+  const { t } = useLanguage();
 
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
 
@@ -266,10 +273,21 @@ export const ActivityDetailScreenShell: React.FC = () => {
     return `${hours}-${maxHours}h`;
   };
 
+  // Get background gradient colors based on vibe state
+  const vibeColors = getVibeColors();
+  const backgroundColors = vibeColors
+    ? [vibeColors.gradient.start, vibeColors.gradient.end, themeColors.background]
+    : resolvedTheme === 'light'
+    ? ['#F5F5F5', '#E5E5E5', '#EFEFEF']
+    : [themeColors.background, themeColors.background, themeColors.background];
+
   return (
     <View style={styles.container}>
-      {/* Background */}
-      <OrbBackdrop variant="dark" />
+      {/* Animated background - vibe-tinted */}
+      <AnimatedGradientBackground
+        colors={backgroundColors as [string, string, string]}
+        duration={currentVibe ? 8000 : 15000}
+      />
 
       {/* Header */}
       <ShellHeader
@@ -283,7 +301,7 @@ export const ActivityDetailScreenShell: React.FC = () => {
       {/* Title Overlay */}
       <View style={styles.titleOverlay}>
         <Text
-          style={[typo.titleL, styles.title, { color: colors.fg.primary, opacity: 0.98 }]}
+          style={[typo.titleL, styles.title, { color: themeColors.text.primary, opacity: 0.98 }]}
           numberOfLines={2}
         >
           {activity.name}
@@ -299,14 +317,14 @@ export const ActivityDetailScreenShell: React.FC = () => {
           <GlassCard emphasis="low" style={styles.contentCard}>
             {/* Description */}
             {activity.description && (
-              <Text style={[typo.bodyLarge, styles.description, { color: colors.fg.secondary, opacity: 0.9 }]}>
+              <Text style={[typo.bodyLarge, styles.description, { color: themeColors.text.secondary, opacity: 0.9 }]}>
                 {String(activity.description)}
               </Text>
             )}
             
             {!activity.description && (
-              <Text style={[typo.bodyLarge, styles.description, { color: colors.fg.tertiary, fontStyle: 'italic', opacity: 0.7 }]}>
-                Discover this exciting activity. Tap "GO NOW" to find the location and learn more.
+              <Text style={[typo.bodyLarge, styles.description, { color: themeColors.text.tertiary, fontStyle: 'italic', opacity: 0.7 }]}>
+                {t('detail.multiple_venues')}
               </Text>
             )}
 
@@ -341,7 +359,7 @@ export const ActivityDetailScreenShell: React.FC = () => {
             <View style={styles.actions}>
               <View style={styles.actionButton}>
                 <GlassButton
-                  label="Learn More"
+                  label={t('detail.learn_more')}
                   kind="secondary"
                   onPress={handleLearnMore}
                   testID="learn-more-btn"
@@ -350,7 +368,7 @@ export const ActivityDetailScreenShell: React.FC = () => {
 
               <View style={styles.actionButton}>
                 <GlassButton
-                  label="GO NOW"
+                  label={t('detail.go_now')}
                   kind="primary"
                   onPress={handleGoNow}
                   testID="go-now-btn"

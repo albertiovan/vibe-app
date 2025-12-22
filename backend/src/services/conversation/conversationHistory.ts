@@ -70,7 +70,7 @@ export class ConversationHistoryService {
   ): Promise<Message> {
     const result = await pool.query(
       `INSERT INTO messages (conversation_id, role, content, metadata) 
-       VALUES ($1, $2, $3, $4) 
+       VALUES ($1, $2, $3, $4::jsonb) 
        RETURNING id, conversation_id, role, content, metadata, created_at`,
       [conversationId, role, content, JSON.stringify(metadata || {})]
     );

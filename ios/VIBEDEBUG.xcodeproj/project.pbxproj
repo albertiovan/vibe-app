@@ -9,10 +9,10 @@
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		9364E2B97E1555711F62E84C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 7DE5911E8765DD672D7B3CCB /* PrivacyInfo.xcprivacy */; };
-		B891DDC17AAFA7D696AC860B /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596A6BA86ACB6FDAAD194FC4 /* ExpoModulesProvider.swift */; };
+		4C05E62C33AADC6F54F435B0 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73112003C8C7E3BBAA6405AC /* ExpoModulesProvider.swift */; };
+		8FC48BDA62F09E31521A856A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D88743CC6CA15DAB73E5BCA3 /* PrivacyInfo.xcprivacy */; };
+		A44BC8CE0FDA8C23FB3E6B0F /* libPods-VIBEDEBUG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C5A99A524731E32AF350A9FF /* libPods-VIBEDEBUG.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		CA590C100072BB4049E07CBF /* libPods-VIBEDEBUG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B97BA9879F87CDA7A1066E8 /* libPods-VIBEDEBUG.a */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -20,13 +20,13 @@
 		13B07F961A680F5B00A75B9A /* VIBEDEBUG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VIBEDEBUG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = VIBEDEBUG/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = VIBEDEBUG/Info.plist; sourceTree = "<group>"; };
-		2E5EE10A32B4C31CBD1DDDE3 /* Pods-VIBEDEBUG.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VIBEDEBUG.release.xcconfig"; path = "Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG.release.xcconfig"; sourceTree = "<group>"; };
-		596A6BA86ACB6FDAAD194FC4 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-VIBEDEBUG/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		7DE5911E8765DD672D7B3CCB /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = VIBEDEBUG/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		8B97BA9879F87CDA7A1066E8 /* libPods-VIBEDEBUG.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VIBEDEBUG.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		8ED2862CA8AA7A6AB6EA110B /* Pods-VIBEDEBUG.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VIBEDEBUG.debug.xcconfig"; path = "Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG.debug.xcconfig"; sourceTree = "<group>"; };
+		1A06602431EB16939BBC06E6 /* Pods-VIBEDEBUG.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VIBEDEBUG.debug.xcconfig"; path = "Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG.debug.xcconfig"; sourceTree = "<group>"; };
+		73112003C8C7E3BBAA6405AC /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-VIBEDEBUG/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = VIBEDEBUG/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		C5A99A524731E32AF350A9FF /* libPods-VIBEDEBUG.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VIBEDEBUG.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D88743CC6CA15DAB73E5BCA3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = VIBEDEBUG/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		DA0F3BB25C7570CABF6C71AC /* Pods-VIBEDEBUG.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VIBEDEBUG.release.xcconfig"; path = "Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = VIBEDEBUG/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* VIBEDEBUG-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "VIBEDEBUG-Bridging-Header.h"; path = "VIBEDEBUG/VIBEDEBUG-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -37,21 +37,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA590C100072BB4049E07CBF /* libPods-VIBEDEBUG.a in Frameworks */,
+				A44BC8CE0FDA8C23FB3E6B0F /* libPods-VIBEDEBUG.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		070D9A77C86CD27AFA3ADD5B /* VIBEDEBUG */ = {
-			isa = PBXGroup;
-			children = (
-				596A6BA86ACB6FDAAD194FC4 /* ExpoModulesProvider.swift */,
-			);
-			name = VIBEDEBUG;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* VIBEDEBUG */ = {
 			isa = PBXGroup;
 			children = (
@@ -61,26 +53,26 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				7DE5911E8765DD672D7B3CCB /* PrivacyInfo.xcprivacy */,
+				D88743CC6CA15DAB73E5BCA3 /* PrivacyInfo.xcprivacy */,
 			);
 			name = VIBEDEBUG;
+			sourceTree = "<group>";
+		};
+		17C7FCCD1B2A96F804BCAE08 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				AF12F24532092CD01264CA08 /* VIBEDEBUG */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				8B97BA9879F87CDA7A1066E8 /* libPods-VIBEDEBUG.a */,
+				C5A99A524731E32AF350A9FF /* libPods-VIBEDEBUG.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		5995D7396AD8B204DA925D3A /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				070D9A77C86CD27AFA3ADD5B /* VIBEDEBUG */,
-			);
-			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -97,8 +89,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				D0C86218BA27CBB3919A6121 /* Pods */,
-				5995D7396AD8B204DA925D3A /* ExpoModulesProviders */,
+				A9A2DF85E78D73EEBC0310E0 /* Pods */,
+				17C7FCCD1B2A96F804BCAE08 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -113,6 +105,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A9A2DF85E78D73EEBC0310E0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1A06602431EB16939BBC06E6 /* Pods-VIBEDEBUG.debug.xcconfig */,
+				DA0F3BB25C7570CABF6C71AC /* Pods-VIBEDEBUG.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		AF12F24532092CD01264CA08 /* VIBEDEBUG */ = {
+			isa = PBXGroup;
+			children = (
+				73112003C8C7E3BBAA6405AC /* ExpoModulesProvider.swift */,
+			);
+			name = VIBEDEBUG;
+			sourceTree = "<group>";
+		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
@@ -120,15 +129,6 @@
 			);
 			name = Supporting;
 			path = VIBEDEBUG/Supporting;
-			sourceTree = "<group>";
-		};
-		D0C86218BA27CBB3919A6121 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				8ED2862CA8AA7A6AB6EA110B /* Pods-VIBEDEBUG.debug.xcconfig */,
-				2E5EE10A32B4C31CBD1DDDE3 /* Pods-VIBEDEBUG.release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,13 +139,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "VIBEDEBUG" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				5D49F0FDA0224F4B483BA0A5 /* [Expo] Configure project */,
+				CF8AEEFD739593B7F36C24FD /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				52A323384D439AC23A65DCC2 /* [CP] Embed Pods Frameworks */,
+				189BF159FA8E6288C3F70C6C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -195,7 +195,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				9364E2B97E1555711F62E84C /* PrivacyInfo.xcprivacy in Resources */,
+				8FC48BDA62F09E31521A856A /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,7 +241,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		52A323384D439AC23A65DCC2 /* [CP] Embed Pods Frameworks */ = {
+		189BF159FA8E6288C3F70C6C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -263,7 +263,41 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		5D49F0FDA0224F4B483BA0A5 /* [Expo] Configure project */ = {
+		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoDevice/ExpoDevice_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoDevice_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevMenu.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CF8AEEFD739593B7F36C24FD /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -287,44 +321,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-VIBEDEBUG/expo-configure-project.sh\"\n";
 		};
-		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXUpdates/EXUpdates.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoDevice/ExpoDevice_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/RNCAsyncStorage/RNCAsyncStorage_resources.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ReachabilitySwift/ReachabilitySwift.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/React-Core_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-cxxreact/React-cxxreact_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/EXDevLauncher.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/EXDevMenu.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXUpdates.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoDevice_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RNCAsyncStorage_resources.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ReachabilitySwift.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-Core_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/React-cxxreact_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevLauncher.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXDevMenu.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VIBEDEBUG/Pods-VIBEDEBUG-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -333,7 +329,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				B891DDC17AAFA7D696AC860B /* ExpoModulesProvider.swift in Sources */,
+				4C05E62C33AADC6F54F435B0 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,9 +338,10 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8ED2862CA8AA7A6AB6EA110B /* Pods-VIBEDEBUG.debug.xcconfig */;
+			baseConfigurationReference = 1A06602431EB16939BBC06E6 /* Pods-VIBEDEBUG.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VIBEDEBUG/VIBEDEBUG.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
@@ -355,12 +352,13 @@
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = VIBEDEBUG/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Vibe;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -379,20 +377,22 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2E5EE10A32B4C31CBD1DDDE3 /* Pods-VIBEDEBUG.release.xcconfig */;
+			baseConfigurationReference = DA0F3BB25C7570CABF6C71AC /* Pods-VIBEDEBUG.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = VIBEDEBUG/VIBEDEBUG.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = N628XG9GLF;
 				INFOPLIST_FILE = VIBEDEBUG/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Vibe;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

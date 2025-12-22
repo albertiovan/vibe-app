@@ -33,6 +33,11 @@ import trainingRoutes from './routes/training.js';
 import challengeRoutes from './routes/challenges.js';
 import vibeProfileRoutes from './routes/vibeProfiles.js';
 import activityFeedbackRoutes from './routes/activityFeedback.js';
+import activityCompletionRoutes from './routes/activityCompletion.js';
+import communityRoutes from './routes/community.js';
+import adminRoutes from './routes/admin.js';
+import friendsRoutes from './routes/friends.js';
+import uploadRoutes from './routes/upload.js';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -70,6 +75,11 @@ app.use('/api/training', trainingRoutes); // Training feedback collection ✨
 app.use('/api/challenges', challengeRoutes); // Challenge Me feature ✨
 app.use('/api/vibe-profiles', vibeProfileRoutes); // Custom Vibe Profiles ✨
 app.use('/api/activities', activityFeedbackRoutes); // Activity feedback for ML ✨
+app.use('/api/activity-completion', activityCompletionRoutes); // Activity completion tracking ✨
+app.use('/api/community', communityRoutes); // Community features (feed, reviews, leaderboard) ✨
+app.use('/api/admin', adminRoutes); // Admin moderation tools 🛡️
+app.use('/api/friends', friendsRoutes); // Friends system (add, search, block, report) 👥
+app.use('/api/upload', uploadRoutes); // S3 upload presigned URLs 📤
 
 // Root endpoint
 app.get('/', (req, res) => {

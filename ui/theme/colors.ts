@@ -15,6 +15,17 @@ export interface ColorTokens {
     secondary: string;
     tertiary: string;
   };
+  // Text colors for different surfaces (theme-aware)
+  text: {
+    primary: string;      // Main text on solid backgrounds
+    secondary: string;    // Secondary text on solid backgrounds
+    tertiary: string;     // Tertiary/muted text on solid backgrounds
+    onGlass: {            // Text on translucent glass surfaces
+      primary: string;    // High contrast on glass
+      secondary: string;  // Medium contrast on glass
+      tertiary: string;   // Low contrast on glass
+    };
+  };
   gradient: {
     primary: {
       from: string;
@@ -29,6 +40,10 @@ export interface ColorTokens {
     surface: string;
     border: string;
     pressed: string;
+  };
+  accent: {
+    primary: string;    // Main accent color for buttons, links, etc.
+    secondary: string;  // Secondary accent
   };
   muted: string;
   // New: Electric glow colors from INSPO
@@ -49,6 +64,16 @@ export const darkColors: ColorTokens = {
     secondary: 'rgba(255, 255, 255, 0.7)', // 70% opacity for secondary text
     tertiary: 'rgba(255, 255, 255, 0.5)', // 50% opacity for tertiary text
   },
+  text: {
+    primary: '#FFFFFF',
+    secondary: 'rgba(255, 255, 255, 0.7)',
+    tertiary: 'rgba(255, 255, 255, 0.5)',
+    onGlass: {
+      primary: '#FFFFFF',                    // Full white on glass
+      secondary: 'rgba(255, 255, 255, 0.8)', // Slightly higher opacity for glass
+      tertiary: 'rgba(255, 255, 255, 0.6)',  // Medium opacity for glass
+    },
+  },
   gradient: {
     primary: {
       from: '#00AAFF', // Electric cyan from INSPO
@@ -64,6 +89,10 @@ export const darkColors: ColorTokens = {
     border: 'rgba(0, 217, 255, 0.15)',  // Cyan border, subtle
     pressed: 'rgba(0, 170, 255, 0.15)', // Slightly more visible on press
   },
+  accent: {
+    primary: '#00D9FF',   // Electric cyan for dark theme
+    secondary: '#6EE7F9', // Lighter cyan
+  },
   muted: 'rgba(255, 255, 255, 0.4)', // Muted text at 40% opacity
 };
 
@@ -76,6 +105,16 @@ export const lightColors: ColorTokens = {
     primary: '#0B1220', // on light
     secondary: '#1E3A5F',
     tertiary: '#4B6B94',
+  },
+  text: {
+    primary: '#0B1220',      // Dark text on light backgrounds
+    secondary: '#1E3A5F',    // Medium dark for secondary text
+    tertiary: '#4B6B94',     // Lighter for tertiary text
+    onGlass: {
+      primary: '#0B1220',    // Dark text on light glass surfaces
+      secondary: '#1E3A5F',  // Medium contrast on glass
+      tertiary: '#4B6B94',   // Lower contrast on glass
+    },
   },
   gradient: {
     primary: {
@@ -91,6 +130,10 @@ export const lightColors: ColorTokens = {
     surface: 'rgba(10, 15, 31, 0.14)',
     border: 'rgba(10, 15, 31, 0.22)',
     pressed: 'rgba(10, 15, 31, 0.22)',
+  },
+  accent: {
+    primary: '#0EA5E9',   // Bright blue for light theme
+    secondary: '#6EE7F9', // Lighter blue
   },
   muted: '#88A2C8',
 };

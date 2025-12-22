@@ -18,6 +18,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LoadingShimmer } from '../ui/components/LoadingShimmer';
 import { chatApi } from '../src/services/chatApi';
 import { FilterOptions } from '../components/filters/ActivityFilters';
+import { useVibe } from '../src/contexts/VibeContext';
+import { useTheme } from '../src/contexts/ThemeContext';
+import { AnimatedGradientBackground } from '../ui/components/AnimatedGradientBackground';
+import { CategoryGradientCard } from '../ui/components/CategoryGradientCard';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -41,6 +45,8 @@ export const MinimalSuggestionsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute<SuggestionsScreenRouteProp>();
   const { conversationId, deviceId, userMessage, filters, userLocation } = route.params;
+  const { currentVibe, getVibeColors } = useVibe();
+  const { resolvedTheme, colors: themeColors } = useTheme();
 
   const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,10 +101,13 @@ export const MinimalSuggestionsScreen: React.FC = () => {
     return `${minHours}-${maxHours}h`;
   };
 
-  const formatDistance = (distance?: number) => {
-    if (!distance) return 'Nearby';
-    if (distance < 1) return `${Math.round(distance * 1000)}m`;
-    return `${distance.toFixed(1)}km`;
+  const formatDistance = (distance?: number, city?: string, region?: string) => {
+    if (distance && distance > 0) {
+      if (distance < 1) return `${Math.round(distance * 1000)}m`;
+      return `${distance.toFixed(1)}km`;
+    }
+    // If no distance calculated, show city/region instead
+    return city || region || 'Bucharest';
   };
 
   if (loading) {
@@ -127,15 +136,33 @@ export const MinimalSuggestionsScreen: React.FC = () => {
     );
   }
 
+  // Get background gradient colors based on vibe state
+  const vibeColors = getVibeColors();
+  const backgroundColors = vibeColors
+    ? [vibeColors.gradient.start, vibeColors.gradient.end, themeColors.background]
+    : resolvedTheme === 'light'
+    ? ['#F5F5F5', '#E5E5E5', '#EFEFEF']
+    : [themeColors.background, themeColors.background, themeColors.background];
+  
+  // Debug logging
+  console.log('📱 Suggestions - Current vibe:', currentVibe);
+  console.log('📱 Suggestions - Background colors:', backgroundColors);
+
   return (
     <View style={styles.container}>
+      {/* Animated background - vibe-tinted */}
+      <AnimatedGradientBackground
+        colors={backgroundColors as [string, string, string]}
+        duration={currentVibe ? 8000 : 15000}
+      />
+      
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Text style={styles.backText}>←</Text>
+            <Text style={[styles.backText, { color: themeColors.text.primary }]}>←</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Suggestions</Text>
+          <Text style={[styles.headerTitle, { color: themeColors.text.primary }]}>Suggestions</Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -146,10 +173,16 @@ export const MinimalSuggestionsScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
         >
           {activities.map((activity, index) => (
-            <View key={activity.id || index} style={styles.card}>
+            <CategoryGradientCard
+              key={activity.id || index}
+              category={activity.category}
+              borderRadius={16}
+              intensity="subtle"
+              style={styles.card}
+            >
               {/* Activity Number */}
               <View style={styles.cardHeader}>
-                <Text style={styles.activityNumber}>Activity {index + 1}</Text>
+                <Text style={[styles.activityNumber, { color: themeColors.text.tertiary }]}>Activity {index + 1}</Text>
               </View>
 
               {/* Image */}
@@ -167,10 +200,10 @@ export const MinimalSuggestionsScreen: React.FC = () => {
               {/* Content */}
               <View style={styles.cardContent}>
                 {/* Name */}
-                <Text style={styles.activityName}>{activity.name}</Text>
+                <Text style={[styles.activityName, { color: themeColors.text.primary }]}>{activity.name}</Text>
 
                 {/* Description */}
-                <Text style={styles.activityDescription} numberOfLines={3}>
+                <Text style={[styles.activityDescription, { color: themeColors.text.secondary }]} numberOfLines={3}>
                   {activity.description}
                 </Text>
 
@@ -178,21 +211,21 @@ export const MinimalSuggestionsScreen: React.FC = () => {
                 <View style={styles.metaRow}>
                   <View style={styles.metaItem}>
                     <Text style={styles.metaIcon}>⏱</Text>
-                    <Text style={styles.metaText}>
+                    <Text style={[styles.metaText, { color: themeColors.text.secondary }]}>
                       {formatDuration(activity.duration_min, activity.duration_max)}
                     </Text>
                   </View>
-                  <View style={styles.metaDivider} />
+                  <View style={[styles.metaDivider, { backgroundColor: themeColors.border }]} />
                   <View style={styles.metaItem}>
                     <Text style={styles.metaIcon}>📍</Text>
-                    <Text style={styles.metaText}>
-                      {formatDistance(activity.distance)}
+                    <Text style={[styles.metaText, { color: themeColors.text.secondary }]}>
+                      {formatDistance(activity.distance, activity.city, activity.region)}
                     </Text>
                   </View>
-                  <View style={styles.metaDivider} />
+                  <View style={[styles.metaDivider, { backgroundColor: themeColors.border }]} />
                   <View style={styles.metaItem}>
                     <Text style={styles.metaIcon}>⚡</Text>
-                    <Text style={styles.metaText}>
+                    <Text style={[styles.metaText, { color: themeColors.text.secondary }]}>
                       {activity.energy_level || 'Medium'}
                     </Text>
                   </View>
@@ -200,14 +233,20 @@ export const MinimalSuggestionsScreen: React.FC = () => {
 
                 {/* Explore Button */}
                 <TouchableOpacity
-                  style={styles.exploreButton}
+                  style={[styles.exploreButton, { 
+                    backgroundColor: resolvedTheme === 'light' ? '#FFFFFF' : themeColors.text.primary,
+                    borderWidth: resolvedTheme === 'light' ? 1 : 0,
+                    borderColor: resolvedTheme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'transparent'
+                  }]}
                   onPress={() => handleExplore(activity)}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.exploreButtonText}>Explore Now</Text>
+                  <Text style={[styles.exploreButtonText, { 
+                    color: resolvedTheme === 'light' ? '#000000' : themeColors.background 
+                  }]}>Explore Now</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </CategoryGradientCard>
           ))}
 
           {/* Bottom Padding */}
@@ -221,13 +260,13 @@ export const MinimalSuggestionsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent',
   },
   safeArea: {
     flex: 1,

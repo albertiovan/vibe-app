@@ -17,6 +17,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useTheme } from '../src/contexts/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.75;
@@ -51,6 +52,7 @@ export const SuggestedSidequests: React.FC<SuggestedSidequestsProps> = ({
   userLocation,
 }) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { colors: themeColors } = useTheme();
   const [sidequests, setSidequests] = useState<Sidequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -143,10 +145,10 @@ export const SuggestedSidequests: React.FC<SuggestedSidequestsProps> = ({
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text style={styles.sectionTitle}>Suggested Sidequests</Text>
+        <Text style={[styles.sectionTitle, { color: themeColors.text.primary }]}>Suggested Sidequests</Text>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color="#FFFFFF" />
-          <Text style={styles.loadingText}>Finding adventures...</Text>
+          <ActivityIndicator size="small" color={themeColors.text.secondary} />
+          <Text style={[styles.loadingText, { color: themeColors.text.secondary }]}>Finding adventures...</Text>
         </View>
       </View>
     );
@@ -159,8 +161,8 @@ export const SuggestedSidequests: React.FC<SuggestedSidequestsProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.sectionTitle}>Suggested Sidequests</Text>
-        <Text style={styles.sectionSubtitle}>
+        <Text style={[styles.sectionTitle, { color: themeColors.text.primary }]}>Suggested Sidequests</Text>
+        <Text style={[styles.sectionSubtitle, { color: themeColors.text.secondary }]}>
           Personalized picks to expand your horizons
         </Text>
       </View>
@@ -202,7 +204,7 @@ export const SuggestedSidequests: React.FC<SuggestedSidequestsProps> = ({
             {/* Content */}
             <View style={styles.cardContent}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardCategory}>{sidequest.category}</Text>
+                <Text style={[styles.cardCategory, { color: themeColors.text.tertiary }]}>{sidequest.category}</Text>
                 <View style={styles.energyBadge}>
                   <Text style={styles.energyText}>
                     {getEnergyIcon(sidequest.energyLevel)}
@@ -210,17 +212,17 @@ export const SuggestedSidequests: React.FC<SuggestedSidequestsProps> = ({
                 </View>
               </View>
 
-              <Text style={styles.cardTitle} numberOfLines={2}>
+              <Text style={[styles.cardTitle, { color: themeColors.text.primary }]} numberOfLines={2}>
                 {sidequest.name}
               </Text>
 
-              <Text style={styles.cardDescription} numberOfLines={2}>
+              <Text style={[styles.cardDescription, { color: themeColors.text.secondary }]} numberOfLines={2}>
                 {sidequest.description}
               </Text>
 
               {sidequest.estimatedDuration && (
                 <View style={styles.cardFooter}>
-                  <Text style={styles.durationText}>
+                  <Text style={[styles.durationText, { color: themeColors.text.tertiary }]}>
                     ⏱ {sidequest.estimatedDuration}
                   </Text>
                 </View>
