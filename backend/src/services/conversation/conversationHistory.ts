@@ -5,9 +5,16 @@
 
 import { Pool } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app'
-});
+// Database connection - create pool lazily to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool() {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+  }
+  return pool;
+}
 
 export interface Message {
   id: number;
@@ -32,7 +39,7 @@ export class ConversationHistoryService {
    * Get or create a user by device ID
    */
   static async getOrCreateUser(deviceId: string): Promise<number> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO users (device_id) 
        VALUES ($1) 
        ON CONFLICT (device_id) 
@@ -50,7 +57,7 @@ export class ConversationHistoryService {
     userId: number,
     context?: { location?: any; weather?: any; time?: string }
   ): Promise<number> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO conversations (user_id, context) 
        VALUES ($1, $2) 
        RETURNING id`,
@@ -68,7 +75,7 @@ export class ConversationHistoryService {
     content: string,
     metadata?: any
   ): Promise<Message> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO messages (conversation_id, role, content, metadata) 
        VALUES ($1, $2, $3, $4::jsonb) 
        RETURNING id, conversation_id, role, content, metadata, created_at`,
@@ -81,7 +88,7 @@ export class ConversationHistoryService {
    * Update conversation title (auto-generated from first message)
    */
   static async updateConversationTitle(conversationId: number, title: string): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `UPDATE conversations SET title = $1 WHERE id = $2`,
       [title, conversationId]
     );
@@ -94,7 +101,7 @@ export class ConversationHistoryService {
     conversationId: number,
     vibeState: 'calm' | 'excited' | 'romantic' | 'adventurous'
   ): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `UPDATE conversations SET vibe_state = $1 WHERE id = $2`,
       [vibeState, conversationId]
     );
@@ -107,7 +114,7 @@ export class ConversationHistoryService {
     userId: number,
     limit: number = 10
   ): Promise<Conversation[]> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
         c.id, 
         c.user_id, 
@@ -141,7 +148,7 @@ export class ConversationHistoryService {
    * Get full conversation with all messages
    */
   static async getConversation(conversationId: number): Promise<Conversation | null> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
         c.id, 
         c.user_id, 
@@ -174,7 +181,7 @@ export class ConversationHistoryService {
    * Get conversation messages for context
    */
   static async getConversationContext(conversationId: number, limit: number = 10): Promise<Message[]> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT id, role, content, metadata, created_at
        FROM messages
        WHERE conversation_id = $1
@@ -210,7 +217,7 @@ export class ConversationHistoryService {
    * Delete old conversations (cleanup)
    */
   static async deleteOldConversations(userId: number, olderThanDays: number = 90): Promise<number> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `DELETE FROM conversations 
        WHERE user_id = $1 
        AND updated_at < NOW() - INTERVAL '${olderThanDays} days'`,
