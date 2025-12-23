@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'center',
-    marginBottom: 12,
+    marginBottom: 28,
     borderRadius: 24,
     borderWidth: 1,
     shadowColor: '#000',

@@ -50,7 +50,8 @@ export default function ChallengeLeaderboard() {
       setLeaderboard(result.leaderboard);
     } catch (error) {
       console.error('Error loading leaderboard:', error);
-      Alert.alert('Error', 'Failed to load leaderboard');
+      // Silently fail - show empty state instead of error alert
+      setLeaderboard([]);
     } finally {
       setLoading(false);
     }
@@ -169,12 +170,12 @@ export default function ChallengeLeaderboard() {
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyIcon}>🏆</Text>
+      <Text style={styles.emptyIcon}>🚧</Text>
       <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-        No rankings yet
+        Coming Soon
       </Text>
       <Text style={[styles.emptySubtitle, { color: colors.text.secondary }]}>
-        Complete challenges to appear on the leaderboard!
+        Challenge leaderboards are currently in development. Compete with friends and climb the rankings soon!
       </Text>
     </View>
   );

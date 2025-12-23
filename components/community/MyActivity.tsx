@@ -34,27 +34,15 @@ export default function MyActivity() {
           const userStats = await getUserStats(account.userId);
           setStats(userStats);
         } catch (apiError) {
-          console.log('API error, using mock data:', apiError);
-          // Use mock data if API fails
-          setStats({
-            posts_count: 12,
-            reviews_count: 8,
-            challenges_count: 15,
-            total_points: 450,
-            total_likes_received: 34,
-          });
+          console.log('API error, showing coming soon:', apiError);
+          // Set to null to show coming soon message
+          setStats(null);
         }
       }
     } catch (error) {
       console.error('Error loading user stats:', error);
-      // Use mock data as fallback
-      setStats({
-        posts_count: 12,
-        reviews_count: 8,
-        challenges_count: 15,
-        total_points: 450,
-        total_likes_received: 34,
-      });
+      // Set to null to show coming soon message
+      setStats(null);
     } finally {
       setLoading(false);
     }
@@ -74,8 +62,12 @@ export default function MyActivity() {
   if (!stats) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Text style={[styles.errorText, { color: colors.text.secondary }]}>
-          Unable to load stats
+        <Text style={styles.emptyIcon}>🚧</Text>
+        <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
+          Coming Soon
+        </Text>
+        <Text style={[styles.emptySubtitle, { color: colors.text.secondary }]}>
+          Your activity stats and history are currently in development. Track your posts, reviews, and challenges soon!
         </Text>
       </View>
     );
@@ -272,6 +264,23 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 15,
     fontWeight: '500',
+  },
+  emptyIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontSize: 15,
+    fontWeight: '400',
+    textAlign: 'center',
+    lineHeight: 22,
+    paddingHorizontal: 40,
   },
   statsGrid: {
     flexDirection: 'row',

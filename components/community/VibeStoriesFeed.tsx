@@ -70,8 +70,9 @@ export default function VibeStoriesFeed() {
       setHasMore(result.hasMore);
     } catch (error) {
       console.error('Error loading feed:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-      Alert.alert('Error', `Failed to load community feed: ${error instanceof Error ? error.message : 'Network request failed'}`);
+      // Silently fail - show empty state instead of error alert
+      setPosts([]);
+      setHasMore(false);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -150,12 +151,12 @@ export default function VibeStoriesFeed() {
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={[styles.emptyIcon]}>🌊</Text>
+      <Text style={[styles.emptyIcon]}>🚧</Text>
       <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-        No posts yet
+        Coming Soon
       </Text>
       <Text style={[styles.emptySubtitle, { color: colors.text.secondary }]}>
-        Be the first to share your vibe!
+        Community features are currently in development. Share your vibes, connect with friends, and discover what others are doing soon!
       </Text>
     </View>
   );

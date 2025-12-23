@@ -256,7 +256,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                           styles.interestLabelSelected,
                       ]}
                     >
-                      {t(`onboarding.interests.${interest.value}`)}
+                      {interest.label}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -385,8 +385,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 style={styles.nextButton}
                 onPress={handleNext}
               >
-                <Text style={styles.buttonText}>{t('onboarding.next')}</Text>
-                <Ionicons name="arrow-forward" size={20} color="#fff" />
+                <Text style={styles.nextButtonText}>{t('onboarding.next')}</Text>
+                <Ionicons name="arrow-forward" size={20} color="#667EEA" />
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
