@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     paddingVertical: 20,
     paddingHorizontal: 20,
+    paddingBottom: 120,
     gap: 24,
   },
   filterSection: {
