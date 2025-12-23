@@ -170,12 +170,12 @@ export default function ChallengeLeaderboard() {
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyIcon}>🚧</Text>
+      <Text style={styles.emptyIcon}>🏆</Text>
       <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-        Coming Soon
+        No rankings yet
       </Text>
       <Text style={[styles.emptySubtitle, { color: colors.text.secondary }]}>
-        Challenge leaderboards are currently in development. Compete with friends and climb the rankings soon!
+        Complete challenges to appear on the leaderboard! Push yourself outside your comfort zone and earn points.
       </Text>
     </View>
   );

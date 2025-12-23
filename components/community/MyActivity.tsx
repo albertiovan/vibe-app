@@ -62,12 +62,12 @@ export default function MyActivity() {
   if (!stats) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <Text style={styles.emptyIcon}>🚧</Text>
+        <Text style={styles.emptyIcon}>📊</Text>
         <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-          Coming Soon
+          No Activity Yet
         </Text>
         <Text style={[styles.emptySubtitle, { color: colors.text.secondary }]}>
-          Your activity stats and history are currently in development. Track your posts, reviews, and challenges soon!
+          Start sharing posts, writing reviews, and completing challenges to see your stats here!
         </Text>
       </View>
     );
