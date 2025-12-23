@@ -75,9 +75,20 @@ export default function MinimalActivityFilters({ onFiltersChange }: MinimalActiv
     }
   };
 
-  // Auto-apply when selections change
+  // Apply filters immediately when selections change
   React.useEffect(() => {
-    applyFilters();
+    const filters: FilterOptions = {};
+    
+    if (selectedDistance !== undefined) {
+      filters.maxDistanceKm = selectedDistance;
+    }
+    
+    if (selectedPrices.length > 0) {
+      filters.priceTier = selectedPrices;
+    }
+    
+    // Call onFiltersChange but don't close the panel
+    onFiltersChange(filters);
   }, [selectedDistance, selectedPrices]);
 
   return (

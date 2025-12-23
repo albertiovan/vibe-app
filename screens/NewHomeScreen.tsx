@@ -367,7 +367,6 @@ export const NewHomeScreen: React.FC = () => {
                       <MinimalActivityFilters
                         onFiltersChange={(newFilters) => {
                           setFilters(newFilters);
-                          setShowFilters(false);
                         }}
                       />
                     </View>
