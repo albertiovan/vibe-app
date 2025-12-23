@@ -3,10 +3,16 @@ import { Pool } from 'pg';
 
 const router = express.Router();
 
-// Database connection - use environment variable set by server.ts
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+// Database connection - create pool lazily to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool() {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+  }
+  return pool;
+}
 
 // ============================================
 // VIBE STORIES FEED
@@ -40,7 +46,7 @@ router.get('/feed', async (req: Request, res: Response) => {
       LIMIT $1 OFFSET $2
     `;
 
-    const result = await pool.query(query, [limit, offset, userId || null]);
+    const result = await getPool().query(query, [limit, offset, userId || null]);
 
     return res.json({
       posts: result.rows,
@@ -76,7 +82,7 @@ router.post('/posts', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'userId and postType are required' });
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO community_posts 
        (user_id, activity_id, post_type, content, photo_url, vibe_before, vibe_after, 
         energy_level, location_city, location_lat, location_lng)
@@ -114,7 +120,7 @@ router.delete('/posts/:postId', async (req: Request, res: Response) => {
     const { userId } = req.query;
 
     // Check ownership or admin role
-    const checkResult = await pool.query(
+    const checkResult = await getPool().query(
       `SELECT user_id FROM community_posts WHERE id = $1`,
       [postId]
     );
@@ -128,7 +134,7 @@ router.delete('/posts/:postId', async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
-    await pool.query(`DELETE FROM community_posts WHERE id = $1`, [postId]);
+    await getPool().query(`DELETE FROM community_posts WHERE id = $1`, [postId]);
     return res.json({ success: true });
   } catch (error) {
     console.error('Error deleting post:', error);
@@ -154,7 +160,7 @@ router.post('/posts/:postId/like', async (req: Request, res: Response) => {
     }
 
     // Insert like (will fail silently if already exists due to UNIQUE constraint)
-    await pool.query(
+    await getPool().query(
       `INSERT INTO post_likes (post_id, user_id) 
        VALUES ($1, $2) 
        ON CONFLICT (post_id, user_id) DO NOTHING`,
@@ -162,13 +168,13 @@ router.post('/posts/:postId/like', async (req: Request, res: Response) => {
     );
 
     // Get updated post
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT likes_count FROM community_posts WHERE id = $1`,
       [postId]
     );
 
     // TODO: Send push notification to post owner
-    const postOwner = await pool.query(
+    const postOwner = await getPool().query(
       `SELECT user_id FROM community_posts WHERE id = $1`,
       [postId]
     );
@@ -198,12 +204,12 @@ router.delete('/posts/:postId/like', async (req: Request, res: Response) => {
     const { postId } = req.params;
     const { userId } = req.query;
 
-    await pool.query(
+    await getPool().query(
       `DELETE FROM post_likes WHERE post_id = $1 AND user_id = $2`,
       [postId, userId]
     );
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT likes_count FROM community_posts WHERE id = $1`,
       [postId]
     );
@@ -229,7 +235,7 @@ router.get('/posts/:postId/comments', async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 50;
     const offset = parseInt(req.query.offset as string) || 0;
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
         pc.*,
         u.nickname,
@@ -262,7 +268,7 @@ router.post('/posts/:postId/comments', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'userId and content are required' });
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO post_comments (post_id, user_id, content)
        VALUES ($1, $2, $3)
        RETURNING *`,
@@ -270,7 +276,7 @@ router.post('/posts/:postId/comments', async (req: Request, res: Response) => {
     );
 
     // Get user info
-    const userResult = await pool.query(
+    const userResult = await getPool().query(
       `SELECT nickname, profile_picture FROM user_accounts WHERE id = $1`,
       [userId]
     );
@@ -281,7 +287,7 @@ router.post('/posts/:postId/comments', async (req: Request, res: Response) => {
     };
 
     // TODO: Send push notification to post owner
-    const postOwner = await pool.query(
+    const postOwner = await getPool().query(
       `SELECT user_id FROM community_posts WHERE id = $1`,
       [postId]
     );
@@ -311,7 +317,7 @@ router.delete('/comments/:commentId', async (req: Request, res: Response) => {
     const { commentId } = req.params;
     const { userId } = req.query;
 
-    const checkResult = await pool.query(
+    const checkResult = await getPool().query(
       `SELECT user_id FROM post_comments WHERE id = $1`,
       [commentId]
     );
@@ -324,7 +330,7 @@ router.delete('/comments/:commentId', async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
-    await pool.query(`DELETE FROM post_comments WHERE id = $1`, [commentId]);
+    await getPool().query(`DELETE FROM post_comments WHERE id = $1`, [commentId]);
     return res.json({ success: true });
   } catch (error) {
     console.error('Error deleting comment:', error);
@@ -346,7 +352,7 @@ router.get('/activities/:activityId/reviews', async (req: Request, res: Response
     const limit = parseInt(req.query.limit as string) || 20;
     const offset = parseInt(req.query.offset as string) || 0;
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
         ar.*,
         u.nickname,
@@ -360,7 +366,7 @@ router.get('/activities/:activityId/reviews', async (req: Request, res: Response
     );
 
     // Get average rating
-    const avgResult = await pool.query(
+    const avgResult = await getPool().query(
       `SELECT AVG(rating)::numeric(3,2) as avg_rating, COUNT(*) as review_count
        FROM activity_reviews
        WHERE activity_id = $1 AND is_hidden = FALSE`,
@@ -402,7 +408,7 @@ router.post('/activities/:activityId/reviews', async (req: Request, res: Respons
       return res.status(400).json({ error: 'Rating must be between 1 and 5' });
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO activity_reviews 
        (user_id, activity_id, rating, review_text, photo_url, vibe_tags, recommended_for_energy)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -453,7 +459,7 @@ router.get('/leaderboard', async (req: Request, res: Response) => {
       viewName = 'alltime_challenge_leaderboard';
     }
 
-    const result = await pool.query(`SELECT * FROM ${viewName}`);
+    const result = await getPool().query(`SELECT * FROM ${viewName}`);
 
     return res.json({ leaderboard: result.rows, period });
   } catch (error) {
@@ -488,7 +494,7 @@ router.post('/challenges/complete', async (req: Request, res: Response) => {
     );
     const points = energyDiff + 1; // 1-3 points based on difficulty
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO challenge_completions 
        (user_id, activity_id, original_energy, challenge_energy, energy_difference, 
         photo_url, completion_notes, points)
@@ -521,7 +527,7 @@ router.get('/users/:userId/stats', async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
 
-    const stats = await pool.query(
+    const stats = await getPool().query(
       `SELECT 
         (SELECT COUNT(*) FROM community_posts WHERE user_id = $1) as posts_count,
         (SELECT COUNT(*) FROM activity_reviews WHERE user_id = $1) as reviews_count,
@@ -555,7 +561,7 @@ router.post('/report', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    await pool.query(
+    await getPool().query(
       `INSERT INTO content_reports 
        (reporter_user_id, content_type, content_id, reason, description)
        VALUES ($1, $2, $3, $4, $5)`,
@@ -585,7 +591,7 @@ router.post('/push-tokens', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'userId and token are required' });
     }
 
-    await pool.query(
+    await getPool().query(
       `INSERT INTO push_notification_tokens (user_id, token, device_type)
        VALUES ($1, $2, $3)
        ON CONFLICT (user_id, token) 
@@ -609,7 +615,7 @@ router.put('/push-tokens/:userId/preferences', async (req: Request, res: Respons
     const { userId } = req.params;
     const { likesEnabled, commentsEnabled, challengesEnabled } = req.body;
 
-    await pool.query(
+    await getPool().query(
       `UPDATE push_notification_tokens 
        SET likes_enabled = $2, comments_enabled = $3, challenges_enabled = $4
        WHERE user_id = $1`,
@@ -633,7 +639,7 @@ async function sendPushNotification(
 ) {
   try {
     // Get user's push tokens and preferences
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT token, device_type, likes_enabled, comments_enabled 
        FROM push_notification_tokens 
        WHERE user_id = $1`,
@@ -646,7 +652,7 @@ async function sendPushNotification(
       if (notification.type === 'comment' && !tokenData.comments_enabled) continue;
 
       // Get sender info
-      const senderResult = await pool.query(
+      const senderResult = await getPool().query(
         `SELECT nickname FROM user_accounts WHERE id = $1`,
         [notification.userId]
       );
