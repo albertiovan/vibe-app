@@ -5,9 +5,16 @@
 
 import { Pool } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app'
-});
+// Database connection - create pool lazily to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool() {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+  }
+  return pool;
+}
 
 export interface UserPreferences {
   favoriteCategories?: string[];
@@ -32,7 +39,7 @@ export class UserService {
    * Get user preferences
    */
   static async getPreferences(userId: number): Promise<UserPreferences> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT preferences FROM users WHERE id = $1`,
       [userId]
     );
@@ -54,7 +61,7 @@ export class UserService {
     
     console.log('Updating preferences for user', userId, ':', merged);
     
-    await pool.query(
+    await getPool().query(
       `UPDATE users SET preferences = $1, updated_at = NOW() WHERE id = $2`,
       [JSON.stringify(merged), userId]
     );
@@ -68,7 +75,7 @@ export class UserService {
     activityId: number,
     notes?: string
   ): Promise<SavedActivity> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO saved_activities (user_id, activity_id, notes) 
        VALUES ($1, $2, $3)
        ON CONFLICT (user_id, activity_id) 
@@ -116,7 +123,7 @@ export class UserService {
          ORDER BY sa.saved_at DESC`;
 
     const params = status ? [userId, status] : [userId];
-    const result = await pool.query(query, params);
+    const result = await getPool().query(query, params);
     return result.rows;
   }
 
@@ -128,7 +135,7 @@ export class UserService {
     activityId: number,
     status: 'saved' | 'completed' | 'canceled'
   ): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `UPDATE saved_activities 
        SET status = $1 
        WHERE user_id = $2 AND activity_id = $3`,
@@ -140,7 +147,7 @@ export class UserService {
    * Remove a saved activity
    */
   static async unsaveActivity(userId: number, activityId: number): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `DELETE FROM saved_activities 
        WHERE user_id = $1 AND activity_id = $2`,
       [userId, activityId]
@@ -156,7 +163,7 @@ export class UserService {
     interactionType: 'viewed' | 'liked' | 'booked' | 'shared' | 'dismissed',
     context?: any
   ): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `INSERT INTO activity_interactions (user_id, activity_id, interaction_type, context) 
        VALUES ($1, $2, $3, $4)`,
       [userId, activityId, interactionType, JSON.stringify(context || {})]
@@ -167,7 +174,7 @@ export class UserService {
    * Get user's favorite categories based on interactions
    */
   static async getFavoriteCategories(userId: number, limit: number = 5): Promise<string[]> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT a.category, COUNT(*) as interaction_count
        FROM activity_interactions ai
        JOIN activities a ON ai.activity_id = a.id
@@ -191,7 +198,7 @@ export class UserService {
 
     if (favoriteCategories.length === 0) {
       // New user - return popular activities
-      const result = await pool.query(
+      const result = await getPool().query(
         `SELECT DISTINCT ON (a.id) a.*, 
          COUNT(ai.id) as popularity
          FROM activities a
@@ -205,7 +212,7 @@ export class UserService {
     }
 
     // Return activities from favorite categories that user hasn't interacted with recently
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT a.*
        FROM activities a
        WHERE a.category = ANY($1::text[])
@@ -231,7 +238,7 @@ export class UserService {
     lng: number,
     city?: string
   ): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `UPDATE users 
        SET location_lat = $1, location_lng = $2, location_city = $3 
        WHERE id = $4`,
@@ -249,7 +256,7 @@ export class UserService {
     favoriteCategory: string | null;
   }> {
     const [savedResult, interactionsResult, categoryResult] = await Promise.all([
-      pool.query(
+      getPool().query(
         `SELECT 
           COUNT(*) FILTER (WHERE status = 'saved') as total_saved,
           COUNT(*) FILTER (WHERE status = 'completed') as total_completed
@@ -257,13 +264,13 @@ export class UserService {
          WHERE user_id = $1`,
         [userId]
       ),
-      pool.query(
+      getPool().query(
         `SELECT COUNT(*) as total
          FROM activity_interactions
          WHERE user_id = $1`,
         [userId]
       ),
-      pool.query(
+      getPool().query(
         `SELECT a.category, COUNT(*) as count
          FROM activity_interactions ai
          JOIN activities a ON ai.activity_id = a.id
