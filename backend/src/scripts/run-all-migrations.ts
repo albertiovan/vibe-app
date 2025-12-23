@@ -16,6 +16,7 @@ const migrations = [
   '001_create_activities_and_venues.sql',
   '002_user_preferences_and_history.sql',
   '003_tags_and_maps.sql',
+  '004_create_user_accounts.sql',
   '006_activity_feedback.sql',
   '007_add_website_column.sql',
   '009_training_feedback.sql',
