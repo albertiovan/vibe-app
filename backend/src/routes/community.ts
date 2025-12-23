@@ -1,16 +1,11 @@
 import express, { Request, Response } from 'express';
 import { Pool } from 'pg';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
-
-// Load environment variables
-dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const router = express.Router();
 
-// Database connection
+// Database connection - use environment variable set by server.ts
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
+  connectionString: process.env.DATABASE_URL,
 });
 
 // ============================================
