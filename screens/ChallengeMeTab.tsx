@@ -31,12 +31,10 @@ import { useLanguage } from '../src/i18n/LanguageContext';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.85;
 
+import { API_BASE_URL } from '../src/config/api';
+
 const getApiUrl = () => {
-  if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
-  if (__DEV__) {
-    return Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
-  }
-  return 'http://10.103.30.198:3000';
+  return API_BASE_URL;
 };
 
 interface Challenge {

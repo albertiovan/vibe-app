@@ -22,6 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { OrbBackdrop } from '../ui/components/OrbBackdrop';
 import { ActivitySuggestionCard } from '../ui/blocks/ActivitySuggestionCard';
 import { LoadingShimmer } from '../ui/components/LoadingShimmer';
+import { VibeLoadingAnimation } from '../ui/components/VibeLoadingAnimation';
 import { theme } from '../ui/theme/tokens';
 import { chatApi } from '../src/services/chatApi';
 import { FilterOptions } from '../components/filters/ActivityFilters';
@@ -237,7 +238,7 @@ export const SuggestionsScreenShell: React.FC = () => {
     return (
       <View style={styles.loadingContainer}>
         <OrbBackdrop variant="dark" />
-        <LoadingShimmer text="Matching your vibe..." />
+        <VibeLoadingAnimation message="Finding your perfect vibe..." />
       </View>
     );
   }
