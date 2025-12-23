@@ -6,12 +6,16 @@ import * as dotenv from 'dotenv';
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env.production') });
 
+console.log('🔍 DATABASE_URL:', process.env.DATABASE_URL ? 'Loaded' : 'Missing');
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
 async function ensureCommunityTables() {
   try {
+    console.log('🔌 Connecting to database...');
+    
     // Check if community_posts table exists
     const result = await pool.query(`
       SELECT EXISTS (
