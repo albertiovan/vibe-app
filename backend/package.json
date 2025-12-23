@@ -44,7 +44,8 @@
     "test:mcp": "tsx scripts/test-mcp-recommendations.ts",
     "csv:convert": "tsx scripts/csv-to-seed-json.ts",
     "csv:import": "npm run csv:convert && npm run db:reset",
-    "translate:romanian": "tsx scripts/translate-activities-to-romanian.ts"
+    "translate:romanian": "tsx scripts/translate-activities-to-romanian.ts",
+    "migrate:community": "tsx src/scripts/ensure-community-tables.ts"
   },
   "keywords": [
     "vibe",
