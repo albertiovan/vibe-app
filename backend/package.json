@@ -45,7 +45,8 @@
     "csv:convert": "tsx scripts/csv-to-seed-json.ts",
     "csv:import": "npm run csv:convert && npm run db:reset",
     "translate:romanian": "tsx scripts/translate-activities-to-romanian.ts",
-    "migrate:community": "tsx src/scripts/ensure-community-tables.ts"
+    "migrate:community": "tsx src/scripts/ensure-community-tables.ts",
+    "migrate:all": "tsx src/scripts/run-all-migrations.ts"
   },
   "keywords": [
     "vibe",
