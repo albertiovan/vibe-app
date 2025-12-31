@@ -612,24 +612,35 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
         : [region];
       
       let { rows: fallbackActivities } = await pool.query(fallbackQuery, fallbackParams);
+      console.log(`📊 Level 3 fallback: Found ${fallbackActivities.length} activities before distance filter`);
       
-      // Apply distance filter to fallback
+      // Apply distance filter to fallback, but keep results if filter removes everything
       if (request.filters?.userLatitude && request.filters?.userLongitude) {
+        const beforeFilter = fallbackActivities.length;
         const expandedDistance = originalMaxDistance ? Math.min(originalMaxDistance * 1.5, 25) : null;
-        fallbackActivities = filterByDistance(
+        const filtered = filterByDistance(
           fallbackActivities,
           request.filters.userLatitude,
           request.filters.userLongitude,
           expandedDistance
         );
         
-        if (expandedDistance && expandedDistance !== originalMaxDistance) {
-          fallbackActivities.forEach(a => {
-            a._expandedRadius = true;
-            a._originalMaxDistance = originalMaxDistance;
-            a._expandedMaxDistance = expandedDistance;
-          });
-          distanceExpanded = true;
+        // Only apply filter if it doesn't remove ALL activities
+        if (filtered.length > 0) {
+          fallbackActivities = filtered;
+          console.log(`📍 Distance filter applied: ${fallbackActivities.length}/${beforeFilter} activities kept`);
+          
+          if (expandedDistance && expandedDistance !== originalMaxDistance) {
+            fallbackActivities.forEach(a => {
+              a._expandedRadius = true;
+              a._originalMaxDistance = originalMaxDistance;
+              a._expandedMaxDistance = expandedDistance;
+            });
+            distanceExpanded = true;
+          }
+        } else {
+          console.log(`⚠️ Distance filter would remove all activities, keeping unfiltered results`);
+          // Keep original activities without distance filtering
         }
       }
       

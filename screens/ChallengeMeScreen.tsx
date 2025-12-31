@@ -28,6 +28,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
+import { API_BASE_URL } from '../src/config/api';
 import { BlurView } from 'expo-blur';
 import { OrbBackdrop } from '../ui/components/OrbBackdrop';
 import { theme } from '../ui/theme/tokens';
@@ -99,7 +100,7 @@ export const ChallengeMeScreen: React.FC = () => {
         : 'http://localhost:3000';
         
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || API_URL}/api/challenges/me?deviceId=${deviceId}`
+        `${API_BASE_URL}/api/challenges/me?deviceId=${deviceId}`
       );
       
       if (!response.ok) {

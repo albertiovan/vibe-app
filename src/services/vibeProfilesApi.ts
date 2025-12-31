@@ -3,27 +3,9 @@
  * Handles all API calls for custom vibe profiles
  */
 
-import { Platform } from 'react-native';
+import { API_BASE_URL } from '../config/api';
 
-// Use appropriate API URL based on platform
-const getApiUrl = () => {
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
-  }
-  
-  // Match the same IP used in other services for consistency
-  if (__DEV__) {
-    // For iOS simulator, Android emulator, and local development
-    return Platform.OS === 'android' 
-      ? 'http://10.0.2.2:3000'
-      : 'http://localhost:3000';
-  }
-  
-  // For standalone builds on same Wi-Fi (your Mac's LAN IP)
-  return 'http://10.103.30.198:3000';
-};
-
-const API_URL = getApiUrl();
+const API_URL = API_BASE_URL;
 
 export interface VibeProfileFilters {
   energyLevel?: 'low' | 'medium' | 'high';

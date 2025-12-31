@@ -21,6 +21,7 @@ import { userStorage } from '../src/services/userStorage';
 import { useTheme } from '../src/contexts/ThemeContext';
 import { useVibe } from '../src/contexts/VibeContext';
 import { LinearGradient } from 'expo-linear-gradient';
+import { API_BASE_URL } from '../src/config/api';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -161,7 +162,7 @@ export const MinimalActivityDetailScreen: React.FC = () => {
       const account = await userStorage.getAccount();
       if (account?.userId) {
         await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activity-completion/log`,
+          `${API_BASE_URL}/api/activity-completion/log`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

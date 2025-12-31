@@ -17,6 +17,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { userStorage } from '../src/services/userStorage';
+import { API_BASE_URL } from '../src/config/api';
 
 interface CompletedActivity {
   instance_id: number;
@@ -47,7 +48,7 @@ export function ActivityHistoryScreen() {
       }
 
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activity-completion/history?userId=${account.userId}&limit=50`
+        `${API_BASE_URL}/api/activity-completion/history?userId=${account.userId}&limit=50`
       );
 
       if (response.ok) {

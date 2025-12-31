@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityCompletionModal } from '../ui/components/ActivityCompletionModal';
 import { userStorage } from '../src/services/userStorage';
+import { API_BASE_URL } from '../src/config/api';
 
 interface ActivityCompletionWrapperProps {
   children: React.ReactNode;
@@ -30,7 +31,7 @@ export function ActivityCompletionWrapper({ children }: ActivityCompletionWrappe
 
       // Call backend API to check for promptable activity
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activity-completion/promptable?userId=${account.userId}`
+        `${API_BASE_URL}/api/activity-completion/promptable?userId=${account.userId}`
       );
 
       if (response.ok) {
@@ -59,7 +60,7 @@ export function ActivityCompletionWrapper({ children }: ActivityCompletionWrappe
 
       // Send completion to backend
       await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activity-completion/complete`,
+        `${API_BASE_URL}/api/activity-completion/complete`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -84,7 +85,7 @@ export function ActivityCompletionWrapper({ children }: ActivityCompletionWrappe
   async function handleSkip() {
     try {
       await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activity-completion/skip`,
+        `${API_BASE_URL}/api/activity-completion/skip`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -106,7 +107,7 @@ export function ActivityCompletionWrapper({ children }: ActivityCompletionWrappe
   async function handleOngoing() {
     try {
       await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activity-completion/ongoing`,
+        `${API_BASE_URL}/api/activity-completion/ongoing`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

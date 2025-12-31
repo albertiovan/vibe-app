@@ -28,6 +28,7 @@ import { RainbowButton } from '../ui/components/RainbowButton';
 import { theme } from '../ui/theme/tokens';
 import { chatApi, ChatStartResponse } from '../src/services/chatApi';
 import { userStorage } from '../src/services/userStorage';
+import { API_BASE_URL } from '../src/config/api';
 import ActivityFilters, { FilterOptions } from '../components/filters/ActivityFilters';
 import { VibeProfileSelector } from '../components/VibeProfileSelector';
 import { CreateVibeProfileModal } from '../components/CreateVibeProfileModal';
@@ -185,7 +186,7 @@ export const HomeScreenShell: React.FC = () => {
         : 'http://localhost:3000';
         
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL || API_URL}/api/challenges/me?deviceId=${deviceId}`
+        `${API_BASE_URL}/api/challenges/me?deviceId=${deviceId}`
       );
       
       if (!response.ok) {

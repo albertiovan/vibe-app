@@ -27,6 +27,7 @@ import { theme } from '../ui/theme/tokens';
 import { chatApi } from '../src/services/chatApi';
 import { FilterOptions } from '../components/filters/ActivityFilters';
 import { useLanguage } from '../src/i18n/LanguageContext';
+import { API_BASE_URL } from '../src/config/api';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -102,7 +103,7 @@ export const SuggestionsScreenShell: React.FC = () => {
 
     // Track acceptance for ML
     try {
-      await fetch(`${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activities/feedback`, {
+      await fetch(`${API_BASE_URL}/api/activities/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -129,7 +130,7 @@ export const SuggestionsScreenShell: React.FC = () => {
 
     // Track denial for ML
     try {
-      await fetch(`${process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000'}/api/activities/feedback`, {
+      await fetch(`${API_BASE_URL}/api/activities/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

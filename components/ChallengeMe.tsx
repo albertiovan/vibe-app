@@ -23,6 +23,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../src/design-system/colors';
 import { tokens } from '../src/design-system/tokens';
 import { useLanguage } from '../src/i18n/LanguageContext';
+import { API_BASE_URL } from '../src/config/api';
 
 interface Challenge {
   activityId: number;
@@ -67,18 +68,8 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
     
     setLoading(true);
     try {
-      // Use platform-specific API URL
-      const getApiUrl = () => {
-        if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
-        if (__DEV__) {
-          return Platform.OS === 'android' ? 'http://10.0.2.2:3000' : 'http://localhost:3000';
-        }
-        // For standalone builds on same Wi-Fi (your Mac's LAN IP)
-        return 'http://10.103.30.198:3000';
-      };
-        
       const response = await fetch(
-        `${getApiUrl()}/api/challenges/me?deviceId=${deviceId}`
+        `${API_BASE_URL}/api/challenges/me?deviceId=${deviceId}`
       );
       
       if (!response.ok) {
@@ -110,14 +101,8 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
     
     // Record response
     try {
-      const getApiUrl = () => {
-        if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
-        if (__DEV__) return 'http://localhost:3000';
-        return 'http://10.103.30.198:3000';
-      };
-      
       await fetch(
-        `${getApiUrl()}/api/challenges/respond`,
+        `${API_BASE_URL}/api/challenges/respond`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -164,14 +149,8 @@ export const ChallengeMe: React.FC<ChallengeMeProps> = ({ deviceId, onChallengeA
     
     // Record response
     try {
-      const getApiUrl = () => {
-        if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
-        if (__DEV__) return 'http://localhost:3000';
-        return 'http://10.103.30.198:3000';
-      };
-      
       await fetch(
-        `${getApiUrl()}/api/challenges/respond`,
+        `${API_BASE_URL}/api/challenges/respond`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
