@@ -180,8 +180,10 @@ export async function getMCPRecommendations(
  */
 async function queryDatabaseDirectly(request: VibeRequest): Promise<RecommendationResult> {
   const { Pool } = await import('pg');
+  const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+  console.log('🔌 Database connection:', dbUrl.includes('rds.amazonaws.com') ? 'RDS (production)' : 'localhost (development)');
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
+    connectionString: dbUrl,
   });
   
   try {
