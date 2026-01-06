@@ -3,6 +3,11 @@
  * 
  * Analyzes user behavior patterns and suggests NEW, EXCITING challenges
  * that push them outside their comfort zone
+ * 
+ * WEATHER-AWARE: Uses Open-Meteo API (free, no key needed) to:
+ * - Suggest indoor activities in bad weather
+ * - Avoid water/outdoor activities in winter/rain
+ * - Prioritize outdoor adventures in good weather
  */
 
 import { Router, Request, Response } from 'express';
@@ -19,6 +24,149 @@ function getPool(): Pool {
     pool = new Pool({ connectionString: dbUrl });
   }
   return pool;
+}
+
+// ============================================
+// WEATHER SERVICE
+// ============================================
+
+interface WeatherData {
+  temperature: number;
+  condition: string;
+  precipitation: number;
+  windSpeed: number;
+  isGoodForOutdoor: boolean;
+  isWinter: boolean;
+  recommendedType: 'indoor' | 'outdoor' | 'both';
+  avoidCategories: string[];
+  preferCategories: string[];
+}
+
+/**
+ * Get current weather for a location using Open-Meteo (free, no API key)
+ */
+async function getCurrentWeather(lat: number = 44.4268, lng: number = 26.1025): Promise<WeatherData> {
+  const defaultWeather: WeatherData = {
+    temperature: 15,
+    condition: 'clear',
+    precipitation: 0,
+    windSpeed: 10,
+    isGoodForOutdoor: true,
+    isWinter: false,
+    recommendedType: 'both',
+    avoidCategories: [],
+    preferCategories: []
+  };
+
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,precipitation,wind_speed_10m,weather_code&timezone=auto`;
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      throw new Error(`Weather API error: ${response.status}`);
+    }
+    
+    const data = await response.json() as any;
+    const current = data.current;
+    
+    if (!current) {
+      return defaultWeather;
+    }
+    
+    const temp = current.temperature_2m ?? 15;
+    const precipitation = current.precipitation ?? 0;
+    const windSpeed = current.wind_speed_10m ?? 10;
+    const weatherCode = current.weather_code ?? 0;
+    
+    // Determine conditions
+    const isRaining = weatherCode >= 51 && weatherCode <= 99; // Rain, snow, thunderstorm codes
+    const isSnowing = weatherCode >= 71 && weatherCode <= 77;
+    const isStormy = weatherCode >= 95;
+    const isCold = temp < 5;
+    const isVeryCold = temp < 0;
+    const isHot = temp > 30;
+    const isWindy = windSpeed > 30;
+    
+    // Determine current month for seasonal awareness
+    const month = new Date().getMonth(); // 0-11
+    const isWinter = month === 11 || month === 0 || month === 1; // Dec, Jan, Feb
+    const isSummer = month >= 5 && month <= 8; // Jun-Sep
+    
+    // Determine outdoor suitability
+    const isGoodForOutdoor = !isRaining && !isSnowing && !isStormy && 
+                              !isWindy && temp >= 5 && temp <= 32;
+    
+    // Build category preferences based on weather
+    const avoidCategories: string[] = [];
+    const preferCategories: string[] = [];
+    
+    // Bad weather → avoid outdoor activities
+    if (isRaining || isSnowing || isStormy) {
+      avoidCategories.push('water', 'nature', 'adventure');
+      preferCategories.push('creative', 'wellness', 'culinary', 'culture', 'learning');
+    }
+    
+    // Cold weather → avoid water, outdoor sports
+    if (isCold) {
+      avoidCategories.push('water');
+      if (!isWinter) {
+        // Only avoid if not proper winter season
+        avoidCategories.push('sports');
+      }
+    }
+    
+    // Very cold → strongly prefer indoor
+    if (isVeryCold) {
+      avoidCategories.push('nature', 'adventure');
+      preferCategories.push('wellness', 'culture', 'creative');
+    }
+    
+    // Hot weather → prefer water, avoid strenuous outdoor
+    if (isHot) {
+      preferCategories.push('water', 'wellness');
+    }
+    
+    // Winter season → add winter sports as option
+    if (isWinter && !isRaining) {
+      preferCategories.push('winter');
+    }
+    
+    // Good weather → prefer outdoor
+    if (isGoodForOutdoor && temp >= 15 && temp <= 28) {
+      preferCategories.push('nature', 'adventure', 'sports');
+    }
+    
+    const recommendedType: 'indoor' | 'outdoor' | 'both' = 
+      isRaining || isSnowing || isVeryCold ? 'indoor' :
+      isGoodForOutdoor && temp >= 15 ? 'outdoor' : 'both';
+    
+    const condition = isRaining ? 'rainy' : isSnowing ? 'snowy' : 
+                       isStormy ? 'stormy' : isCold ? 'cold' : 
+                       isHot ? 'hot' : 'clear';
+    
+    console.log(`🌤️ Weather: ${temp}°C, ${condition}, outdoor=${isGoodForOutdoor}`);
+    
+    return {
+      temperature: Math.round(temp),
+      condition,
+      precipitation,
+      windSpeed,
+      isGoodForOutdoor,
+      isWinter,
+      recommendedType,
+      avoidCategories: [...new Set(avoidCategories)],
+      preferCategories: [...new Set(preferCategories)]
+    };
+    
+  } catch (error) {
+    console.log('⚠️ Weather fetch failed, using defaults:', error instanceof Error ? error.message : 'Unknown');
+    return defaultWeather;
+  }
 }
 
 interface ChallengeActivity {
@@ -69,10 +217,11 @@ const CATEGORY_INFO: Record<string, { emoji: string; label: string }> = {
 /**
  * GET /api/challenges/me
  * Get 3 personalized challenges based on user's past behavior
+ * Weather-aware: filters out inappropriate activities based on current weather
  */
 router.get('/me', async (req: Request, res: Response) => {
   try {
-    const { deviceId, userId } = req.query;
+    const { deviceId, userId, lat, lng } = req.query;
     const userIdentifier = userId || deviceId;
 
     if (!userIdentifier) {
@@ -80,6 +229,12 @@ router.get('/me', async (req: Request, res: Response) => {
     }
 
     console.log('🎯 Generating challenges for user:', userIdentifier);
+
+    // STEP 0: Fetch current weather for weather-aware challenges
+    const userLat = lat ? parseFloat(lat as string) : 44.4268; // Default: București
+    const userLng = lng ? parseFloat(lng as string) : 26.1025;
+    const weather = await getCurrentWeather(userLat, userLng);
+    console.log(`🌤️ Weather for challenges: ${weather.temperature}°C, ${weather.condition}, recommend=${weather.recommendedType}`);
 
     // STEP 1: Analyze user's past activity patterns (gracefully handle new users)
     let userPattern;
@@ -99,9 +254,9 @@ router.get('/me', async (req: Request, res: Response) => {
       };
     }
 
-    // STEP 2: Generate challenge suggestions (opposite of comfort zone)
-    const challenges = await generateChallenges(userPattern);
-    console.log(`✅ Generated ${challenges.length} challenges`);
+    // STEP 2: Generate weather-aware challenge suggestions (opposite of comfort zone)
+    const challenges = await generateChallenges(userPattern, weather);
+    console.log(`✅ Generated ${challenges.length} weather-appropriate challenges`);
 
     return res.json({
       challenges,
@@ -109,6 +264,12 @@ router.get('/me', async (req: Request, res: Response) => {
         dominantCategories: userPattern.dominantCategories,
         dominantEnergy: userPattern.dominantEnergy,
         preferredLocation: userPattern.preferredLocation
+      },
+      weather: {
+        temperature: weather.temperature,
+        condition: weather.condition,
+        recommendedType: weather.recommendedType,
+        isGoodForOutdoor: weather.isGoodForOutdoor
       }
     });
 
@@ -263,15 +424,42 @@ async function analyzeUserPattern(userIdentifier: string): Promise<{
 
 /**
  * Generate 3 challenge activities that push user outside comfort zone
+ * Weather-aware: filters out inappropriate activities based on current conditions
  */
-async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyzeUserPattern>>): Promise<ChallengeActivity[]> {
+async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyzeUserPattern>>, weather?: WeatherData): Promise<ChallengeActivity[]> {
   const challenges: ChallengeActivity[] = [];
 
   // Define challenge strategy based on user patterns
-  const challengeCategories = determineChallengeCategories(userPattern);
+  let challengeCategories = determineChallengeCategories(userPattern);
   const challengeEnergy = determineChallengeEnergy(userPattern);
 
-  console.log('🎯 Challenge strategy:', { challengeCategories, challengeEnergy });
+  // WEATHER FILTERING: Remove inappropriate categories based on weather
+  if (weather) {
+    // Filter out categories that are bad for current weather
+    if (weather.avoidCategories.length > 0) {
+      challengeCategories = challengeCategories.filter(
+        cat => !weather.avoidCategories.includes(cat)
+      );
+      console.log(`🌤️ Filtered categories for weather: ${challengeCategories.join(', ')}`);
+    }
+    
+    // If all categories filtered out, use weather-preferred categories
+    if (challengeCategories.length === 0) {
+      challengeCategories = weather.preferCategories.length > 0 
+        ? weather.preferCategories 
+        : ['creative', 'wellness', 'culture', 'learning'];
+      console.log(`🌤️ Using weather-preferred categories: ${challengeCategories.join(', ')}`);
+    }
+  }
+
+  console.log('🎯 Challenge strategy:', { challengeCategories, challengeEnergy, weather: weather?.condition });
+
+  // Build indoor/outdoor filter based on weather
+  const indoorOutdoorFilter = weather?.recommendedType === 'indoor' 
+    ? `AND (a.indoor_outdoor = 'indoor' OR a.indoor_outdoor IS NULL)`
+    : weather?.recommendedType === 'outdoor'
+    ? `AND (a.indoor_outdoor = 'outdoor' OR a.indoor_outdoor = 'both' OR a.indoor_outdoor IS NULL)`
+    : ''; // 'both' = no filter
 
   // Query 1: LOCAL CHALLENGE (in user's city but different category)
   const localChallenge = await getPool().query(`
@@ -284,6 +472,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
     WHERE a.category = ANY($1::text[])
       AND a.energy_level = $2
       AND a.region = 'București'
+      ${indoorOutdoorFilter}
     ORDER BY RANDOM()
     LIMIT 1
   `, [challengeCategories, challengeEnergy]);
@@ -314,6 +503,11 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
   }
 
   // Query 2: TRAVEL CHALLENGE (outside city, adventurous)
+  // Weather-aware: avoid water/outdoor travel challenges in bad weather
+  const travelCategories = weather?.avoidCategories.includes('water') || weather?.avoidCategories.includes('nature')
+    ? ['culture', 'wellness', 'creative', 'winter'] // Indoor travel options
+    : ['adventure', 'nature', 'sports', 'water']; // Outdoor travel options
+  
   const travelChallenge = await getPool().query(`
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
@@ -321,13 +515,13 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
       a.duration_min, a.duration_max, a.latitude, a.longitude,
       a.hero_image_url
     FROM activities a
-    WHERE a.category IN ('adventure', 'nature', 'sports', 'water')
-      AND a.energy_level = 'high'
+    WHERE a.category = ANY($1::text[])
       AND a.region != 'București'
       AND a.region IN ('Brașov', 'Prahova', 'Sinaia', 'Constanța')
+      ${indoorOutdoorFilter}
     ORDER BY RANDOM()
     LIMIT 1
-  `);
+  `, [travelCategories]);
 
   if (travelChallenge.rows.length > 0) {
     const activity = travelChallenge.rows[0];
@@ -355,6 +549,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
   }
 
   // Query 3: EXTREME CHALLENGE (completely different from user's pattern)
+  // Weather-aware: in bad weather, pick indoor adrenaline activities
   const extremeChallenge = await getPool().query(`
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
@@ -364,7 +559,9 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
     FROM activities a
     WHERE a.category NOT IN (SELECT unnest($1::text[]))
       AND a.energy_level != $2
-      AND 'mood:adrenaline' = ANY(a.tags)
+      AND ('mood:adrenaline' = ANY(a.tags) OR a.category IN ('adventure', 'sports'))
+      ${weather?.avoidCategories.length ? `AND a.category NOT IN (${weather.avoidCategories.map(c => `'${c}'`).join(',')})` : ''}
+      ${indoorOutdoorFilter}
     ORDER BY RANDOM()
     LIMIT 1
   `, [userPattern.dominantCategories.length > 0 ? userPattern.dominantCategories : ['none'], userPattern.dominantEnergy]);
