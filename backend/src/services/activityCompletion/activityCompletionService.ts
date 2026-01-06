@@ -5,9 +5,15 @@
 
 import { Pool } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app'
-});
+// Lazy pool initialization to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+    pool = new Pool({ connectionString: dbUrl });
+  }
+  return pool;
+}
 
 export interface ActivityInstance {
   id: number;
@@ -66,7 +72,7 @@ export class ActivityCompletionService {
     actionType: 'go_now' | 'learn_more',
     venueId?: number
   ): Promise<number> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO activity_instances 
        (user_id, activity_id, venue_id, action_type, action_timestamp, status)
        VALUES ($1, $2, $3, $4, NOW(), 'pending')
@@ -87,7 +93,7 @@ export class ActivityCompletionService {
   static async getPromptableActivity(userId: string): Promise<ActivityInstance | null> {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
     
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
         ai.*,
         a.name as activity_name,
@@ -115,7 +121,7 @@ export class ActivityCompletionService {
   static async getPendingCount(userId: string): Promise<number> {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
     
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT COUNT(*) as count
        FROM activity_instances
        WHERE user_id = $1
@@ -137,7 +143,7 @@ export class ActivityCompletionService {
     photoUrl?: string,
     review?: string
   ): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `UPDATE activity_instances
        SET 
          status = 'completed',
@@ -156,7 +162,7 @@ export class ActivityCompletionService {
    * User marks activity as ongoing (resets timer)
    */
   static async markOngoing(instanceId: number): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `UPDATE activity_instances
        SET 
          action_timestamp = NOW(),
@@ -170,7 +176,7 @@ export class ActivityCompletionService {
    * User skips activity (didn't complete it)
    */
   static async skipActivity(instanceId: number): Promise<void> {
-    await pool.query(
+    await getPool().query(
       `UPDATE activity_instances
        SET 
          status = 'skipped',
@@ -189,7 +195,7 @@ export class ActivityCompletionService {
     limit: number = 50,
     offset: number = 0
   ): Promise<CompletedActivity[]> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT * FROM user_completed_activities
        WHERE user_id = $1
        ORDER BY completed_at DESC
@@ -209,7 +215,7 @@ export class ActivityCompletionService {
     average_rating: number;
     activities_with_photos: number;
   }> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
          COUNT(*) FILTER (WHERE status = 'completed') as total_completed,
          COUNT(*) FILTER (WHERE status = 'skipped') as total_skipped,
@@ -232,7 +238,7 @@ export class ActivityCompletionService {
    * Get activity by instance ID
    */
   static async getActivityInstance(instanceId: number): Promise<ActivityInstance | null> {
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
         ai.*,
         a.name as activity_name,
@@ -255,7 +261,7 @@ export class ActivityCompletionService {
   static async cleanupOldPending(): Promise<number> {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     
-    const result = await pool.query(
+    const result = await getPool().query(
       `DELETE FROM activity_instances
        WHERE status = 'pending'
          AND action_timestamp < $1
