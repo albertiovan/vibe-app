@@ -59,24 +59,55 @@ export class MultiLocationWeatherService {
   }
 
   /**
+   * Normalize city names to handle EN/RO variations
+   * "Bucharest" → "București", "Brasov" → "Brașov", etc.
+   */
+  private normalizeCityName(cityName: string): string {
+    const normalized = cityName.trim();
+    
+    // EN → RO mappings
+    const cityMappings: Record<string, string> = {
+      'Bucharest': 'București',
+      'bucharest': 'București',
+      'BUCHAREST': 'București',
+      'Brasov': 'Brașov',
+      'brasov': 'Brașov',
+      'BRASOV': 'Brașov',
+      'Cluj': 'Cluj-Napoca',
+      'cluj': 'Cluj-Napoca',
+      'Timisoara': 'Timișoara',
+      'timisoara': 'Timișoara',
+      'Iasi': 'Iași',
+      'iasi': 'Iași',
+      'Constanta': 'Constanța',
+      'constanta': 'Constanța'
+    };
+    
+    return cityMappings[normalized] || normalized;
+  }
+
+  /**
    * Get weather for a specific city
    */
   async getWeatherForCity(cityName: string): Promise<CityWeather | null> {
-    const city = ROMANIAN_CITIES[cityName as keyof typeof ROMANIAN_CITIES];
+    // Normalize city name to handle EN/RO variations
+    const normalizedName = this.normalizeCityName(cityName);
+    
+    const city = ROMANIAN_CITIES[normalizedName as keyof typeof ROMANIAN_CITIES];
     if (!city) {
-      console.warn(`⚠️ Unknown city: ${cityName}`);
+      console.warn(`⚠️ Unknown city: ${cityName} (normalized: ${normalizedName})`);
       return null;
     }
 
-    // Check cache first
-    const cached = this.getCachedWeather(cityName);
+    // Check cache first (use normalized name for cache key)
+    const cached = this.getCachedWeather(normalizedName);
     if (cached) {
-      console.log(`✅ Using cached weather for ${cityName}`);
+      console.log(`✅ Using cached weather for ${normalizedName}`);
       return cached;
     }
 
     // Fetch fresh weather
-    console.log(`🌤️ Fetching weather for ${cityName}...`);
+    console.log(`🌤️ Fetching weather for ${normalizedName}...`);
     const weather = await this.weatherService.getCurrentWeather(city.lat, city.lng);
     
     if (!weather) {
@@ -84,7 +115,7 @@ export class MultiLocationWeatherService {
     }
 
     const cityWeather: CityWeather = {
-      city: cityName,
+      city: normalizedName, // Use normalized name consistently
       lat: city.lat,
       lng: city.lng,
       temperature: Math.round(weather.temperature),
@@ -96,8 +127,8 @@ export class MultiLocationWeatherService {
       description: this.formatWeatherDescription(weather)
     };
 
-    // Cache the result
-    this.cache.data.set(cityName, cityWeather);
+    // Cache the result (use normalized name for cache key)
+    this.cache.data.set(normalizedName, cityWeather);
     this.cache.timestamp = Date.now();
 
     return cityWeather;
