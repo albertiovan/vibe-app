@@ -8,10 +8,15 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const router = express.Router();
 
-// Database connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
-});
+// Lazy pool initialization to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+    pool = new Pool({ connectionString: dbUrl });
+  }
+  return pool;
+}
 
 // ============================================
 // ADMIN AUTHENTICATION MIDDLEWARE
@@ -30,7 +35,7 @@ async function requireAdmin(req: Request, res: Response, next: express.NextFunct
     }
 
     // Check if user is admin or moderator
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT role FROM user_accounts WHERE id = $1`,
       [userId]
     );
@@ -64,21 +69,21 @@ async function requireAdmin(req: Request, res: Response, next: express.NextFunct
 router.get('/dashboard', requireAdmin, async (req: Request, res: Response) => {
   try {
     // Get pending reports count
-    const reportsResult = await pool.query(
+    const reportsResult = await getPool().query(
       `SELECT COUNT(*) as pending_reports FROM content_reports WHERE status = 'pending'`
     );
 
     // Get flagged content count
-    const flaggedPostsResult = await pool.query(
+    const flaggedPostsResult = await getPool().query(
       `SELECT COUNT(*) as flagged_posts FROM community_posts WHERE is_flagged = TRUE AND is_hidden = FALSE`
     );
 
-    const flaggedCommentsResult = await pool.query(
+    const flaggedCommentsResult = await getPool().query(
       `SELECT COUNT(*) as flagged_comments FROM post_comments WHERE is_flagged = TRUE AND is_hidden = FALSE`
     );
 
     // Get community stats
-    const statsResult = await pool.query(
+    const statsResult = await getPool().query(
       `SELECT 
         (SELECT COUNT(*) FROM community_posts WHERE created_at >= NOW() - INTERVAL '24 hours') as posts_today,
         (SELECT COUNT(*) FROM post_comments WHERE created_at >= NOW() - INTERVAL '24 hours') as comments_today,
@@ -124,7 +129,7 @@ router.get('/reports', requireAdmin, async (req: Request, res: Response) => {
     const offset = parseInt(req.query.offset as string) || 0;
     const status = req.query.status || 'pending';
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
         cr.*,
         reporter.nickname as reporter_nickname,
@@ -157,7 +162,7 @@ router.get('/reports/:reportId/content', requireAdmin, async (req: Request, res:
     const { reportId } = req.params;
 
     // Get report details
-    const reportResult = await pool.query(
+    const reportResult = await getPool().query(
       `SELECT content_type, content_id FROM content_reports WHERE id = $1`,
       [reportId]
     );
@@ -171,7 +176,7 @@ router.get('/reports/:reportId/content', requireAdmin, async (req: Request, res:
 
     // Fetch the actual content based on type
     if (content_type === 'post') {
-      const result = await pool.query(
+      const result = await getPool().query(
         `SELECT cp.*, u.nickname, u.profile_picture, a.name as activity_name
          FROM community_posts cp
          JOIN user_accounts u ON cp.user_id = u.id
@@ -181,7 +186,7 @@ router.get('/reports/:reportId/content', requireAdmin, async (req: Request, res:
       );
       content = result.rows[0];
     } else if (content_type === 'comment') {
-      const result = await pool.query(
+      const result = await getPool().query(
         `SELECT pc.*, u.nickname, u.profile_picture
          FROM post_comments pc
          JOIN user_accounts u ON pc.user_id = u.id
@@ -190,7 +195,7 @@ router.get('/reports/:reportId/content', requireAdmin, async (req: Request, res:
       );
       content = result.rows[0];
     } else if (content_type === 'review') {
-      const result = await pool.query(
+      const result = await getPool().query(
         `SELECT ar.*, u.nickname, u.profile_picture, a.name as activity_name
          FROM activity_reviews ar
          JOIN user_accounts u ON ar.user_id = u.id
@@ -227,7 +232,7 @@ router.put('/reports/:reportId/review', requireAdmin, async (req: Request, res: 
     }
 
     // Get report details
-    const reportResult = await pool.query(
+    const reportResult = await getPool().query(
       `SELECT content_type, content_id FROM content_reports WHERE id = $1`,
       [reportId]
     );
@@ -241,25 +246,25 @@ router.put('/reports/:reportId/review', requireAdmin, async (req: Request, res: 
     // Take action on the content
     if (action === 'hide') {
       if (content_type === 'post') {
-        await pool.query(`UPDATE community_posts SET is_hidden = TRUE WHERE id = $1`, [content_id]);
+        await getPool().query(`UPDATE community_posts SET is_hidden = TRUE WHERE id = $1`, [content_id]);
       } else if (content_type === 'comment') {
-        await pool.query(`UPDATE post_comments SET is_hidden = TRUE WHERE id = $1`, [content_id]);
+        await getPool().query(`UPDATE post_comments SET is_hidden = TRUE WHERE id = $1`, [content_id]);
       } else if (content_type === 'review') {
-        await pool.query(`UPDATE activity_reviews SET is_hidden = TRUE WHERE id = $1`, [content_id]);
+        await getPool().query(`UPDATE activity_reviews SET is_hidden = TRUE WHERE id = $1`, [content_id]);
       }
     } else if (action === 'delete') {
       if (content_type === 'post') {
-        await pool.query(`DELETE FROM community_posts WHERE id = $1`, [content_id]);
+        await getPool().query(`DELETE FROM community_posts WHERE id = $1`, [content_id]);
       } else if (content_type === 'comment') {
-        await pool.query(`DELETE FROM post_comments WHERE id = $1`, [content_id]);
+        await getPool().query(`DELETE FROM post_comments WHERE id = $1`, [content_id]);
       } else if (content_type === 'review') {
-        await pool.query(`DELETE FROM activity_reviews WHERE id = $1`, [content_id]);
+        await getPool().query(`DELETE FROM activity_reviews WHERE id = $1`, [content_id]);
       }
     }
 
     // Update report status
     const newStatus = action === 'dismiss' ? 'dismissed' : 'action_taken';
-    await pool.query(
+    await getPool().query(
       `UPDATE content_reports 
        SET status = $1, admin_notes = $2, reviewed_by = $3, reviewed_at = NOW()
        WHERE id = $4`,
@@ -287,7 +292,7 @@ router.get('/flagged', requireAdmin, async (req: Request, res: Response) => {
 
     let result;
     if (contentType === 'posts') {
-      result = await pool.query(
+      result = await getPool().query(
         `SELECT cp.*, u.nickname, u.profile_picture, a.name as activity_name
          FROM community_posts cp
          JOIN user_accounts u ON cp.user_id = u.id
@@ -297,7 +302,7 @@ router.get('/flagged', requireAdmin, async (req: Request, res: Response) => {
          LIMIT 50`
       );
     } else if (contentType === 'comments') {
-      result = await pool.query(
+      result = await getPool().query(
         `SELECT pc.*, u.nickname, u.profile_picture
          FROM post_comments pc
          JOIN user_accounts u ON pc.user_id = u.id
@@ -306,7 +311,7 @@ router.get('/flagged', requireAdmin, async (req: Request, res: Response) => {
          LIMIT 50`
       );
     } else if (contentType === 'reviews') {
-      result = await pool.query(
+      result = await getPool().query(
         `SELECT ar.*, u.nickname, u.profile_picture, a.name as activity_name
          FROM activity_reviews ar
          JOIN user_accounts u ON ar.user_id = u.id
@@ -356,7 +361,7 @@ router.get('/users', requireAdmin, async (req: Request, res: Response) => {
 
     query += ` ORDER BY u.created_at DESC LIMIT $1 OFFSET $2`;
 
-    const result = await pool.query(query, params);
+    const result = await getPool().query(query, params);
 
     return res.json({
       users: result.rows,
@@ -386,7 +391,7 @@ router.put('/users/:userId/role', requireAdmin, async (req: Request, res: Respon
       return res.status(400).json({ error: 'Invalid role' });
     }
 
-    await pool.query(
+    await getPool().query(
       `UPDATE user_accounts SET role = $1 WHERE id = $2`,
       [role, userId]
     );
@@ -412,7 +417,7 @@ router.get('/waitlist', requireAdmin, async (req: Request, res: Response) => {
     const offset = parseInt(req.query.offset as string) || 0;
     const status = req.query.status || 'waiting';
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT * FROM beta_waitlist 
        WHERE status = $1 
        ORDER BY created_at ASC 
@@ -441,7 +446,7 @@ router.post('/waitlist/:waitlistId/invite', requireAdmin, async (req: Request, r
     // Generate unique invite code
     const inviteCode = `VIBE-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
 
-    await pool.query(
+    await getPool().query(
       `UPDATE beta_waitlist 
        SET status = 'invited', invite_code = $1, invited_at = NOW()
        WHERE id = $2`,
@@ -474,7 +479,7 @@ router.get('/analytics', requireAdmin, async (req: Request, res: Response) => {
     if (period === '30d') interval = '30 days';
     if (period === '90d') interval = '90 days';
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT 
         COUNT(DISTINCT cp.user_id) as active_users,
         COUNT(cp.id) as total_posts,

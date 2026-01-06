@@ -11,10 +11,15 @@ import { Pool } from 'pg';
 
 const router = Router();
 
-// Initialize database pool
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost:5432/vibe_app',
-});
+// Lazy pool initialization to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+    pool = new Pool({ connectionString: dbUrl });
+  }
+  return pool;
+}
 
 interface UserPreferences {
   favoriteCategories: string[];
@@ -72,7 +77,7 @@ async function getUserPreferences(deviceId: string): Promise<UserPreferences> {
       LIMIT 50
     `;
 
-    const result = await pool.query(interactionsQuery, [deviceId]);
+    const result = await getPool().query(interactionsQuery, [deviceId]);
     const interactions = result.rows;
 
     // Analyze favorite categories (weighted by interaction type)
@@ -329,7 +334,7 @@ async function getActivityByPreferences(options: {
       LIMIT 1
     `;
 
-    const result = await pool.query(query, params);
+    const result = await getPool().query(query, params);
     return result.rows[0] || null;
   } catch (error) {
     console.error('Error getting activity:', error);

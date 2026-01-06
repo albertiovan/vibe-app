@@ -9,9 +9,16 @@ import { Router, Request, Response } from 'express';
 import { Pool } from 'pg';
 
 const router = Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
-});
+
+// Lazy pool initialization to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+    pool = new Pool({ connectionString: dbUrl });
+  }
+  return pool;
+}
 
 interface VibeProfileFilters {
   energyLevel?: 'low' | 'medium' | 'high';
@@ -54,7 +61,7 @@ router.get('/', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'User identifier required' });
     }
 
-    const { rows: profiles } = await pool.query<VibeProfile>(`
+    const { rows: profiles } = await getPool().query<VibeProfile>(`
       SELECT id, user_identifier, name, emoji, description, filters,
              times_used, last_used_at, created_at, updated_at
       FROM vibe_profiles
@@ -93,7 +100,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     console.log('📝 Creating vibe profile:', name, 'for user:', userIdentifier);
 
-    const { rows } = await pool.query<VibeProfile>(`
+    const { rows } = await getPool().query<VibeProfile>(`
       INSERT INTO vibe_profiles (user_identifier, name, emoji, description, filters)
       VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT (user_identifier, name) 
@@ -133,7 +140,7 @@ router.put('/:id', async (req: Request, res: Response) => {
 
     console.log('📝 Updating vibe profile:', id);
 
-    const { rows } = await pool.query<VibeProfile>(`
+    const { rows } = await getPool().query<VibeProfile>(`
       UPDATE vibe_profiles
       SET name = COALESCE($2, name),
           emoji = COALESCE($3, emoji),
@@ -176,7 +183,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
 
     console.log('🗑️  Deleting vibe profile:', id);
 
-    const { rowCount } = await pool.query(`
+    const { rowCount } = await getPool().query(`
       DELETE FROM vibe_profiles
       WHERE id = $1 AND user_identifier = $2
     `, [id, userIdentifier]);
@@ -211,7 +218,7 @@ router.post('/:id/use', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'User identifier required' });
     }
 
-    const { rows } = await pool.query<VibeProfile>(`
+    const { rows } = await getPool().query<VibeProfile>(`
       UPDATE vibe_profiles
       SET times_used = times_used + 1,
           last_used_at = NOW()

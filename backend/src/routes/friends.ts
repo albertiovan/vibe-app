@@ -13,10 +13,15 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const router = express.Router();
 
-// Database connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
-});
+// Lazy pool initialization to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+    pool = new Pool({ connectionString: dbUrl });
+  }
+  return pool;
+}
 
 // ============================================
 // USER MANAGEMENT
@@ -34,14 +39,14 @@ router.post('/user/init', async (req: Request, res: Response) => {
     }
 
     // Check if user exists
-    let user = await pool.query(
+    let user = await getPool().query(
       'SELECT * FROM users WHERE device_id = $1',
       [deviceId]
     );
 
     if (user.rows.length === 0) {
       // Create new user
-      user = await pool.query(
+      user = await getPool().query(
         `INSERT INTO users (device_id, username, display_name, last_active)
          VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
          RETURNING *`,
@@ -49,7 +54,7 @@ router.post('/user/init', async (req: Request, res: Response) => {
       );
     } else {
       // Update last active
-      user = await pool.query(
+      user = await getPool().query(
         `UPDATE users SET last_active = CURRENT_TIMESTAMP
          WHERE device_id = $1
          RETURNING *`,
@@ -77,7 +82,7 @@ router.put('/user/profile', async (req: Request, res: Response) => {
 
     // Check if username is taken
     if (username) {
-      const existing = await pool.query(
+      const existing = await getPool().query(
         'SELECT id FROM users WHERE username = $1 AND device_id != $2',
         [username, deviceId]
       );
@@ -86,7 +91,7 @@ router.put('/user/profile', async (req: Request, res: Response) => {
       }
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `UPDATE users 
        SET username = COALESCE($2, username),
            display_name = COALESCE($3, display_name),
@@ -121,7 +126,7 @@ router.get('/user/search', async (req: Request, res: Response) => {
     }
 
     // Get current user's blocked list
-    const blocked = await pool.query(
+    const blocked = await getPool().query(
       `SELECT blocked_user_id FROM blocked_users WHERE user_id = (
         SELECT id FROM users WHERE device_id = $1
       )`,
@@ -146,7 +151,7 @@ router.get('/user/search', async (req: Request, res: Response) => {
 
     queryText += ' ORDER BY username LIMIT 20';
 
-    const result = await pool.query(queryText, params);
+    const result = await getPool().query(queryText, params);
 
     res.json({ users: result.rows });
   } catch (error) {
@@ -171,7 +176,7 @@ router.post('/request/send', async (req: Request, res: Response) => {
     }
 
     // Get user IDs
-    const users = await pool.query(
+    const users = await getPool().query(
       `SELECT 
         (SELECT id FROM users WHERE device_id = $1) as user_id,
         (SELECT id FROM users WHERE username = $2) as friend_id`,
@@ -185,7 +190,7 @@ router.post('/request/send', async (req: Request, res: Response) => {
     }
 
     // Check if already friends or request exists
-    const existing = await pool.query(
+    const existing = await getPool().query(
       `SELECT * FROM friendships 
        WHERE (user_id = $1 AND friend_id = $2) 
           OR (user_id = $2 AND friend_id = $1)`,
@@ -197,7 +202,7 @@ router.post('/request/send', async (req: Request, res: Response) => {
     }
 
     // Check if blocked
-    const blocked = await pool.query(
+    const blocked = await getPool().query(
       `SELECT * FROM blocked_users 
        WHERE (user_id = $1 AND blocked_user_id = $2)
           OR (user_id = $2 AND blocked_user_id = $1)`,
@@ -209,7 +214,7 @@ router.post('/request/send', async (req: Request, res: Response) => {
     }
 
     // Create friend request
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO friendships (user_id, friend_id, status, requested_by)
        VALUES ($1, $2, 'pending', $1)
        RETURNING *`,
@@ -234,7 +239,7 @@ router.post('/request/accept', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID and friendship ID required' });
     }
 
-    const userId = await pool.query(
+    const userId = await getPool().query(
       'SELECT id FROM users WHERE device_id = $1',
       [deviceId]
     );
@@ -244,7 +249,7 @@ router.post('/request/accept', async (req: Request, res: Response) => {
     }
 
     // Update friendship status
-    const result = await pool.query(
+    const result = await getPool().query(
       `UPDATE friendships 
        SET status = 'accepted', updated_at = CURRENT_TIMESTAMP
        WHERE id = $1 AND friend_id = $2 AND status = 'pending'
@@ -257,7 +262,7 @@ router.post('/request/accept', async (req: Request, res: Response) => {
     }
 
     // Create reciprocal friendship
-    await pool.query(
+    await getPool().query(
       `INSERT INTO friendships (user_id, friend_id, status, requested_by)
        VALUES ($1, $2, 'accepted', $3)
        ON CONFLICT (user_id, friend_id) DO NOTHING`,
@@ -282,7 +287,7 @@ router.post('/request/reject', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID and friendship ID required' });
     }
 
-    const userId = await pool.query(
+    const userId = await getPool().query(
       'SELECT id FROM users WHERE device_id = $1',
       [deviceId]
     );
@@ -291,7 +296,7 @@ router.post('/request/reject', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `DELETE FROM friendships 
        WHERE id = $1 AND friend_id = $2 AND status = 'pending'
        RETURNING *`,
@@ -320,7 +325,7 @@ router.get('/requests/pending', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID required' });
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT f.id, f.created_at, u.id as user_id, u.username, u.display_name, u.profile_picture
        FROM friendships f
        JOIN users u ON f.user_id = u.id
@@ -348,7 +353,7 @@ router.get('/list', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID required' });
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT u.id, u.username, u.display_name, u.profile_picture, u.bio, u.last_active, f.created_at as friends_since
        FROM friendships f
        JOIN users u ON f.friend_id = u.id
@@ -376,7 +381,7 @@ router.delete('/remove', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID and friend ID required' });
     }
 
-    const userId = await pool.query(
+    const userId = await getPool().query(
       'SELECT id FROM users WHERE device_id = $1',
       [deviceId]
     );
@@ -386,7 +391,7 @@ router.delete('/remove', async (req: Request, res: Response) => {
     }
 
     // Delete both directions of friendship
-    await pool.query(
+    await getPool().query(
       `DELETE FROM friendships 
        WHERE (user_id = $1 AND friend_id = $2)
           OR (user_id = $2 AND friend_id = $1)`,
@@ -411,7 +416,7 @@ router.delete('/clear', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID required' });
     }
 
-    const userId = await pool.query(
+    const userId = await getPool().query(
       'SELECT id FROM users WHERE device_id = $1',
       [deviceId]
     );
@@ -420,7 +425,7 @@ router.delete('/clear', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    await pool.query(
+    await getPool().query(
       `DELETE FROM friendships 
        WHERE user_id = $1 OR friend_id = $1`,
       [userId.rows[0].id]
@@ -448,7 +453,7 @@ router.post('/block', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID and blocked user ID required' });
     }
 
-    const userId = await pool.query(
+    const userId = await getPool().query(
       'SELECT id FROM users WHERE device_id = $1',
       [deviceId]
     );
@@ -458,7 +463,7 @@ router.post('/block', async (req: Request, res: Response) => {
     }
 
     // Remove any existing friendships
-    await pool.query(
+    await getPool().query(
       `DELETE FROM friendships 
        WHERE (user_id = $1 AND friend_id = $2)
           OR (user_id = $2 AND friend_id = $1)`,
@@ -466,7 +471,7 @@ router.post('/block', async (req: Request, res: Response) => {
     );
 
     // Add to blocked list
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO blocked_users (user_id, blocked_user_id, reason)
        VALUES ($1, $2, $3)
        ON CONFLICT (user_id, blocked_user_id) DO NOTHING
@@ -492,7 +497,7 @@ router.delete('/unblock', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID and blocked user ID required' });
     }
 
-    const userId = await pool.query(
+    const userId = await getPool().query(
       'SELECT id FROM users WHERE device_id = $1',
       [deviceId]
     );
@@ -501,7 +506,7 @@ router.delete('/unblock', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    await pool.query(
+    await getPool().query(
       'DELETE FROM blocked_users WHERE user_id = $1 AND blocked_user_id = $2',
       [userId.rows[0].id, blockedUserId]
     );
@@ -524,7 +529,7 @@ router.get('/blocked', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID required' });
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `SELECT u.id, u.username, u.display_name, u.profile_picture, b.created_at as blocked_at, b.reason
        FROM blocked_users b
        JOIN users u ON b.blocked_user_id = u.id
@@ -555,7 +560,7 @@ router.post('/report', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Device ID, reported user ID, and reason required' });
     }
 
-    const userId = await pool.query(
+    const userId = await getPool().query(
       'SELECT id FROM users WHERE device_id = $1',
       [deviceId]
     );
@@ -564,7 +569,7 @@ router.post('/report', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const result = await pool.query(
+    const result = await getPool().query(
       `INSERT INTO user_reports (reporter_id, reported_user_id, reason, description)
        VALUES ($1, $2, $3, $4)
        RETURNING *`,

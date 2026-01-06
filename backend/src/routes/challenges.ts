@@ -9,9 +9,17 @@ import { Router, Request, Response } from 'express';
 import { Pool } from 'pg';
 
 const router = Router();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
-});
+
+// Lazy pool initialization to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+    console.log('🔌 Challenges DB:', dbUrl.includes('rds.amazonaws.com') ? 'RDS' : 'localhost');
+    pool = new Pool({ connectionString: dbUrl });
+  }
+  return pool;
+}
 
 interface ChallengeActivity {
   activityId: number;
@@ -129,14 +137,14 @@ router.post('/respond', async (req: Request, res: Response) => {
     console.log(`📝 User ${response}ed challenge:`, activityId);
 
     // Store challenge response for future learning
-    await pool.query(`
+    await getPool().query(`
       INSERT INTO challenge_responses (user_identifier, activity_id, response, challenge_reason, decline_reason, created_at)
       VALUES ($1, $2, $3, $4, $5, NOW())
     `, [userIdentifier, activityId, response, challengeReason, declineReason || null]);
 
     // If accepted, create a pending activity for the user
     if (response === 'accepted') {
-      await pool.query(`
+      await getPool().query(`
         INSERT INTO user_challenges (user_identifier, activity_id, status, accepted_at)
         VALUES ($1, $2, 'pending', NOW())
         ON CONFLICT (user_identifier, activity_id) 
@@ -170,7 +178,7 @@ async function analyzeUserPattern(userIdentifier: string): Promise<{
   
   // Try to get user's past activities from conversation history (if table exists)
   try {
-    const result = await pool.query(`
+    const result = await getPool().query(`
       SELECT DISTINCT
         jsonb_array_elements(ch.metadata->'activities') as activity
       FROM conversation_history ch
@@ -190,7 +198,7 @@ async function analyzeUserPattern(userIdentifier: string): Promise<{
   // Also get accepted challenge responses
   let acceptedChallenges: any[] = [];
   try {
-    const result = await pool.query(`
+    const result = await getPool().query(`
       SELECT a.category, a.energy_level
       FROM challenge_responses cr
       JOIN activities a ON a.id = cr.activity_id
@@ -266,7 +274,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
   console.log('🎯 Challenge strategy:', { challengeCategories, challengeEnergy });
 
   // Query 1: LOCAL CHALLENGE (in user's city but different category)
-  const localChallenge = await pool.query(`
+  const localChallenge = await getPool().query(`
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
@@ -306,7 +314,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
   }
 
   // Query 2: TRAVEL CHALLENGE (outside city, adventurous)
-  const travelChallenge = await pool.query(`
+  const travelChallenge = await getPool().query(`
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
@@ -347,7 +355,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
   }
 
   // Query 3: EXTREME CHALLENGE (completely different from user's pattern)
-  const extremeChallenge = await pool.query(`
+  const extremeChallenge = await getPool().query(`
     SELECT 
       a.id as activity_id, a.name, a.category, a.city, a.region, 
       a.description, a.tags, a.energy_level, a.indoor_outdoor,
@@ -389,7 +397,7 @@ async function generateChallenges(userPattern: Awaited<ReturnType<typeof analyze
   // Fetch venues for each challenge (if tables exist)
   for (const challenge of challenges) {
     try {
-      const { rows: venues } = await pool.query(`
+      const { rows: venues } = await getPool().query(`
         SELECT v.id as venue_id, v.name, v.city, v.latitude, v.longitude, v.rating
         FROM venues v
         JOIN activity_venues av ON av.venue_id = v.id
@@ -494,7 +502,7 @@ router.get('/day-trips', async (req: Request, res: Response) => {
   try {
     const { limit = 3 } = req.query;
     
-    const result = await pool.query(`
+    const result = await getPool().query(`
       SELECT 
         a.id as activity_id, a.name, a.category, a.city, a.region, 
         a.description, a.energy_level, a.indoor_outdoor,
@@ -575,7 +583,7 @@ router.get('/weather-window', async (req: Request, res: Response) => {
       ? ['nature', 'adventure', 'sports', 'water']
       : ['creative', 'wellness', 'culinary', 'culture', 'learning'];
 
-    const result = await pool.query(`
+    const result = await getPool().query(`
       SELECT 
         a.id as activity_id, a.name, a.category, a.city, a.region, 
         a.description, a.energy_level, a.indoor_outdoor,
@@ -632,7 +640,7 @@ router.get('/weather-window', async (req: Request, res: Response) => {
  */
 router.get('/categories', async (_req: Request, res: Response) => {
   try {
-    const result = await pool.query(`
+    const result = await getPool().query(`
       SELECT category, COUNT(*) as count 
       FROM activities 
       WHERE category IS NOT NULL
@@ -665,7 +673,7 @@ router.get('/by-category/:category', async (req: Request, res: Response) => {
     const { category } = req.params;
     const { deviceId, userId } = req.query;
 
-    const result = await pool.query(`
+    const result = await getPool().query(`
       SELECT 
         a.id as activity_id, a.name, a.category, a.city, a.region, 
         a.description, a.energy_level, a.indoor_outdoor,
@@ -727,7 +735,7 @@ router.get('/history', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'User identifier required' });
     }
 
-    const result = await pool.query(`
+    const result = await getPool().query(`
       SELECT 
         cr.id,
         cr.response,

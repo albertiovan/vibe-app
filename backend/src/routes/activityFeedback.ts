@@ -10,9 +10,15 @@ import { Pool } from 'pg';
 
 const router = express.Router();
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
-});
+// Lazy pool initialization to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+    pool = new Pool({ connectionString: dbUrl });
+  }
+  return pool;
+}
 
 /**
  * POST /api/activities/feedback
@@ -33,7 +39,7 @@ router.post('/feedback', async (req: Request, res: Response) => {
     console.log(`📊 Activity feedback: ${action} - Activity ${activityId} by ${deviceId}`);
 
     // Store feedback in database
-    await pool.query(`
+    await getPool().query(`
       INSERT INTO activity_feedback (
         device_id,
         activity_id,
@@ -52,7 +58,7 @@ router.post('/feedback', async (req: Request, res: Response) => {
 
     // If accepted, also track in user_activities for history
     if (action === 'accepted') {
-      await pool.query(`
+      await getPool().query(`
         INSERT INTO user_activities (
           device_id,
           activity_id,
@@ -92,7 +98,7 @@ router.get('/feedback/stats', async (req: Request, res: Response) => {
     }
 
     // Get acceptance rate
-    const acceptanceRate = await pool.query(`
+    const acceptanceRate = await getPool().query(`
       SELECT 
         COUNT(*) FILTER (WHERE action = 'accepted') as accepted_count,
         COUNT(*) FILTER (WHERE action = 'denied') as denied_count,
@@ -102,7 +108,7 @@ router.get('/feedback/stats', async (req: Request, res: Response) => {
     `, [deviceId]);
 
     // Get category preferences (most accepted categories)
-    const categoryPreferences = await pool.query(`
+    const categoryPreferences = await getPool().query(`
       SELECT 
         a.category,
         COUNT(*) FILTER (WHERE af.action = 'accepted') as accepted_count,
@@ -121,7 +127,7 @@ router.get('/feedback/stats', async (req: Request, res: Response) => {
     `, [deviceId]);
 
     // Get energy level preferences
-    const energyPreferences = await pool.query(`
+    const energyPreferences = await getPool().query(`
       SELECT 
         a.energy_level,
         COUNT(*) FILTER (WHERE af.action = 'accepted') as accepted_count,
@@ -162,7 +168,7 @@ router.get('/feedback/recommendations', async (req: Request, res: Response) => {
     }
 
     // Get user's most accepted categories
-    const topCategories = await pool.query(`
+    const topCategories = await getPool().query(`
       SELECT a.category
       FROM activity_feedback af
       JOIN activities a ON a.id = af.activity_id
@@ -176,7 +182,7 @@ router.get('/feedback/recommendations', async (req: Request, res: Response) => {
 
     if (categories.length === 0) {
       // No history, return popular activities
-      const popular = await pool.query(`
+      const popular = await getPool().query(`
         SELECT DISTINCT ON (a.id) a.*, v.name as venue_name, v.latitude, v.longitude
         FROM activities a
         LEFT JOIN venues v ON v.activity_id = a.id
@@ -191,7 +197,7 @@ router.get('/feedback/recommendations', async (req: Request, res: Response) => {
     }
 
     // Get activities from preferred categories that user hasn't seen yet
-    const recommendations = await pool.query(`
+    const recommendations = await getPool().query(`
       SELECT DISTINCT ON (a.id) a.*, v.name as venue_name, v.latitude, v.longitude
       FROM activities a
       LEFT JOIN venues v ON v.activity_id = a.id

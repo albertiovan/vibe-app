@@ -11,10 +11,15 @@ import { analyzeVibeSemantically } from '../services/llm/semanticVibeAnalyzer.js
 
 const router = express.Router();
 
-// Initialize PostgreSQL connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app',
-});
+// Lazy pool initialization to ensure DATABASE_URL is loaded
+let pool: Pool | null = null;
+function getPool(): Pool {
+  if (!pool) {
+    const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost/vibe_app';
+    pool = new Pool({ connectionString: dbUrl });
+  }
+  return pool;
+}
 
 /**
  * POST /api/training/recommendations
@@ -88,7 +93,7 @@ router.post('/feedback', async (req: Request, res: Response) => {
       });
     }
 
-    const client = await pool.connect();
+    const client = await getPool().connect();
 
     try {
       await client.query('BEGIN');
@@ -165,7 +170,7 @@ router.post('/feedback', async (req: Request, res: Response) => {
  */
 router.get('/stats', async (req: Request, res: Response) => {
   try {
-    const client = await pool.connect();
+    const client = await getPool().connect();
 
     try {
       // Overall statistics
@@ -274,7 +279,7 @@ router.get('/stats', async (req: Request, res: Response) => {
  */
 router.get('/insights', async (req: Request, res: Response) => {
   try {
-    const client = await pool.connect();
+    const client = await getPool().connect();
 
     try {
       // Energy level mismatches

@@ -30,6 +30,7 @@ router.get('/feed', async (req: Request, res: Response) => {
     const filter = req.query.filter || 'all'; // all, following, nearby
     const userId = req.query.userId as string;
 
+    // Use TEXT cast for user_id to handle non-UUID formats like "user_1763927130786_vgsyak"
     let query = `
       SELECT 
         cp.*,
@@ -38,7 +39,7 @@ router.get('/feed', async (req: Request, res: Response) => {
         a.name as activity_name,
         a.name_ro as activity_name_ro,
         a.hero_image_url as activity_image_url,
-        EXISTS(SELECT 1 FROM post_likes WHERE post_id = cp.id AND user_id = $3) as user_has_liked
+        EXISTS(SELECT 1 FROM post_likes WHERE post_id = cp.id AND user_id::text = $3) as user_has_liked
       FROM community_posts cp
       LEFT JOIN activities a ON cp.activity_id = a.id
       WHERE cp.is_hidden = FALSE
@@ -46,7 +47,7 @@ router.get('/feed', async (req: Request, res: Response) => {
       LIMIT $1 OFFSET $2
     `;
 
-    const result = await getPool().query(query, [limit, offset, userId || null]);
+    const result = await getPool().query(query, [limit, offset, userId || '']);
 
     return res.json({
       posts: result.rows,
