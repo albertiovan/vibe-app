@@ -166,7 +166,7 @@ export const HomeScreenShell: React.FC = () => {
       conversationId: currentConversationId,
       deviceId: deviceId,
       userMessage: query,
-      filters: Object.keys(filters).length > 0 ? activeFilters : undefined,
+      filters: activeFilters, // Always pass filters (includes location for weather)
       userLocation: userLocation || undefined,
     });
   };
