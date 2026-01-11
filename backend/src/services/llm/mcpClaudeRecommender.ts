@@ -951,16 +951,55 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       console.log(`   OK weather: ${okWeatherActivities.length} activities`);
       console.log(`   Bad weather: ${badWeatherActivities.length} activities`);
       
-      // Prioritize good weather activities, then OK, then bad as fallback
-      weatherFilteredActivities = [
-        ...goodWeatherActivities,
-        ...okWeatherActivities,
-        ...badWeatherActivities
-      ];
+      // Check if extreme weather - if so, NEVER include bad weather activities
+      const firstWeatherData = weatherData.values().next().value;
+      const isExtremeWeather = firstWeatherData && (
+        firstWeatherData.temperature < 0 ||
+        (firstWeatherData.condition || '').toLowerCase().includes('snow') ||
+        (firstWeatherData.condition || '').toLowerCase().includes('storm')
+      );
       
-      // If we filtered out too many, show warning
-      if (goodWeatherActivities.length < 3 && badWeatherActivities.length > 0) {
-        console.log('⚠️ Limited good-weather options, including activities with weather warnings');
+      if (isExtremeWeather) {
+        // EXTREME WEATHER: Only good and OK activities, NO bad weather activities
+        console.log(`🚫 Extreme weather (${firstWeatherData.temperature}°C) - excluding ${badWeatherActivities.length} outdoor activities`);
+        weatherFilteredActivities = [
+          ...goodWeatherActivities,
+          ...okWeatherActivities
+        ];
+        
+        // If not enough activities, fetch more indoor activities
+        if (weatherFilteredActivities.length < 5) {
+          console.log(`📍 Only ${weatherFilteredActivities.length} weather-appropriate activities, fetching more indoor options...`);
+          const indoorQuery = `
+            SELECT a.id, a.name, a.category, a.city, a.region, 
+                   a.description, a.tags, a.energy_level, a.indoor_outdoor,
+                   a.latitude, a.longitude, a.duration_min
+            FROM activities a
+            WHERE a.indoor_outdoor = 'indoor'
+              AND a.id NOT IN (${weatherFilteredActivities.map(a => a.id).join(',') || '0'})
+              AND a.region = 'București'
+            ORDER BY RANDOM()
+            LIMIT ${5 - weatherFilteredActivities.length}
+          `;
+          const { rows: indoorActivities } = await pool.query(indoorQuery);
+          
+          // Add weather data to indoor activities
+          for (const activity of indoorActivities) {
+            activity._weather = firstWeatherData;
+            activity._weatherSuitability = 'good';
+            activity._relevanceScore = 50; // Lower score but still included
+          }
+          
+          weatherFilteredActivities = [...weatherFilteredActivities, ...indoorActivities];
+          console.log(`✅ Added ${indoorActivities.length} indoor activities for extreme weather`);
+        }
+      } else {
+        // Normal weather: Include all, prioritized by suitability
+        weatherFilteredActivities = [
+          ...goodWeatherActivities,
+          ...okWeatherActivities,
+          ...badWeatherActivities
+        ];
       }
     }
     
