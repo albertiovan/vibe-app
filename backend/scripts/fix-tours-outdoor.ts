@@ -6,11 +6,15 @@
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
 
-dotenv.config({ path: './backend/.env' });
+// Load environment variables - use production if --prod flag passed
+const isProd = process.argv.includes('--prod');
+dotenv.config({ path: isProd ? './backend/.env.production' : './backend/.env' });
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app'
 });
+
+console.log(`🔌 Connecting to: ${isProd ? 'PRODUCTION (RDS)' : 'LOCAL'} database`);
 
 async function fixOutdoorActivities() {
   console.log('🔧 Fixing outdoor activities...\n');
