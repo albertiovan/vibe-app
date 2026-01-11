@@ -48,7 +48,15 @@ export const ROMANIAN_CITIES = {
   'Dâmbovița': { lat: 44.9300, lng: 25.4500 },
   'Giurgiu': { lat: 43.9000, lng: 25.9700 },
   'Ialomița': { lat: 44.5700, lng: 27.3700 },
-  'Călărași': { lat: 44.2000, lng: 27.3300 }
+  'Călărași': { lat: 44.2000, lng: 27.3300 },
+  'Timiș': { lat: 45.7489, lng: 21.2087 }, // Same as Timișoara
+  'Bihor': { lat: 47.0500, lng: 21.9300 }, // Oradea region
+  'Mureș': { lat: 46.5500, lng: 24.5600 }, // Târgu Mureș region
+  'Alba': { lat: 46.0700, lng: 23.5800 }, // Alba Iulia region
+  'Hunedoara': { lat: 45.7500, lng: 22.9000 }, // Deva region
+  'Maramureș': { lat: 47.6600, lng: 23.5800 }, // Baia Mare region
+  'Suceava': { lat: 47.6500, lng: 26.2500 }, // Suceava region
+  'Neamț': { lat: 46.9300, lng: 26.3700 } // Piatra Neamț region
 } as const;
 
 export class MultiLocationWeatherService {
