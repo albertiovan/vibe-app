@@ -8,7 +8,14 @@ import * as dotenv from 'dotenv';
 
 // Load environment variables - use production if --prod flag passed
 const isProd = process.argv.includes('--prod');
-dotenv.config({ path: isProd ? './backend/.env.production' : './backend/.env' });
+// Try multiple paths to handle different working directories
+const envPaths = isProd 
+  ? ['./.env.production', './backend/.env.production', '../.env.production']
+  : ['./.env', './backend/.env', '../.env'];
+for (const envPath of envPaths) {
+  dotenv.config({ path: envPath });
+  if (process.env.DATABASE_URL) break;
+}
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://localhost/vibe_app'
