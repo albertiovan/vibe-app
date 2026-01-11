@@ -891,48 +891,61 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
         const temp = cityWeather.temperature;
         const condition = (cityWeather.condition || '').toLowerCase();
         const precipitation = cityWeather.precipitation || 0;
+        const activityName = (activity.name || '').toLowerCase();
         
         const isSnowing = condition.includes('snow') || condition.includes('blizzard');
         const isRaining = condition.includes('rain') || precipitation > 5;
         const isFreezing = temp < 0;
         const isVeryCold = temp < 5;
         const isStormy = condition.includes('storm') || condition.includes('thunder');
+        const isExtremeWeather = isSnowing || isFreezing || isStormy;
+        
+        // Detect outdoor activities from name (walking tour, rooftop, market, park, etc.)
+        const outdoorKeywords = ['tour', 'walk', 'rooftop', 'market', 'park', 'outdoor', 'garden', 'terrace', 'beach', 'lake', 'river', 'hike', 'bike', 'cycling'];
+        const hasOutdoorKeyword = outdoorKeywords.some(kw => activityName.includes(kw));
+        
+        // Detect truly indoor activities from name
+        const indoorKeywords = ['escape room', 'museum', 'spa', 'massage', 'cinema', 'theater', 'theatre', 'gallery', 'workshop', 'class', 'cooking', 'pottery', 'vr', 'gaming', 'bowling', 'pub quiz', 'board game'];
+        const hasTrulyIndoorKeyword = indoorKeywords.some(kw => activityName.includes(kw));
         
         // Indoor activities are always good
-        if (isIndoor) {
+        if (isIndoor || hasTrulyIndoorKeyword) {
           goodWeatherActivities.push(activity);
           activity._weatherSuitability = 'good';
           continue;
         }
         
-        // Non-weather-dependent activities (both/null indoor_outdoor, non-outdoor categories)
-        if (!isWeatherDependent) {
-          // Still mark as bad if extreme weather
-          if (isSnowing || isStormy || (isFreezing && isRaining)) {
+        // If activity has outdoor keywords OR extreme weather, be strict
+        const isLikelyOutdoor = isOutdoor || hasOutdoorKeyword || isWeatherDependent;
+        
+        // EXTREME WEATHER: Only truly indoor activities are good
+        if (isExtremeWeather) {
+          if (isLikelyOutdoor) {
+            badWeatherActivities.push(activity);
+            activity._weatherSuitability = 'bad';
+            weatherWarnings.set(activity.id, `⚠️ Poor weather: ${temp}°C, ${cityWeather.description}`);
+          } else {
+            // Unknown indoor/outdoor - mark as OK in extreme weather
             okWeatherActivities.push(activity);
             activity._weatherSuitability = 'ok';
             weatherWarnings.set(activity.id, `Weather not ideal: ${cityWeather.description}`);
-          } else {
-            goodWeatherActivities.push(activity);
-            activity._weatherSuitability = 'good';
           }
           continue;
         }
         
-        // OUTDOOR/WEATHER-DEPENDENT ACTIVITIES: Apply strict rules
-        // BAD: Snow, freezing, stormy, or heavy rain
-        if (isSnowing || isFreezing || isStormy || (isRaining && temp < 10)) {
-          badWeatherActivities.push(activity);
-          activity._weatherSuitability = 'bad';
-          weatherWarnings.set(activity.id, `⚠️ Poor weather: ${temp}°C, ${cityWeather.description}`);
-          continue;
-        }
-        
-        // OK: Cold (< 5°C) or light rain
-        if (isVeryCold || isRaining) {
+        // COLD WEATHER (< 5°C): Outdoor activities are OK, not bad
+        if (isVeryCold && isLikelyOutdoor) {
           okWeatherActivities.push(activity);
           activity._weatherSuitability = 'ok';
           weatherWarnings.set(activity.id, `Weather may not be ideal: ${cityWeather.description}`);
+          continue;
+        }
+        
+        // RAIN: Outdoor activities are bad
+        if (isRaining && isLikelyOutdoor) {
+          badWeatherActivities.push(activity);
+          activity._weatherSuitability = 'bad';
+          weatherWarnings.set(activity.id, `⚠️ Rainy conditions: ${cityWeather.description}`);
           continue;
         }
         
