@@ -30,6 +30,7 @@ interface WeatherCache {
  */
 export const ROMANIAN_CITIES = {
   'București': { lat: 44.4268, lng: 26.1025 },
+  'Ilfov': { lat: 44.5500, lng: 26.1500 }, // Region around București
   'Brașov': { lat: 45.6427, lng: 25.5887 },
   'Cluj-Napoca': { lat: 46.7712, lng: 23.6236 },
   'Timișoara': { lat: 45.7489, lng: 21.2087 },
@@ -42,7 +43,12 @@ export const ROMANIAN_CITIES = {
   'Danube Delta': { lat: 45.2500, lng: 29.0000 },
   'Apuseni': { lat: 46.5000, lng: 22.8000 },
   'Prahova': { lat: 45.1000, lng: 26.0000 },
-  'Tulcea': { lat: 45.1667, lng: 28.8000 }
+  'Tulcea': { lat: 45.1667, lng: 28.8000 },
+  'Argeș': { lat: 44.8500, lng: 24.8700 },
+  'Dâmbovița': { lat: 44.9300, lng: 25.4500 },
+  'Giurgiu': { lat: 43.9000, lng: 25.9700 },
+  'Ialomița': { lat: 44.5700, lng: 27.3700 },
+  'Călărași': { lat: 44.2000, lng: 27.3300 }
 } as const;
 
 export class MultiLocationWeatherService {
@@ -65,22 +71,69 @@ export class MultiLocationWeatherService {
   private normalizeCityName(cityName: string): string {
     const normalized = cityName.trim();
     
-    // EN → RO mappings
+    // EN → RO mappings and region aliases
     const cityMappings: Record<string, string> = {
+      // Bucharest variations
       'Bucharest': 'București',
       'bucharest': 'București',
       'BUCHAREST': 'București',
+      
+      // Brașov variations
       'Brasov': 'Brașov',
       'brasov': 'Brașov',
       'BRASOV': 'Brașov',
+      'Poiana Brasov': 'Poiana Brașov',
+      
+      // Cluj variations
       'Cluj': 'Cluj-Napoca',
       'cluj': 'Cluj-Napoca',
+      'Cluj Napoca': 'Cluj-Napoca',
+      
+      // Timișoara variations
       'Timisoara': 'Timișoara',
       'timisoara': 'Timișoara',
+      'TIMISOARA': 'Timișoara',
+      
+      // Iași variations
       'Iasi': 'Iași',
       'iasi': 'Iași',
+      'IASI': 'Iași',
+      
+      // Constanța variations
       'Constanta': 'Constanța',
-      'constanta': 'Constanța'
+      'constanta': 'Constanța',
+      'CONSTANTA': 'Constanța',
+      
+      // Regions (use nearest major city for weather)
+      'Balotești': 'Ilfov',
+      'Balotesti': 'Ilfov',
+      'Otopeni': 'Ilfov',
+      'Voluntari': 'Ilfov',
+      'Popești-Leordeni': 'Ilfov',
+      'Popesti-Leordeni': 'Ilfov',
+      'Buftea': 'Ilfov',
+      'Chitila': 'Ilfov',
+      
+      // Prahova region
+      'Busteni': 'Prahova',
+      'Azuga': 'Prahova',
+      'Predeal': 'Prahova',
+      
+      // Argeș variations
+      'Arges': 'Argeș',
+      'arges': 'Argeș',
+      
+      // Dâmbovița variations
+      'Dambovita': 'Dâmbovița',
+      'dambovita': 'Dâmbovița',
+      
+      // Ialomița variations
+      'Ialomita': 'Ialomița',
+      'ialomita': 'Ialomița',
+      
+      // Călărași variations
+      'Calarasi': 'Călărași',
+      'calarasi': 'Călărași'
     };
     
     return cityMappings[normalized] || normalized;
