@@ -881,17 +881,15 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
         
         activity._weather = cityWeather;
         
-        // Check if activity is weather-dependent
-        const isOutdoor = activity.indoor_outdoor === 'outdoor';
+        // Use database indoor_outdoor values (properly tagged now)
         const isIndoor = activity.indoor_outdoor === 'indoor';
-        const isWeatherDependent = isOutdoor || 
-          ['adventure', 'nature', 'sports', 'water'].includes(activity.category);
+        const isOutdoor = activity.indoor_outdoor === 'outdoor';
+        const isBoth = activity.indoor_outdoor === 'both';
         
-        // STRICT WEATHER RULES: Snow, negative temps, or heavy rain = bad for outdoor
+        // Weather conditions
         const temp = cityWeather.temperature;
         const condition = (cityWeather.condition || '').toLowerCase();
         const precipitation = cityWeather.precipitation || 0;
-        const activityName = (activity.name || '').toLowerCase();
         
         const isSnowing = condition.includes('snow') || condition.includes('blizzard');
         const isRaining = condition.includes('rain') || precipitation > 5;
@@ -900,56 +898,44 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
         const isStormy = condition.includes('storm') || condition.includes('thunder');
         const isExtremeWeather = isSnowing || isFreezing || isStormy;
         
-        // Detect outdoor activities from name (walking tour, rooftop, market, park, etc.)
-        const outdoorKeywords = ['tour', 'walk', 'rooftop', 'market', 'park', 'outdoor', 'garden', 'terrace', 'beach', 'lake', 'river', 'hike', 'bike', 'cycling'];
-        const hasOutdoorKeyword = outdoorKeywords.some(kw => activityName.includes(kw));
-        
-        // Detect truly indoor activities from name
-        const indoorKeywords = ['escape room', 'museum', 'spa', 'massage', 'cinema', 'theater', 'theatre', 'gallery', 'workshop', 'class', 'cooking', 'pottery', 'vr', 'gaming', 'bowling', 'pub quiz', 'board game'];
-        const hasTrulyIndoorKeyword = indoorKeywords.some(kw => activityName.includes(kw));
-        
-        // Indoor activities are always good
-        if (isIndoor || hasTrulyIndoorKeyword) {
+        // INDOOR activities are always GOOD
+        if (isIndoor) {
           goodWeatherActivities.push(activity);
           activity._weatherSuitability = 'good';
           continue;
         }
         
-        // If activity has outdoor keywords OR extreme weather, be strict
-        const isLikelyOutdoor = isOutdoor || hasOutdoorKeyword || isWeatherDependent;
-        
-        // EXTREME WEATHER: Only truly indoor activities are good
-        if (isExtremeWeather) {
-          if (isLikelyOutdoor) {
+        // OUTDOOR activities - strict weather rules
+        if (isOutdoor) {
+          if (isExtremeWeather) {
             badWeatherActivities.push(activity);
             activity._weatherSuitability = 'bad';
             weatherWarnings.set(activity.id, `⚠️ Poor weather: ${temp}°C, ${cityWeather.description}`);
-          } else {
-            // Unknown indoor/outdoor - mark as OK in extreme weather
+          } else if (isVeryCold || isRaining) {
             okWeatherActivities.push(activity);
             activity._weatherSuitability = 'ok';
-            weatherWarnings.set(activity.id, `Weather not ideal: ${cityWeather.description}`);
+            weatherWarnings.set(activity.id, `Weather may not be ideal: ${cityWeather.description}`);
+          } else {
+            goodWeatherActivities.push(activity);
+            activity._weatherSuitability = 'good';
           }
           continue;
         }
         
-        // COLD WEATHER (< 5°C): Outdoor activities are OK, not bad
-        if (isVeryCold && isLikelyOutdoor) {
-          okWeatherActivities.push(activity);
-          activity._weatherSuitability = 'ok';
-          weatherWarnings.set(activity.id, `Weather may not be ideal: ${cityWeather.description}`);
+        // BOTH activities - more lenient, only bad in extreme weather
+        if (isBoth) {
+          if (isExtremeWeather) {
+            okWeatherActivities.push(activity);
+            activity._weatherSuitability = 'ok';
+            weatherWarnings.set(activity.id, `Weather not ideal: ${cityWeather.description}`);
+          } else {
+            goodWeatherActivities.push(activity);
+            activity._weatherSuitability = 'good';
+          }
           continue;
         }
         
-        // RAIN: Outdoor activities are bad
-        if (isRaining && isLikelyOutdoor) {
-          badWeatherActivities.push(activity);
-          activity._weatherSuitability = 'bad';
-          weatherWarnings.set(activity.id, `⚠️ Rainy conditions: ${cityWeather.description}`);
-          continue;
-        }
-        
-        // GOOD: Everything else
+        // NULL/unknown - treat as indoor (safe default)
         goodWeatherActivities.push(activity);
         activity._weatherSuitability = 'good';
       }
