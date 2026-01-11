@@ -879,38 +879,72 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
           continue;
         }
         
+        activity._weather = cityWeather;
+        
         // Check if activity is weather-dependent
         const isOutdoor = activity.indoor_outdoor === 'outdoor';
+        const isIndoor = activity.indoor_outdoor === 'indoor';
         const isWeatherDependent = isOutdoor || 
           ['adventure', 'nature', 'sports', 'water'].includes(activity.category);
         
-        if (!isWeatherDependent) {
-          // Indoor/weather-independent activities always good
+        // STRICT WEATHER RULES: Snow, negative temps, or heavy rain = bad for outdoor
+        const temp = cityWeather.temperature;
+        const condition = (cityWeather.condition || '').toLowerCase();
+        const precipitation = cityWeather.precipitation || 0;
+        
+        const isSnowing = condition.includes('snow') || condition.includes('blizzard');
+        const isRaining = condition.includes('rain') || precipitation > 5;
+        const isFreezing = temp < 0;
+        const isVeryCold = temp < 5;
+        const isStormy = condition.includes('storm') || condition.includes('thunder');
+        
+        // Indoor activities are always good
+        if (isIndoor) {
           goodWeatherActivities.push(activity);
-          activity._weather = cityWeather;
+          activity._weatherSuitability = 'good';
           continue;
         }
         
-        // Assess weather suitability for outdoor activities
-        const suitability = assessWeatherSuitability(activity.category, {
-          tMax: cityWeather.temperature,
-          precipMm: cityWeather.precipitation,
-          windMps: cityWeather.windSpeed / 3.6, // Convert km/h to m/s
-          condition: cityWeather.condition
-        });
-        
-        activity._weather = cityWeather;
-        activity._weatherSuitability = suitability.suitability;
-        
-        if (suitability.suitability === 'good') {
-          goodWeatherActivities.push(activity);
-        } else if (suitability.suitability === 'ok') {
-          okWeatherActivities.push(activity);
-          weatherWarnings.set(activity.id, `Weather may not be ideal: ${cityWeather.description}`);
-        } else {
-          badWeatherActivities.push(activity);
-          weatherWarnings.set(activity.id, `⚠️ Poor weather conditions: ${cityWeather.description}`);
+        // Non-weather-dependent activities (both/null indoor_outdoor, non-outdoor categories)
+        if (!isWeatherDependent) {
+          // Still mark as bad if extreme weather
+          if (isSnowing || isStormy || (isFreezing && isRaining)) {
+            okWeatherActivities.push(activity);
+            activity._weatherSuitability = 'ok';
+            weatherWarnings.set(activity.id, `Weather not ideal: ${cityWeather.description}`);
+          } else {
+            goodWeatherActivities.push(activity);
+            activity._weatherSuitability = 'good';
+          }
+          continue;
         }
+        
+        // OUTDOOR/WEATHER-DEPENDENT ACTIVITIES: Apply strict rules
+        // BAD: Snow, freezing, stormy, or heavy rain
+        if (isSnowing || isFreezing || isStormy || (isRaining && temp < 10)) {
+          badWeatherActivities.push(activity);
+          activity._weatherSuitability = 'bad';
+          weatherWarnings.set(activity.id, `⚠️ Poor weather: ${temp}°C, ${cityWeather.description}`);
+          continue;
+        }
+        
+        // OK: Cold (< 5°C) or light rain
+        if (isVeryCold || isRaining) {
+          okWeatherActivities.push(activity);
+          activity._weatherSuitability = 'ok';
+          weatherWarnings.set(activity.id, `Weather may not be ideal: ${cityWeather.description}`);
+          continue;
+        }
+        
+        // GOOD: Everything else
+        goodWeatherActivities.push(activity);
+        activity._weatherSuitability = 'good';
+      }
+      
+      // Log actual weather conditions
+      const firstWeather = weatherData.values().next().value;
+      if (firstWeather) {
+        console.log(`🌡️ Current weather: ${firstWeather.temperature}°C, ${firstWeather.condition}, precip=${firstWeather.precipitation}mm`);
       }
       
       console.log(`🌤️ Weather filtering results:`);
