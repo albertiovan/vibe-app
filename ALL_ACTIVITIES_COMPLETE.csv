@@ -1,0 +1,481 @@
+ID,Name_EN,Name_RO,Category,Energy_Level
+1,"Therme București Wellness Day","Zi de Wellness la Therme București",wellness,medium
+2,"Peleș Castle Guided Visit","Vizită Ghidată la Castelul Peleș",culture,low
+3,"Bran Castle (Dracula's Castle) Visit","Vizită la Castelul Bran (Castelul Dracula)",culture,medium
+4,"Brașov Old Town Walking Tour","Tur Pietonal prin Centrul Vechi al Brașovului",culture,medium
+5,"Skiing in Poiana Brașov","Schi în Poiana Brașov",sports,high
+6,"Danube Delta Boat Safari from Tulcea","Safari cu Barca în Delta Dunării de la Tulcea",nature,medium
+7,"Wine Tasting in Dealu Mare","Degustare de Vin în Dealu Mare",culinary,low
+8,"Transfăgărășan Scenic Day Tour","Tur Scenic pe Transfăgărășan",adventure,medium
+9,"Turda Salt Mine Underground Park","Parcul Subteran Salina Turda",culture,medium
+10,"Dimitrie Gusti National Village Museum","Muzeul Național al Satului Dimitrie Gusti",culture,low
+11,"Bucovina Painted Monasteries Tour","Turul Mănăstirilor Pictate din Bucovina",culture,medium
+12,"Bear Watching from a Hide (Brașov)","Observarea Urșilor din Ascunzătoare (Brașov)",nature,medium
+13,"Parc Aventura Brașov Zipline & Ropes","Parc Aventura Brașov - Zipline și Trasee cu Frânghii",adventure,high
+14,"Black Sea Sea-Kayaking (Mangalia)","Caiac pe Marea Neagră (Mangalia)",water,medium
+15,"Electronic Club Night in Bucharest","Seară la Club Electronic în București",nightlife,high
+16,"Cluj Live Music & Club Night","Muzică Live și Club Noaptea în Cluj",nightlife,high
+17,"Timisoara Club Night","Seară de Club în Timișoara",nightlife,high
+18,"Iași Night Out (Bars & Clubs)","Ieșire Nocturnă în Iași (Baruri & Cluburi)",nightlife,high
+19,"Bucharest Escape Room Challenge","Provocarea Camerei de Evadare în București",social,medium
+20,"Cluj Escape Room Adventure","Aventură în Camera de Evadare din Cluj",social,medium
+21,"Bucharest Yoga Class (Vinyasa/Hatha)","Clasă de Yoga la București (Vinyasa/Hatha)",fitness,low
+22,"CrossFit Session in Cluj","Sesiune CrossFit în Cluj",fitness,high
+23,"CrossFit Session in Bucharest","Sesiune CrossFit în București",fitness,high
+24,"Oradea Thermal Aqua Day (Aquaparks)","Zi Termală Aqua în Oradea (Aquaparks)",wellness,medium
+25,"Sovata Bear Lake & Spa Day","Zi la Lacul Ursu și Spa în Sovata",wellness,low
+26,"Balvanyos Forest Spa Ritual","Ritual Spa în Pădurea Bálványos",wellness,low
+27,"Black Sea Coastal Kayaking Coaching","Instruire Caiac de Mare pe Coasta Mării Negre",water,medium
+28,"Wakeboarding Session near Bucharest","Sesiune de Wakeboarding lângă București",water,high
+29,"Intro to Golf in Transylvania","Introducere în Golf în Transilvania",sports,medium
+30,"Romantic Boat Ride on Herăstrău Lake","Plimbare Romantică cu Barca pe Lacul Herăstrău",romance,low
+31,"Hot Air Balloon Flight near Cluj","Zbor cu Balonul cu Aer Cald lângă Cluj",romance,low
+32,"Christmas Market Sibiu (Piața Mare)","Târgul de Crăciun Sibiu (Piața Mare)",seasonal,low
+33,"Christmas Market Cluj-Napoca (Piața Unirii)","Târgul de Crăciun Cluj-Napoca (Piața Unirii)",seasonal,low
+34,"Christmas Market Bucharest (Constitution Square)","Târgul de Crăciun București (Piața Constituției)",seasonal,low
+35,"Christmas Market Timișoara (Victory Square)","Târgul de Crăciun Timișoara (Piața Victoriei)",seasonal,low
+36,"Bucharest Traditional Food Tour","Tur Gastronomic Tradițional București",culinary,medium
+37,"Romanian Cooking Class in Bucharest","Clasă de Gătit Românesc în București",culinary,medium
+38,"Cluj-Napoca Street Food & Market Tasting","Tur de Street Food & Piață în Cluj-Napoca",culinary,medium
+39,"Sibiu Old Town Food Tour","Tur Gastronomic în Centrul Vechi Sibiu",culinary,low
+40,"Timișoara Craft Beer Tasting Crawl","Tur de Degustare Beer Craft Timișoara",culinary,medium
+41,"Gramma Winery Visit & Tasting (Iași)","Vizită și Degustare la Crama Gramma (Iași)",culinary,low
+42,"Domeniul Bogdan Organic Winery Tour","Tur la Domeniul Bogdan Crama Ecologică",culinary,low
+43,"Dealu Mare Winery Trio (Lacerta/Serve/Budureasca)","Trio Degustări Dealu Mare (Lacerta/Serve/Budureasca)",culinary,medium
+44,"Constanța Seafood Tasting Experience","Experiență de Degustare Fructe de Mare la Constanța",culinary,low
+45,"Improvisation Theatre Workshop (Bucharest)","Atelier de Teatru de Improvizație (București)",creative,medium
+46,"Salsa/Bachata Beginner Class (Bucharest)","Clasă pentru Începători de Salsa/Bachata (București)",creative,medium
+47,"Cyanotype & Alternative Photography Workshop","Atelier de Cianotipie și Fotografie Alternativă",creative,low
+48,"Screen Printing Basics (Bucharest)","Bazele Serigrafiei (București)",creative,medium
+49,"Icon on Glass Workshop (ASTRA Museum)","Atelier de Pictură Icoane pe Sticlă (Muzeul ASTRA)",creative,low
+50,"Weaving on the Loom (ASTRA Museum)","Țesut la Război (Muzeul ASTRA)",creative,low
+51,"Romanian Language Crash Course (Bucharest)","Curs Intensiv de Limbă Română (București)",learning,medium
+52,"Specialty Coffee Brewing Class (Bucharest)","Curs de Preparare a Cafelei Specialitate (București)",learning,medium
+53,"Barista Basics Workshop (Cluj)","Atelier de Bază pentru Barista (Cluj)",learning,medium
+54,"Sibiu Traditional Cooking Class","Clasă de Gătit Tradițional Sibiu",learning,medium
+55,"Intro to Romanian Wine (Bucharest)","Introducere în Vinurile Românești (București)",learning,low
+56,"Sound Bath & Breathwork (Bucharest)","Baie Sonoră și Respirație Conștientă (București)",mindfulness,low
+57,"Halotherapy & Mindful Walk – Turda Salt Mine","Haloterapie și Plimbare Conștientă – Salina Turda",mindfulness,low
+58,"Salt Mine Wellness Session – Praid","Sesiune de Wellness în Mina de Sare – Praid",mindfulness,low
+59,"Therme Sauna Rituals & Mindful Heat","Ritual de Saună Therme și Căldură Conștientă",mindfulness,low
+60,"Ana Aslan Health Spa Day – Eforie Nord","Zi de Sănătate la Centrul Ana Aslan – Eforie Nord",wellness,low
+61,"Aqvatonic Med Spa Pass – Eforie Nord","Abonament Aqvatonic Med Spa – Eforie Nord",wellness,medium
+62,"Leaota Mountain Horseback Trail Ride","Traseu cu Calul pe Muntele Leaota",nature,medium
+63,"Bucegi Plateau Hike: Babele & Sphinx","Drumeție pe Platoul Bucegi: Babele & Sfinxul",nature,medium
+64,"Scărișoara Ice Cave & Apuseni Views","Peștera de Gheață Scărișoara & Priveliștea Apusenilor",nature,medium
+65,"Cheile Turzii Gorge Guided Hike","Drumeție Ghidată pe Cheile Turzii",nature,medium
+66,"Retezat National Park Day Hike","Drumeție de o Zi în Parcul Național Retezat",nature,high
+67,"Viscri Pastures Bike & Haystack Walk","Plimbare cu Bicicleta și Plimbare pe Fânețe la Viscri",nature,medium
+68,"Board Game Night in Bucharest Old Town","Seară de Jocuri de Societate în Centrul Vechi al Bucureștiului",social,medium
+69,"Pub Quiz Night in the Old Town (Mojo & The PUB)","Seară de Pub Quiz în Centrul Vechi (Mojo & The PUB)",social,medium
+70,"Escape Room Marathon (Central Bucharest)","Maraton de Escape Room (Centrul Bucureștiului)",social,medium
+71,"Bucharest Language Exchange Social","Seară de Schimb Lingvistic în București",social,low
+72,"NOR Sky Rooftop Dinner for Two","Cină pentru Doi la NOR Sky",romance,low
+73,"Rooftop Cocktails at Linea/Closer to the Moon","Cocktailuri pe Terasă la Linea/Closer to the Moon",romance,medium
+74,"Private Boat Ride on Herăstrău Lake","Plimbare Privată cu Barca pe Lacul Herăstrău",romance,low
+75,"Private Snagov Lake Boat Cruise","Croazieră Privată pe Lacul Snagov",romance,low
+76,"Couples' Photoshoot in Old Town","Ședință Foto pentru Cupluri în Centrul Vechi",romance,low
+77,"Edenland Park Zipline & Aerial Courses","Trasee Aeriene și Zipline la Edenland Park",adventure,high
+78,"Comana Adventure Park & Kayak","Parc de Aventură și Caiac la Comana",adventure,medium
+79,"Tandem Skydiving at Clinceni Airfield","Salt în Tandem cu Parașuta la Aerodromul Clinceni",adventure,high
+80,"Squash Session & Coaching (Central-East)","Sesiune și Antrenament de Squash (Centru-Est)",sports,high
+81,"Badminton Courts & Group Play (Sun Plaza)","Terenuri de Badminton și Joc în Grup (Sun Plaza)",sports,medium
+82,"Ice Skating Session (AFI Cotroceni)","Sesiune de Patinaj pe Gheață (AFI Cotroceni)",sports,medium
+83,"Beginner Archery Class (Sector 5 Range)","Clasă de Tir cu Arcul pentru Începători (Poligon Sector 5)",sports,medium
+84,"Karaoke Night at Mojo Music Club","Seară de Karaoke la Mojo Music Club",social,high
+85,"Fun Bowling & Billiards at Trickshot","Bowling și Biliard Distractiv la Trickshot",social,medium
+86,"Free-Roam VR Arena & Escape Games (Gateway VR)","Arenă VR cu Mișcare Liberă și Jocuri de Evadare (Gateway VR)",social,medium
+87,"Immersive Escape Room Adventure","Aventură Imersivă în Cameră de Evadare",social,medium
+88,"Romantic Candlelight Concert (Fever)","Concert Romantic la Lumânări (Fever)",romance,low
+89,"Stargazing at Vasile Urseanu Observatory","Observație Astronomică la Observatorul Vasile Urseanu",romance,low
+90,"Boat Ride on Herăstrău Lake","Plimbare cu Barca pe Lacul Herăstrău",romance,low
+91,"Go-Karting: VMAX (Indoor) or AMCKart (Outdoor)","Karting: VMAX (Indoor) sau AMCKart (Outdoor)",adventure,high
+92,"Indoor Climbing Session (Top-rope & Bouldering)","Sesiune de Escaladă în Interior (Top-rope și Bouldering)",adventure,medium
+93,"Laser Tag Battles","Lupte Laser Tag",sports,high
+94,"Padel Court Booking (Romexpo Area)","Rezervare Teren Padel (Zona Romexpo)",sports,medium
+95,"5-a-Side Football Pitch Hire (South)","Închiriere Teren Fotbal 5-a-Side (Sud)",sports,high
+98,"Contemporary Jewelry Making (Assamblage Institute)","Confecționare Bijuterii Contemporane (Institutul Assamblage)",creative,medium
+99,"Stained Glass (Tiffany Technique) Workshop","Atelier de Sticlă Colorată (Tehnica Tiffany)",creative,medium
+100,"Intro to Woodworking (NOD Makerspace)","Introducere în Prelucrarea Lemnului (NOD Makerspace)",creative,medium
+103,"Specialty Coffee Cupping & Barista Basics","Degustare Cafea Specială și Noțiuni de Barista",culinary,medium
+104,"Mixology & Cocktail Fundamentals (Exquisite Bar Solutions)","Mixologie și Fundamente de Cocktail (Exquisite Bar Solutions)",culinary,medium
+105,"Sourdough & Pastry Fundamentals (Horeca Culinary School)","Fundamentele Aluatului de Drojdie Sălbatică & Patiserie (Horeca Culinary School)",culinary,medium
+106,"Homebakers by Grain Trip (Bread & Viennoiserie)","Brutari Casnici by Grain Trip (Pâine & Viennoiserie)",culinary,medium
+107,"Bucharest Trivia Night at a Craft Beer Bar","",social,medium
+109,"Pottery Wheel Taster (Bucharest)","",creative,low
+110,"Candle-Making Workshop (Bucharest)","",creative,low
+113,"Sunset Picnic in Herăstrău Park","",romance,low
+114,"Rooftop Dinner with City Views (Bucharest)","",romance,low
+115,"Private Cooking Class for Two (Bucharest)","",romance,medium
+116,"Stargazing Night near Bucharest","",romance,low
+117,"Bucharest Ghost Tour (Old Town)","",culture,medium
+118,"Bucharest Food Market Tour (Obor/Dorobanți)","",culinary,medium
+119,"Bucharest Vintage Shopping Tour","",culture,medium
+120,"Bucharest Architectural Walking Tour","",culture,medium
+121,"Bucharest Communist History Tour","",culture,low
+122,"Bucharest Jewish Heritage Tour","",culture,low
+123,"Photography Fundamentals (Academia F64)","Fundamentele Fotografiei (Academia F64)",learning,medium
+124,"Intro to 3D Printing & Rapid Prototyping (NOD)","Introducere în Imprimarea 3D & Prototipare Rapidă (NOD)",learning,medium
+125,"Intro to Programming (Școala Informală de IT)","Introducere în Programare (Școala Informală de IT)",learning,medium
+126,"Pilates Class (Bucharest)","",fitness,medium
+129,"Pottery Wheel Throwing for Beginners (Clay Play)","Modelare pe Roată pentru Începători (Clay Play)",creative,low
+130,"Hand-Building Ceramics Workshop (ArtTime Atelier)","Atelier de Ceramică Modelată Manual (ArtTime Atelier)",creative,low
+131,"Cyanotype & Screen Printing Lab (Allkimik)","Laborator de Cianotipie & Imprimare pe Ecran (Allkimik)",creative,low
+132,"Painting & Drawing Class (Art & Hobby Studio)","Curs de Pictură & Desen (Art & Hobby Studio)",creative,low
+133,"Chocolate Tasting Foundations (Artisan HUB events)","Fundamente de Degustare a Ciocolatei (Artisan HUB events)",culinary,low
+134,"Old Town Street Food Tour (Small Group)","Tur de Stradă cu Mâncare Tradițională în Centrul Vechi (Grup Mic)",culinary,medium
+135,"Urban Hammam & Thermal Circuit (Orhideea Spa)","Circuit Termic și Hammam Urban (Orhideea Spa)",wellness,low
+136,"Shiseido Spa Rituals at Stejarii Country Club","Ritualuri Spa Shiseido la Stejarii Country Club",wellness,low
+137,"Float Therapy Session (Sensory Deprivation)","Sesiune de Flotație (Privare Senzorială)",mindfulness,low
+138,"Gong & Sound Bath (The Inner)","Baie de Sunet cu Gong (The Inner)",mindfulness,low
+139,"Intro to Raja Yoga Meditation (Brahma Kumaris)","Introducere în Meditația Raja Yoga (Brahma Kumaris)",mindfulness,low
+140,"Tai Chi & Qigong Classes (Taijidao)","Clase de Tai Chi și Qigong (Taijidao)",mindfulness,low
+141,"Quick Reset: Aesthetic Coffee Spots (15–30 min)","Resetare Rapidă: Cafenele Estetice (15–30 min)",social,low
+142,"Quick Reset: Bookstore Browsing at Cărturești","Resetare Rapidă: Răsfoire prin Librăria Cărturești",creative,low
+143,"Quick Reset: MNAC Rooftop Terrace View","Resetare Rapidă: Terasa cu Vedere de la MNAC",creative,low
+144,"Quick Reset: Macca–Vilacrosse Passage Stroll","Oprire Rapidă: Plimbare pe Pasajul Macca–Vilacrosse",creative,low
+145,"Japanese Garden Stroll (King Michael I Park)","Plimbare prin Grădina Japoneză (Parcul Regele Mihai I)",nature,low
+146,"Urban Nature Walk & Birdwatching (Văcărești)","Plimbare prin Natura Urbană și Observare Păsări (Văcărești)",nature,low
+147,"Arthouse Cinema Session (Elvire Popesco)","Sesiune de Cinema de Artă (Elvire Popesco)",social,low
+148,"Classic Film at Cinemateca Eforie","Film Clasic la Cinemateca Eforie",learning,low
+149,"Tea Tasting & Ceremony (Cotroceni Teahouses)","Degustare și Ceremonie de Ceai (Ceainăriile din Cotroceni)",culinary,low
+150,"Express Beauty Reset (GETT'S Color Bar – malls)","Reîmprospătare Express de Frumusețe (GETT'S Color Bar – centre comerciale)",wellness,low
+151,"Self-Guided Architecture Audio Walk (Old Town)","Plimbare Audio Arhitecturală cu Ghid Propriu (Centrul Vechi)",learning,low
+152,"Full-Day Thermal & Sauna at Therme București","Zi Întreagă la Terme cu Saună la Therme București",wellness,low
+153,"Thai Massage & Aromatherapy (THAIco Spa Dorobanți)","Masaj Thai și Aromaterapie (THAIco Spa Dorobanți)",wellness,low
+154,"Orchid Thai Spa – Aromatherapy Ritual","Orchid Thai Spa – Ritual de Aromaterapie",wellness,low
+155,"Ana Spa Daypass at Crowne Plaza","Trecere de o zi la Ana Spa de la Crowne Plaza",wellness,low
+156,"Halotherapy Day at Slănic Prahova Salt Mine","Zi de Haloterapie la Mina de Sare Slănic Prahova",wellness,low
+157,"Quick Reset: Cișmigiu Gardens Quiet Loop & Bench 7","Resetare Rapidă: Buclă Liniștită în Grădina Cișmigiu & Banca 7",nature,low
+158,"Quick Reset: Carol Park Mausoleum Viewpoint Bench","Resetare Rapidă: Banca cu Vedere la Mausoleul din Parcul Carol",nature,low
+159,"Quick Reset: Botanical Garden Rosarium Loop","Resetare Rapidă: Buclă în Rozariul Grădinii Botanice",nature,low
+160,"Quick Reset: Kiseleff Shaded Boulevard Benches","Resetare Rapidă: Bănci pe Bulevardul Kiseleff la Umbră",nature,low
+161,"Quick Reset: Titan (A.I. Cuza) Lakeside – Insula Artelor","Resetare Rapidă: Lacul Titan (A.I. Cuza) – Insula Artelor",nature,low
+162,"Quick Reset Café: Steam Coffee Shop Victoriei","Resetare Rapidă la Cafea: Steam Coffee Shop Victoriei",culinary,low
+164,"Quick Reset Café: FRUDISIAC","Resetare Rapidă la Cafea: FRUDISIAC",culinary,low
+165,"Quick Reset Café: TROFIC (City Center)","Cafeneaua Rapidă Reset: TROFIC (City Center)",culinary,low
+166,"Micro-Visit: MNAR European Gallery (1 Room)","Micro-Vizită: Galeria Europeană MNAR (1 Sală)",creative,low
+167,"Micro-Visit: Museum of Maps – 1 Gallery","Micro-Vizită: Muzeul Hărților – 1 Galerie",creative,low
+168,"Micro-Visit: Antipa – One Hall Only (Coral & Fish)","Micro-Vizită: Antipa – O Singură Sală (Corali și Pești)",learning,low
+169,"Pottery Workshop (Urban Crafts/Extasy)","Atelier de Olărit (Meșteșuguri Urbane/Extasy)",creative,low
+170,"Painting Class at Atelier Pastel (Dorobanți)","Clasă de Pictură la Atelier Pastel (Dorobanți)",creative,low
+171,"Modern Calligraphy – Fundația Calea Victoriei","Caligrafie Modernă – Fundația Calea Victoriei",creative,low
+172,"Embroidery & Traditional Motifs – FCV","Broderie și Motive Tradiționale – FCV",creative,low
+173,"Sewing Basics – Atelierele ILBAH","Noțiuni de Bază la Croitorie – Atelierele ILBAH",creative,medium
+174,"Halotherapy in urban salt rooms","Haloterapie în Camere de Sare Urbane",wellness,low
+175,"Aromatherapy & natural perfume workshop","Atelier de aromaterapie & parfum natural",wellness,low
+176,"Sound bath with gongs & bowls","Baie sonoră cu gonguri și boluri",mindfulness,low
+177,"Guided meditation session","Sesiune ghidată de meditație",mindfulness,low
+178,"Breathwork fundamentals (Wim Hof/box/paced)","Fundamentele respirației (Wim Hof/cutie/pași)",mindfulness,medium
+179,"Quick reset: Saint Roastery coffee stop","Resetare rapidă: Oprire la Saint Roastery",culinary,low
+180,"Quick reset: Two Minutes Coffee Shop","Resetare rapidă: Cafeneaua Two Minutes",culinary,low
+181,"Quick reset: BOB Coffee Lab (Charles de Gaulle)","Resetare rapidă: BOB Coffee Lab (Charles de Gaulle)",culinary,low
+182,"Quick reset: Throwback Dorobanți","Resetare rapidă: Throwback Dorobanți",culinary,low
+183,"Micro-visit: Zambaccian Museum (one-gallery focus)","Micro-vizită: Muzeul Zambaccian (focus pe o singură galerie)",creative,low
+184,"Micro-visit: Theodor Aman Museum","Micro-vizită: Muzeul Theodor Aman",creative,low
+185,"Quiet bench: Parcul Circului (Lotus Lake)","Bancă liniștită: Parcul Circului (Lotus Lake)",nature,low
+186,"Quiet bench: Grădina Icoanei","Bancă liniștită: Grădina Icoanei",nature,low
+187,"Photo spot & sit: Izvor Park Parliament view","Punct foto & stat: Vedere spre Parlament în Parcul Izvor",nature,low
+188,"Mini-walk & overlook: Tineretului Park","Mini-plimbare & punct de vedere: Parcul Tineretului",nature,medium
+189,"Botanical Garden: Palmhouse & remedy garden loop","Grădina Botanică: Buclă Casa Palmierilor & grădina de remedii",nature,low
+190,"Pottery basics: hand-building & glazing","Ceramică de bază: modelare și emailare",creative,medium
+191,"Wheel-throwing taster at CUBUL","Inițiere la roată la CUBUL",creative,medium
+192,"Evening acrylic painting class (Rodia Art Studio)","Clasă de pictură în acril seara (Rodia Art Studio)",creative,low
+193,"Paint-your-own pottery (MadeByYou)","Pictează-ți propria ceramică (MadeByYou)",creative,low
+194,"Calligraphy & lettering workshop","Atelier de caligrafie și literație",creative,low
+195,"Knitting & crochet at a textile atelier","Tricotaj și croșetat la un atelier textil",creative,low
+196,"Wellness visit: Salina Turda (salt mine)","Vizită de wellness: Salina Turda",wellness,low
+198,"Basketball Court Booking (Full Court Run)","Rezervare Teren de Baschet (Meci Complet)",sports,high
+199,"Indoor Volleyball Session","Sesiune de Volei în Interior",sports,high
+200,"Boxing Gym Session (Pads & Bag)","Sesiune de Box (Labe și Sac)",sports,high
+203,"Tennis Lesson Or Court (Herăstrău)","Lecție de Tenis sau Teren (Herăstrău)",sports,high
+204,"Footvolley/Beach Football On Sand","Fotvolei/Fotbal pe Nisip",sports,high
+205,"Rugby Intro Session (Non-contact Basics)","Sesiune Introductivă de Rugby (Baze Fără Contact)",sports,high
+206,"Ultimate Frisbee Pickup Night","Seară de Ultimate Frisbee",sports,high
+207,"Dodgeball League Night","Seară de Dodgeball",sports,high
+208,"Handball Pickup (Full-Court)","Handbal Pickup (Teren Întreg)",sports,high
+210,"Muay Thai/Kickboxing Class","Clasă de Muay Thai/Kickboxing",sports,high
+211,"50m Lap Swim (Olympic Pool)","Înot în lungime de 50m (Bazin Olimpic)",sports,medium
+212,"Track Session (Iolanda Balaș-Soter)","Sesiune de Pistă (Iolanda Balaș-Soter)",sports,high
+213,"Fencing Intro: Foil Basics","Introducere în Scrimă: Bazele Floretei",sports,high
+214,"Table Tennis Club Session","Sesiune de Club Tenis de Masă",racket_sports,high
+215,"Pickleball Social Play","Joc Social Pickleball",racket_sports,high
+216,"Beach Tennis Doubles","Tenis de Plajă Dublu",racket_sports,high
+217,"Guided Mountain Biking — Postăvarul Peak","Mountain Bike Îndrumat — Vârful Postăvarul",adventure,high
+218,"Outdoor Rock Climbing Day","Zi de Escaladă în Exterior",adventure,high
+219,"Via Ferrata “Casa Zmeului”","Via Ferrata 'Casa Zmeului'",adventure,high
+220,"Guided Hike — Omu Peak (Bucegi)","Traseu Ghidat - Vârful Omu (Bucegi)",adventure,high
+221,"Trail Running Clinic (Brașov)","Curs de Alergare pe Traseu (Brașov)",adventure,high
+222,"Park Orienteering Challenge","Provocarea de Orientare în Parc",sports,high
+223,"Bungee Jump (Râșnoavei Gorge)","Salt cu Coarda Elastică (Cheile Râșnoavei)",adventure,high
+224,"Paragliding Tandem (Bunloc)","Planorism în Tandem (Bunloc)",adventure,high
+225,"ATV/Quad Biking (Cernica Forest)","ATV/Quad Biking (Pădurea Cernica)",adventure,high
+226,"Paintball Skirmish (Woodland Maps)","Luptă cu Paintball (Hărți de Pădure)",adventure,high
+227,"Boxing Fitness (No Sparring)","Fitness de Box (Fără Luptă)",fitness,high
+228,"Indoor Cycling (Beat-Driven Ride)","Ciclism Interior (Plimbare Condusă de Ritm)",fitness,high
+229,"Outdoor Bootcamp (Total Body)","Antrenament în Aer Liber (Total Body)",fitness,high
+230,"F45 HIIT Team Training","Antrenament de Echipă F45 HIIT",fitness,high
+231,"Zumba Dance Fitness","Zumba Dans Fitness",fitness,high
+232,"Calisthenics Park Training (Parc Tei)","Antrenament de Calisthenics în Parc (Parc Tei)",fitness,high
+233,"Obstacle Course/Ninja Training","Curs de Obstacole/Antrenament Ninja",fitness,high
+234,"Stand-Up Paddle (City Session)","Paddle Board (Sesiune Urbană)",water,high
+235,"Surfing Lesson (Black Sea)","Lecție de Surfing (Marea Neagră)",water,high
+236,"Windsurfing Intro (Mamaia)","Inițiere în Windsurf (Mamaia)",water,high
+275,"Scuba Diving — Discover Scuba (DSD)","Scufundări — Descoperă Scuba (DSD)",water,high
+276,"Traditional Rowing (Canotcă) Basics","Canotcă Tradițională — Noțiuni de Bază",water,high
+315,"Tandem Skydive at Clinceni (TNT Brothers)","Salt în Tandem cu Parașuta la Clinceni (TNT Brothers)",adventure,high
+316,"Track Day Laps at MotorPark Romania","Ture pe Circuit la MotorPark Romania",motorsports,high
+317,"High Ropes & Mega Ziplines (Parc Aventura Brașov)","Traseul cu Frânghii Înalte și Telegondole Mega (Parc Aventura Brașov)",adventure,high
+318,"Outdoor Karting Session (AMCKart Tunari)","Sesiune de Karting în Aer Liber (AMCKart Tunari)",motorsports,high
+319,"Jet Ski Bursts on Lake Siutghiol (JT Watersports Mamaia)","Curse cu Jet Ski pe Lacul Siutghiol (JT Watersports Mamaia)",water,high
+320,"Via Ferrata Casa Zmeului (Vadu Crișului)","Via Ferrata Casa Zmeului (Vadu Crișului)",adventure,high
+321,"Via Ferrata Hili's Cave (Cheile Turzii)","Via Ferrata Peștera Hili (Cheile Turzii)",adventure,high
+322,"Downhill & Enduro Runs (Postăvaru Bike Park)","Coborâri Downhill și Enduro (Postăvaru Bike Park)",adventure,high
+738,"Buzău River Whitewater Rafting (Class III–IV) with Green Adventure","Rafting pe Râul Buzău (Clasa III–IV) cu Green Adventure",water,high
+739,"Jiu Gorge Whitewater Rafting (Class III–IV)","Rafting pe Defileul Jiului (Clasa III–IV)",water,high
+740,"Via Ferrata Casa Zmeului – Vadu Crișului","Via Ferrata Casa Zmeului – Vadu Crișului",adventure,high
+741,"Via Ferrata Pietrele Negre – Vârtop (Apuseni)","Via Ferrata Pietrele Negre – Vârtop (Apuseni)",adventure,high
+742,"Seven Ladders Canyon Tyrolean Zipline (Dâmbul Morii)","Tiroliana din Canionul Șapte Scări (Dâmbul Morii)",adventure,high
+743,"Paragliding Tandem Flight – Bunloc Take-off (Brașov)","Zbor în Tandem cu Parapanta – Decolare Bunloc (Brașov)",adventure,high
+744,"Tandem Skydive – Tuzla Aerodrome (Black Sea)","Salt în Tandem cu Parașuta – Aerodromul Tuzla (Marea Neagră)",adventure,high
+745,"Kitesurfing Lessons – H2O Kiteboarding Mamaia","Lecții de Kitesurfing – H2O Kiteboarding Mamaia",water,high
+746,"Downhill MTB – Bike Resort Sinaia","Coborâre cu Mountain Bike-ul – Bike Resort Sinaia",sports,high
+747,"Outdoor Go-Karting – AMCKart (1.24 km CIK-FIA Track)","Karting în Aer Liber – AMCKart (Pistă CIK-FIA de 1;24 km)",motorsports,high
+748,"Backcountry Snowmobile Tour – Harghita-Mădăraș","Tur cu Snowmobilul în Teren Neprelucrat – Harghita-Mădăraș",winter,high
+749,"ATV/Quad Off-Road Tour – Zărnești & Plaiul Foii","Tur cu ATV/Quad în Teren Accidentat – Zărnești & Plaiul Foii",motorsports,high
+750,"Rock Ridge Climb – Acele Morarului (Bucegi)","Alpinism pe Creasta Rock Ridge – Acele Morarului (Bucegi)",adventure,high
+751,"First-Time Caving – Apuseni Mountains (Guided)","Primă Inițiere în Speologie – Munții Apuseni (Ghidat)",adventure,high
+794,"Tandem Skydiving over Cluj with Skydive Transilvania","Salt în Tandem cu Parașuta deasupra Clujului cu Skydive Transilvania",adventure,high
+795,"Drift Taxi & Hot Laps at Academia Titi Aur","Drift Taxi și Tururi Rapide la Academia Titi Aur",motorsports,high
+796,"Outdoor Karting Sprints at Prejmer Raceway","Sprinturi de Karting în Aer Liber la Pista Prejmer",motorsports,high
+797,"High Ropes & Mega Ziplines at Adrenalin Park","Curse Înalte pe Frânghii și Zboruri cu Tiroliana la Adrenalin Park",adventure,high
+798,"Zipline & Rope Courses at Comana Adventure Park","Tiroliene și Trasee pe Frânghii la Parcul de Aventură Comana",adventure,high
+799,"Via Ferrata Wild Ferenc in Bicaz Gorges","Via Ferrata Wild Ferenc în Cheile Bicazului",adventure,high
+800,"Guided Canyoning in Valea lui Stan (Vidraru)","Canyoning Ghidat în Valea lui Stan (Vidraru)",adventure,high
+801,"Full-Size Cable Wakeboarding at A2Wake (km 49 A2)","Wakeboarding pe Cablu la Dimensiune Completă la A2Wake (km 49 A2)",water,high
+802,"Cluj Tandem Paragliding at Feleacu","Zbor Tandem cu Parașuta la Feleacu; Cluj",adventure,high
+803,"Black Sea Intro Dive with Marine Explorers","Scufundare introductivă la Marea Neagră cu Exploratori Marini",water,high
+859,"Bâlea Ski Mountaineering Clinic (Făgăraș)","Clinică de Schi Montan la Bâlea (Făgăraș)",winter,high
+860,"Făgăraș Ski Touring Week (High Alpine)","Săptămână de Schi cu Schi Montan în Făgăraș (Alpin Înalt)",winter,high
+861,"Retezat Backcountry Ski (6-Day)","Schi în Zona Sălbatică din Retezat (6 Zile)",winter,high
+862,"Harghita Husky Dog-Sledding Ride","Plimbare cu Sania trasă de Câini Husky în Harghita",winter,high
+863,"Azuga Guided Snowmobile Ride","Plimbare ghidată cu snowmobilul în Azuga",winter,high
+864,"Bâlea Ice Climbing Intro","Inițiere în Escalada pe Gheață la Bâlea",winter,high
+865,"Făgăraș Winter Mountaineering Weekend","Weekend de Alpinism Iarna în Făgăraș",winter,high
+866,"Bucegi Ski Touring (Busteni/Sinaia)","Schi Montan în Bucegi (Bușteni/Sinaia)",winter,high
+867,"Poiana Brașov Steep Snowshoe Traverse","Traversarea cu Rachetele de Zăpadă pe Pârtia Abruptă din Poiana Brașov",winter,high
+868,"Avalanche Skills & Freetouring – Bâlea","Abilități de Avalanșă și Freetouring – Bâlea",winter,high
+869,"Héliski Făgăraș (Freeride Vertical)","Heli-Schi în Făgăraș (Vertical Freeride)",winter,high
+870,"Bicaz Gorges Ice Climbing","Escaladă pe Gheață în Cheile Bicazului",winter,high
+936,"Tandem Skydive over the Black Sea (Tuzla)","Salt în Tandem deasupra Mării Negre (Tuzla)",adventure,high
+937,"Tandem Skydive Luncani (Skydive Transilvania)","Salt în Tandem Luncani (Skydive Transilvania)",adventure,high
+938,"Tandem Skydive Timișoara (GoJump LRSG)","Salt în Tandem Timișoara (GoJump LRSG)",adventure,high
+939,"Cheile Râșnoavei Bungee Jump","Sări cu Bungee în Cheile Râșnoavei",adventure,high
+940,"Adventure Park Brașov Mega Zip & Ropes","Parc de Aventură Brașov - Mega Zip și Frânghii",adventure,high
+941,"Tandem Paragliding Clopotiva (Retezat)","Zbor în Tandem cu Parapanta la Clopotiva (Retezat)",adventure,high
+942,"Seven Ladders Canyon Via Ferrata Sprint","Sprintul Via Ferrata în Canionul Șapte Scări",adventure,high
+1018,"Therme București Full-Day Thermal Spa","Spa-ul Termal Therme București - Zi Întreagă",wellness,low
+1019,"Aquapark Nymphaea Day Pass","Bilet de o Zi la Aquapark Nymphaea",wellness,medium
+1020,"Ensana Sovata Spa & Saltwater Pools","Spa și Bazine cu Apă Sărată Ensana Sovata",wellness,low
+1021,"Grand Santerra Spa Forest Thermal Session","Sesiune Termală în Pădure la Grand Santerra Spa",wellness,low
+1022,"Old Town Wine Tasting at Abel's","Degustare de Vinuri în Centrul Vechi la Abel's",culinary,medium
+1023,"LacertA Winery Tour & Tasting (Dealu Mare)","Tur și Degustare la LacertA Winery (Dealu Mare)",culinary,medium
+1024,"Rhein Azuga 1892 Cellar Tour & Bubbles","Tur de Pivniță și Bule la Rhein Azuga 1892",culinary,medium
+1025,"Cramele Recaș Estate Visit & Tasting","Vizită și Degustare la Cramele Recaș",culinary,medium
+1026,"ASTRA Museum Hands-on Crafts Workshop","Atelier Hands-on de Meșteșuguri la Muzeul ASTRA",culture,medium
+1027,"Village Museum Curated Guided Tour","Tur Ghidat Curatorial la Muzeul Satului",culture,medium
+1028,"Meron Public Coffee Cupping (Cluj)","Degustare Publică de Cafea Meron (Cluj)",culinary,medium
+1029,"Hands-on Cocktail Workshop (Bucharest)","Atelier Interactiv de Cocktailuri (București)",culinary,medium
+1112,"Wheel Throwing Intro at Clay Play","Introducere în Modelarea la Roată la Clay Play",creative,medium
+1113,"Paint-Your-Own Ceramics at Made by You","Pictează-ți Propria Ceramică la Made by You",creative,low
+1114,"Guided Acrylic Painting (Art & Hobby Studio)","Pictură Acrilică Ghidată (Art & Hobby Studio)",creative,medium
+1115,"Jewelry Making Fundamentals (Assamblage School)","Fundamentele Realizării Bijuteriilor (Assamblage School)",creative,medium
+1117,"Leathercraft: Hand-Stitched Wallet at Urban Bag","Prelucrarea Pielii: Portofel Cusut Manual la Urban Bag",creative,medium
+1118,"Modern Calligraphy at Seneca AntiCafe","Caligrafie Modernă la Seneca AntiCafe",creative,low
+1119,"Woodworking Basics at NOD Makerspace","Noțiuni de Tâmplărie la NOD Makerspace",creative,medium
+1120,"Traditional Embroidery at Casa cu Rost","Broderie Tradițională la Casa cu Rost",creative,low
+1121,"Ceramics Hand-Building (Alimeria Ceramics)","Ceramică modelată manual (Alimeria Ceramics)",creative,medium
+1122,"Paint-Your-Own Ceramics (Caferamica Iași)","Pictează-ți Propria Ceramică (Caferamica Iași)",creative,low
+1123,"Maker Induction & Studio Access (FIX Makerspace)","Inițiere și Acces în Atelier (FIX Makerspace)",creative,medium
+1124,"Sip & Paint Night (PaintandParty.ro)","Seară de Pictat (PaintandParty.ro)",creative,medium
+1218,"Wheel Throwing Starter at Em Chang Studio","Inițiere la Roata de Ceramică la Em Chang Studio",creative,medium
+1219,"Botanical Watercolor with Irina Neacșu","Acuarelă Botanică cu Irina Neacșu",creative,medium
+1220,"Sewing & Patternmaking Basics (Atelierele ILBAH)","Noțiuni de Bază în Cusut și Croit (Atelierele ILBAH)",creative,medium
+1221,"Stained Glass (Tiffany) Intro Workshop","Atelier Introductiv de Vitralii (Tehnică Tiffany)",creative,medium
+1222,"Traditional Pottery at Ceramica de Nocrich","Ceramică Tradițională la Ceramica de Nocrich",creative,medium
+1223,"Fashion Illustration After-Work (DallesGO)","Ilustrație Modă După Serviciu (DallesGO)",creative,medium
+1224,"Adult Ceramics Starter (Școala Populară de Arte Cluj)","Ceramică pentru Adulți - Inițiere (Școala Populară de Arte Cluj)",creative,medium
+1225,"Resin Art: Pour & Finish (NOD cursuri)","Artă cu Rășină: Turnare și Finisare (NOD cursuri)",creative,medium
+1331,"321sport Community Run","Alergare Comunitară 321sport",social,medium
+1332,"Vertical Spirit Social Climb Night","Seară Socială de Escaladă Vertical Spirit",social,high
+1333,"Board Game Social at The Guild Hall","Seară Socială de Jocuri de Masă la The Guild Hall",social,low
+1334,"Level Up Language Exchange Meetup","Schimb de Limbi Level Up",social,medium
+1335,"Improteca Improv Jam Night","Seară de Improvizație Improteca",social,medium
+1336,"Runners Club Cluj – Social Run","Clubul de Alergare Cluj - Alergare Socială",social,medium
+1337,"Team Escape at Captive","Evadare în Echipă la Captive",social,medium
+1338,"The Dungeon – Team Escape Night","Noaptea Evadării din Temnița – Echipă",social,medium
+1339,"Impact Hub Community Friday","Vinerea Comunității Impact Hub",social,low
+1340,"Social Ping-Pong at Ping Pong Academy","Ping-Pong Social la Ping Pong Academy",social,medium
+1342,"Mojo's Weekly Pub Quiz (Social Teams)","Pub Quiz Săptămânal la Mojo (Echipe Sociale)",social,low
+1343,"Volleyball Social Play – CCSS Tei","Volei Social – Joc CCSS Tei",social,high
+1344,"Seneca AntiCafe – Board Game & Social Work Sesh","Seneca AntiCafe – Sesiune de Jocuri de Societate și Lucru Social",social,low
+1457,"BlaBla Language Exchange (Iași)","Schimb Lingvistic BlaBla (Iași)",social,medium
+1458,"Board Games Night at Harmony Cafe","Seară de Jocuri de Societate la Harmony Cafe",social,medium
+1459,"Board Games Zone Social (Timișoara)","Zonă Socială Jocuri de Societate (Timișoara)",social,medium
+1460,"ExitGames Team Escape (Timișoara)","Evadare în Echipă ExitGames (Timișoara)",social,medium
+1461,"Pub Quiz Night at O'Peter's Irish Pub (Brașov)","Noaptea de Pub Quiz la O'Peter's Irish Pub (Brașov)",social,medium
+1462,"Puzzle Punks Board-Games Social (Brașov)","Puzzle Punks - Social cu Jocuri de Societate (Brașov)",social,medium
+1463,"BlaBla Language Exchange (Constanța)","Schimb Lingvistic BlaBla (Constanța)",social,medium
+1464,"The Escapers Team Escape (Constanța)","The Escapers - Evadare în Echipă (Constanța)",social,medium
+1590,"Toastmasters Public Speaking Night (Iași)","Noaptea de Vorbire Publică Toastmasters (Iași)",social,medium
+1591,"Legend Pub Quiz Night","Noaptea de Pub Quiz Legend",social,medium
+1592,"Retro Café Board-Game Social","Social cu Jocuri de Societate la Retro Café",social,medium
+1593,"Toastmasters Public Speaking Night (Timișoara)","Noaptea de Vorbire Publică Toastmasters (Timișoara)",social,medium
+1594,"Vineri 15 Riverfront Quiz Night","Noaptea de Quiz Vineri 15 pe Malul Râului",social,medium
+1595,"Cowork Timișoara Language Hangout","Atelier Lingvistic Cowork Timișoara",social,medium
+1596,"ZborHub Language Exchange (Brașov)","Schimb Lingvistic ZborHub (Brașov)",social,medium
+1597,"Deane's Wednesday Pub Quiz (Brașov)","Pub Quiz-ul lui Deane (Brașov)",social,medium
+1599,"Encanto Latin Social (Constanța)","Social Latin Encanto (Constanța)",social,high
+1600,"NEXT DOOR Game Night (Constanța)","Seară de Jocuri NEXT DOOR (Constanța)",social,medium
+1601,"Toastmasters Public Speaking Night (Constanța)","Seară de Vorbire Publică Toastmasters (Constanța)",social,medium
+1735,"Control Club Electronic Night","Seară Electronică Control Club",nightlife,high
+1736,"Expirat Halele Carol Live & DJ","Expirat Halele Carol Live & DJ",nightlife,high
+1737,"Fratelli Studios High-End Clubbing","Clubbing de Lux Fratelli Studios",nightlife,high
+1738,"Kristal Glam Club Techno Night","Seară Techno Kristal Glam Club",nightlife,high
+1739,"BOA Beat of Angels Luxury Night","Seară Luxury BOA Beat of Angels",nightlife,high
+1740,"Nomad Skybar Rooftop Evenings","Seri pe Acoperișul Nomad Skybar",nightlife,medium
+1741,"Linea/Closer to the Moon Rooftop","Terasa Linea/Aproape de Lună",nightlife,medium
+1742,"Corks Cozy Winebar Social Tasting","Degustare Socială la Corks Wine Bar",nightlife,medium
+1743,"Abel's Wine Bar Discovery Night","Seara de Descoperire a Vinurilor la Abel's Wine Bar",nightlife,low
+1744,"Mojo Music Club Karaoke Night","Noaptea de Karaoke la Mojo Music Club",nightlife,high
+1745,"BERĂRIA H Live & Beer Hall","BERĂRIA H Live & Berărie",nightlife,high
+1746,"Energiea Gastropub Social Night","Seara Socială la Energiea Gastropub",nightlife,medium
+1747,"Green Hours Live Jazz Night","Seara de Jazz Live la Green Hours",nightlife,medium
+1893,"Alt & Electronic Nights at Control Club","Seri Alternative și Electronice la Control Club",nightlife,
+1894,"Tech-House Marathon at Kristal Glam Club","Maraton Tech-House la Kristal Glam Club",nightlife,
+1895,"Student Night at Kulturhaus Bucharest","Noaptea Studenților la Kulturhaus București",nightlife,
+1896,"BOA (Beat of Angels) Hip-Hop & R&B Night","BOA (Beat of Angels) - Noaptea de Hip-Hop & R&B",nightlife,
+1897,"House Night at Fratelli Lounge & Club","Noaptea de House la Fratelli Lounge & Club",nightlife,
+1898,"Rooftop Cocktails at NOMAD Skybar","Cocktailuri pe Acoperiș la NOMAD Skybar",nightlife,
+1899,"Rooftop Sundowners at Linea / Closer to the Moon","Răsărit pe Acoperiș la Linea / Closer to the Moon",nightlife,
+1900,"Live Band & Karaoke at Mojo Music Club","Trupă Live & Karaoke la Mojo Music Club",nightlife,
+1901,"Intimate Jazz Night at Green Hours","Seară de Jazz Intimă la Green Hours",nightlife,
+1902,"Stand-Up Night at The Fool Comedy Club","Seară de Stand-Up la The Fool Comedy Club",nightlife,
+1903,"KIKI Lounge & Bar (LGBTQ+ friendly) Cocktails","Cocktailuri la KIKI Lounge & Bar (Prietenos LGBTQ+)",social,
+1904,"Queens Club LGBTQ+ Night","Noaptea LGBTQ+ la Queens Club",nightlife,
+1905,"Berăria H Beer Hall & Live Shows","Berăria H: Berărie și Spectacole Live",nightlife,
+1906,"Hookah & Lounge at Macca-Villacrosse (Hugo)","Narghilea & Lounge la Pasajul Macca-Villacrosse (Hugo)",social,
+1907,"Board-Game Evening at Snakes & Wizards","Seară de Jocuri de Societate la Snakes & Wizards",social,
+1908,"Craft Beers at Beer O'Clock","Beri Artizanale la Beer O'Clock",nightlife,
+1909,"Sports & Pints at St. Patrick Irish Pub","Sport și Bere la Pub-ul Irish St. Patrick",nightlife,
+1910,"Alt-Rock & Indie Nights at Expirat","Seri de Rock Alternativ și Indie la Expirat",nightlife,
+1911,"Live Jazz Sessions at The JAZZ BOOK","Sesiuni de Jazz Live la The JAZZ BOOK",nightlife,
+1912,"Live Anthems at Hard Rock Cafe Bucharest","Imnuri Live la Hard Rock Cafe București",nightlife,
+1913,"Peak Weekend at FACE Club","Vârful Weekendului la Clubul FACE",nightlife,
+1914,"Foraged Cocktails at FIX Me a Drink","Cocktailuri Culese la FIX Me a Drink",nightlife,
+1915,"Origo Cocktail Evenings (Old Town)","Serile de Cocktail Origo (Centrul Vechi)",nightlife,
+1916,"High-Gloss Nights at E3 by Entourage","Nopți de Lux la E3 by Entourage",nightlife,
+1917,"Uanderful: Floreasca Lounge & Late Drinks","Uanderful: Lounge & Băuturi Târzii Floreasca",nightlife,
+1918,"City-High Cocktails at NOR Sky (SkyTower)","Cocktailuri la Înălțime la NOR Sky (SkyTower)",nightlife,
+1919,"Sunset Rooftops at 18 Lounge (City Gate)","Terase la Apus la 18 Lounge (City Gate)",nightlife,
+1920,"LINEA / Closer to the Moon Rooftop","LINEA / Mai Aproape de Lună - Terasă",nightlife,
+1921,"Mojo: Karaoke & Live Band Nights","Mojo: Seri de Karaoke & Trupă Live",nightlife,
+1922,"SHOTERIA Old Town: Rapid-Fire Shots","SHOTERIA Centrul Vechi: Shots cu Foc Rapid",nightlife,
+1923,"Beluga: Music & Cocktails (Old Town)","Beluga: Muzică & Cocktailuri (Centrul Vechi)",nightlife,
+1924,"Fire Club: Rock & Alternative","Fire Club: Rock & Alternative",nightlife,
+1925,"St. Patrick Irish Pub: Sports & Pints","St. Patrick Irish Pub: Sport și Beri",nightlife,
+1926,"Beer O'Clock: Craft & Imports","Beer O'Clock: Beri Artizanale și de Import",nightlife,
+1927,"Bruno Wine Bar: Cellar Vibes","Bruno Wine Bar: Atmosferă de Cramă",nightlife,
+1928,"Club Șurubelnița: Underground Party Bar","Club Șurubelnița: Bar de Petreceri Subterane",nightlife,
+1929,"Quantic: Rock & Metal Live","Quantic: Rock și Metal Live",nightlife,
+1930,"Infinity Hookah Lounge (Eminescu)","Infinity Hookah Lounge (Eminescu)",social,
+1931,"Nova Lounge & Hookah (Ferdinand)","Nova Lounge & Hookah (Ferdinand)",social,
+1932,"Trickshot Mega Mall: Bowling & Bar","Trickshot Mega Mall: Bowling și Bar",social,
+1933,"Trickshot AFI Cotroceni: Lanes & Cocktails","Trickshot AFI Cotroceni: Piste și Cocktailuri",social,
+1934,"Trickshot Promenada Rooftop","Trickshot Promenada Rooftop",social,
+1935,"KLANdestin: IOR Park View Drinks","KLANdestin: Băuturi cu Vedere la Parcul IOR",social,
+1936,"Sports Bar Titan: Billiards & Darts","Sports Bar Titan: Biliard și Darts",social,
+1937,"Pura Vida Sky Bar (Old Town)","Pura Vida Sky Bar (Centrul Vechi)",nightlife,
+1938,"Halftime Sports Pub (Gabroveni)","Halftime Sports Pub (Gabroveni)",nightlife,
+1939,"Evening Lanes at Dinamo Olympic Pool","Ore de Seară la Bazinul Olimpic Dinamo",social,
+1940,"Sunset Splash at Magic Place Aqua Park","Stropire la Apus la Magic Place Aqua Park",social,
+1941,"Club Swim & Sun at Stejarii Country Club","Club de Înot & Soare la Stejarii Country Club",social,
+1942,"After-Work Dip at Daimon Wellness (Tineretului)","Scufundare după Program la Daimon Wellness (Tineretului)",social,
+1943,"Laps & Steam at Crowne Plaza ANA Spa","Lungimi & Aburi la Crowne Plaza ANA Spa",social,
+1944,"City-Centre Swim at Novotel Wellness","Înot în Centrul Orașului la Novotel Wellness",social,
+1945,"Campus Swim at Carol Davila Pool (Cotroceni)","Înot pe Campus la Piscina Carol Davila (Cotroceni)",social,
+1946,"Affordable Lengths at Olimpia (Iancului)","Lungimi Accesibile la Olimpia (Iancului)",social,
+1947,"Semi-Olympic Session at World Class Mega Mall (Pantelimon)","Sesiune Semi-Olimpică la World Class Mega Mall (Pantelimon)",social,
+1948,"Grand Lanes at World Class The Grand (JW Marriott)","Culoare Grandioase la World Class The Grand (JW Marriott)",social,
+1949,"Flying Circus Alt Nights","Circul Zburător - Seri Alternative",nightlife,
+1950,"Steampunk Cocktails at Joben","Cocktailuri Steampunk la Joben",nightlife,
+1951,"D'Arc Unirii Sessions","Sesiunile D'Arc Unirii",nightlife,
+1952,"Scârț Loc Lejer Living-Room Lounge","Scârț Loc Lejer - Salonul de Living",social,
+1953,"Viniloteca: Wine & Wax Nights","Viniloteca: Seri de Vin și Ceară",nightlife,
+1954,"Moszkva Oradea Alt Scene","Scena Alternativă Moszkva din Oradea",nightlife,
+1955,"Lokal Oradea Rooftop Sundowners","Lokal Oradea - Apusuri pe Terasă",nightlife,
+1956,"Music Pub Sibiu Rock Nights","Music Pub Sibiu - Nopți de Rock",nightlife,
+1957,"Underground The Pub: Iași Rock Cellar","Underground The Pub - Pivnița Rock Iași",nightlife,
+1958,"Jazz & Blues Club Târgu Mureș","Jazz & Blues Club Târgu Mureș",nightlife,
+1959,"EGO Mamaia Beach Club Nights","EGO Mamaia - Nopți de Club pe Plajă",nightlife,
+1960,"Expirat Vama Veche Beach Sessions","Expirat Vama Veche - Sesiuni pe Plajă",nightlife,
+1961,"Tipografia Culture Bar","Tipografia - Bar Cultural",nightlife,
+1962,"Yolka Skybar Sundowners","Yolka Skybar - Apusuri",nightlife,
+1963,"VIP Glam Night at BOA - Beat of Angels","Noapte VIP Strălucitoare la BOA - Bătaia Îngerilor",nightlife,
+1964,"Premium Party at NOA – Nest of Angels","Petrecere Premium la NOA - Cuibul Îngerilor",nightlife,
+1965,"High-End Night at Epic Society","Seara de Lux la Epic Society",nightlife,
+1966,"Metal Nights at Rockstadt","Nopți de Metal la Rockstadt",nightlife,
+1967,"Live Jazz at Jazz & Blues Club","Jazz Live la Jazz & Blues Club",nightlife,
+1968,"Concert Night at Doors Club","Seară de Concert la Doors Club",nightlife,
+1969,"Beach Club Night at EGO Mamaia","Seară la Beach Club EGO Mamaia",nightlife,
+1970,"Fratelli Beach & Club – House by the Sea","Fratelli Beach & Club – House lângă Mare",nightlife,
+1971,"Fratelli Iași – Luxe Mixed Music Night","Fratelli Iași – Seară de Muzică Mixtă de Lux",nightlife,
+1972,"Euphoria Music Hall – Big-Room Live & Party","Euphoria Music Hall – Concert Live și Petrecere mare",nightlife,
+1973,"Olympic Lanes at Complex Sportiv Otopeni","Bazine Olimpice la Complexul Sportiv Otopeni",fitness,high
+1974,"Training Session at Bazinul Olimpic Dinamo","Sesiune de Antrenament la Bazinul Olimpic Dinamo",fitness,high
+1975,"Mountain City Laps at Bazinul Olimpic Mihai Mitrofan","Tururi de Bazin înCity-ul Montan la Bazinul Olimpic Mihai Mitrofan",fitness,high
+1976,"University Pool at Complexul de Natație UBB","Bazin Universitar la Complexul de Natație UBB",fitness,high
+1977,"Technical University Pool at UTCN","Bazin la Universitatea Tehnică UTCN",fitness,high
+1978,"Western Training at Bazinul Olimpic Ioan Alexandrescu","Antrenament Vestic la Bazinul Olimpic Ioan Alexandrescu",fitness,high
+1979,"Transylvanian Laps at Bazinul Olimpic Târgu Mureș","Ture Transilvane la Bazinul Olimpic Târgu Mureș",fitness,high
+1980,"Modern Training at Complex Sportiv City","Antrenament Modern la Complex Sportiv City",fitness,high
+1981,"Community Swimming at Bazinul Vega","Înot Comunitar la Bazinul Vega",fitness,medium
+1982,"Year-Round Swimming at Aria Aqua Park","Înot pe Tot Parcursul Anului la Aria Aqua Park",fitness,medium
+1983,"Premium Club Swimming at World Class Mall Moldova","Înot de Club Premium la World Class Mall Moldova",fitness,high
+1984,"Coastal Training at World Class Constanța","Antrenament Coastal la World Class Constanța",fitness,high
+1985,"Premium Tennis at Stejarii Country Club","Tenis Premium la Stejarii Country Club",sports,high
+1986,"Modern Tennis at Winners Sports Club","Tenis Modern la Winners Sports Club",sports,high
+1987,"Coastal Tennis at Tenis Club IDU","Tenis Coastal la Tenis Club IDU",sports,high
+1988,"Wellness & Tennis at Pescariu Sports","Wellness & Tenis la Pescariu Sports",sports,high
+1989,"Parkside Tennis at North Tennis Herăstrău","Tenis Parkside la North Tennis Herăstrău",sports,high
+1990,"Community Tennis at BDK Tennis Herăstrău","Tenis Comunitar la BDK Tennis Herăstrău",sports,high
+1991,"National Training at Centrul Național de Tenis","Antrenament Național la Centrul Național de Tenis",sports,high
+1992,"Western Tennis at Tenis Timișoara","Tenis Vestic la Tenis Timișoara",sports,high
+1993,"Mountain City Tennis at Tenis Arena Brașov","Tenis înCity Mountain la Tenis Arena Brașov",sports,high
+1994,"Urban Tennis at Tenis Club AS","Tenis Urban la Tenis Club AS",sports,high
+1995,"Moldavian Tennis at Tenis Club Leo","Tenis Moldovenesc la Tenis Club Leo",sports,high
+1996,"Modern Tennis at iTENIS Iași","Tenis Modern la iTENIS Iași",sports,high
+1997,"Social Badminton at WePlay Brașov","Badminton Social la WePlay Brașov",sports,high
+1998,"Competitive Badminton at Badminton Club Cluj","Badminton Competitiv la Badminton Club Cluj",sports,high
+1999,"Training & Play at ACS Pro Badminton","Antrenament și Joc la ACS Pro Badminton",sports,high
+2000,"Multi-Sport Badminton at AeroSquash Băneasa","Badminton Multi-Sport la AeroSquash Băneasa",sports,high
+2001,"Community Badminton at Banu Sport","Badminton Comunitar la Banu Sport",sports,high
+2002,"Sports Hall Badminton at Sala STOMART","Badminton în Sala de Sport STOMART",sports,high
+2003,"Club Badminton at CSM Timișoara","Badminton Club la CSM Timișoara",sports,high
+2004,"Student Club Badminton at Sportul Studențesc","Badminton Club Studențesc la Sportul Studențesc",sports,high
+2005,"Professional Cooking at Horeca Culinary School","Gătit Profesional la Horeca Culinary School",culinary,medium
+2006,"Hands-On Classes at Cooking Studio","Clase Practice la Cooking Studio",culinary,medium
+2007,"Amateur Cooking at Atelierele ILBAH","Gătit pentru Amatori la Atelierele ILBAH",culinary,medium
+2008,"Cooking for Beginners at DallesGO","Gătit pentru Începători la DallesGO",culinary,medium
+2009,"Gourmet Techniques at Société Gourmet","Tehnici Gastronomice la Société Gourmet",culinary,medium
+2010,"Modern Cooking at CulinaryOn România","Gătit Modern la CulinaryOn România",culinary,medium
+2011,"Artisan Techniques at Artisan Cooking Classes","Tehnici Artizanale la Artisan Cooking Classes",culinary,medium
+2012,"Grill Mastery at Grill Expert Academy","Măiestria Grătarului la Grill Expert Academy",culinary,medium
+2013,"Local Cuisine Workshops at My Transylvania","Ateliere de Bucătărie Locală la My Transylvania",culinary,medium
+2014,"Culinary Workshops at KUXA Studio","Ateliere Culinare la KUXA Studio",culinary,medium
+2015,"Traditional Cookery at Casa Ratiu","Gătit Tradițional la Casa Ratiu",culinary,medium
+2016,"French Techniques at Disciples Escoffier","Tehnici Franceze la Disciples Escoffier",culinary,medium
+2017,"Professional Chef Training at ICEP Hotel School","Formare Profesională pentru Bucătari la Școala de Hotelărie ICEP",culinary,medium
+2018,"Chef Course at ICEP București","Curs de Bucătar la ICEP București",culinary,medium
+2019,"Culinary Masterclass at Horeca School","Masterclass Culinar la Horeca School",culinary,medium
+2020,"Pastry Courses at SIMPA Sibiu","Cursuri de Patiserie la SIMPA Sibiu",culinary,medium

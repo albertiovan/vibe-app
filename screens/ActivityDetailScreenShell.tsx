@@ -255,8 +255,12 @@ export const ActivityDetailScreenShell: React.FC = () => {
     (navigation as any).navigate('UserProfile');
   };
 
-  // Get images for carousel
-  const images = activity.photos || (activity.imageUrl ? [activity.imageUrl] : []);
+  // Get images for carousel - check all possible image field names
+  const images = (activity as any).image_urls || 
+                 (activity as any).imageUrls || 
+                 activity.photos || 
+                 ((activity as any).hero_image_url ? [(activity as any).hero_image_url] : []) ||
+                 (activity.imageUrl ? [activity.imageUrl] : []);
 
   // Format duration for display
   const formatDuration = (): string | undefined => {

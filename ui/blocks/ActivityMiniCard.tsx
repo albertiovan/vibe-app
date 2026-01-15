@@ -47,8 +47,13 @@ export const ActivityMiniCard: React.FC<ActivityMiniCardProps> = ({
   const colors = theme.colors;
   const typo = theme.typography;
 
-  // Get image URL
-  const imageUrl = activity.imageUrl || activity.photos?.[0] || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400';
+  // Get image URL - check all possible field names from database
+  const imageUrl = (activity as any).hero_image_url || 
+                   (activity as any).image_urls?.[0] || 
+                   (activity as any).imageUrls?.[0] ||
+                   activity.imageUrl || 
+                   activity.photos?.[0] || 
+                   'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400';
 
   // Format duration
   const formatDuration = (): string | null => {

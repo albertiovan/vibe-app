@@ -295,7 +295,8 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
              ${descField} as description, ${tagsField} as tags, 
              a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
              a.duration_min, a.duration_max, a.crowd_size, a.crowd_type, 
-             a.group_suitability, a.price_tier
+             a.group_suitability, a.price_tier,
+             a.hero_image_url, a.image_urls
       FROM activities a
       WHERE ${whereClause}
     `;
@@ -766,7 +767,7 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
             SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags,
                    a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
                    a.duration_min, a.duration_max, a.crowd_size, a.crowd_type,
-                   a.group_suitability, a.price_tier
+                   a.group_suitability, a.price_tier, a.hero_image_url, a.image_urls
             FROM activities a
             WHERE a.region = $1
             ORDER BY RANDOM()
@@ -1063,6 +1064,8 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
           priceTier: activity.price_tier,
           website: activity.website, // Activity website (if available)
           websiteUrl: activity.website, // Also as websiteUrl for compatibility
+          hero_image_url: activity.hero_image_url, // Activity hero image
+          image_urls: activity.image_urls, // Activity image gallery
           weather: weatherInfo, // NEW: Weather data for activity location
           expandedRadius: activity._expandedRadius || false, // NEW: Indicates if distance was expanded
           originalMaxDistance: activity._originalMaxDistance, // NEW: Original distance limit
