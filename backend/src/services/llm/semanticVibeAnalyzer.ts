@@ -118,42 +118,62 @@ DEEP (✅ CORRECT):
 ⚠️ **CRITICAL: CONFIDENCE LEVELS FOR KEYWORD MATCHING**
 
 **CONFIDENCE >= 0.9 (HIGH SPECIFICITY):**
-Use ONLY for EXPLICIT activity name requests where user names a SPECIFIC activity type.
+Use for EXPLICIT requests where user names a SPECIFIC activity type OR a SPECIFIC MOOD/ENERGY.
 Keywords become MANDATORY filters - ONLY return activities matching these keywords.
+Energy level becomes STRICT filter - ONLY return activities with matching energy.
 
 ✅ HIGH CONFIDENCE Examples (0.9-0.95):
+
+SPECIFIC ACTIVITIES:
 - "mountain biking" → confidence: 0.95, keywordPrefer: [mountain, biking, bike, MTB]
 - "rock climbing" → confidence: 0.95, keywordPrefer: [rock, climbing, climb, boulder]
 - "kayaking" → confidence: 0.95, keywordPrefer: [kayak, kayaking, paddling]
 - "I want to go rock climbing" → confidence: 0.95 (specific activity named)
 
-These get ONLY activities matching keywords (strict filtering).
+SPECIFIC MOODS/ENERGY (NEW - THESE ARE HIGH CONFIDENCE):
+- "adrenaline" → confidence: 0.95, energyLevel: high, requiredTags: [mood:adrenaline, category:adventure], avoidTags: [energy:low, mood:relaxed, category:culinary, category:creative]
+- "I want adrenaline" → confidence: 0.95, energyLevel: high, suggestedCategories: [adventure, sports, fitness]
+- "thrill-seeking" → confidence: 0.9, energyLevel: high, requiredTags: [mood:adrenaline]
+- "extreme sports" → confidence: 0.95, energyLevel: high, suggestedCategories: [adventure, sports]
+- "romantic evening" → confidence: 0.9, requiredTags: [mood:romantic, category:romance]
+- "zen/mindful" → confidence: 0.9, energyLevel: low, requiredTags: [mood:mindful, category:wellness]
+- "cozy night in" → confidence: 0.9, energyLevel: low, requiredTags: [mood:cozy]
 
-**CONFIDENCE < 0.9 (GENERAL REQUEST / MOOD-BASED):**
-Use for mood states, energy levels, or broad themes. Keywords become PREFERRED (boosting, not filtering).
+WHY THESE ARE HIGH CONFIDENCE:
+- User explicitly stated the MOOD they want (adrenaline, romantic, zen)
+- This is NOT a vague request - they know exactly what feeling they want
+- Giving them low-energy pottery when they said "adrenaline" is a FAILURE
+- These moods map to specific database tags (mood:adrenaline, mood:romantic, etc.)
+
+These get ONLY activities matching the mood/energy (strict filtering).
+
+**CONFIDENCE < 0.9 (GENERAL REQUEST / VAGUE MOOD):**
+Use for VAGUE mood states, suggestions, or broad themes. Keywords become PREFERRED (boosting, not filtering).
 This maintains VARIETY across the entire database.
 
-✅ GENERAL/MOOD Examples (0.5-0.85):
-- "feeling energetic" → confidence: 0.7, keywordPrefer: [active, energy, movement]
-- "feeling sporty" → confidence: 0.75, keywordPrefer: [sport, athletic, game]
-- "I'm bored" → confidence: 0.6, keywordPrefer: [fun, exciting, interesting]
-- "adventure in the mountains" → confidence: 0.75, keywordPrefer: [mountain, adventure, outdoor]
-- "something fun outdoors" → confidence: 0.6, keywordPrefer: [outdoor, fun, nature]
-- "relax in nature" → confidence: 0.7, keywordPrefer: [nature, relax, outdoor]
-- "I want sports" → confidence: 0.8, keywordPrefer: [sport, athletic, game]
-- "I want to work out" → confidence: 0.8, keywordPrefer: [workout, fitness, exercise, gym]
+✅ GENERAL/VAGUE Examples (0.5-0.85):
+- "feeling energetic" → confidence: 0.7 (vague - could mean sports, dancing, hiking, etc.)
+- "feeling sporty" → confidence: 0.75
+- "I'm bored" → confidence: 0.6 (very vague - could want anything)
+- "adventure in the mountains" → confidence: 0.75
+- "something fun outdoors" → confidence: 0.6
+- "relax in nature" → confidence: 0.7
+- "I want sports" → confidence: 0.8 (category, not specific activity)
+- "I want to work out" → confidence: 0.8
 
 These get activities WITH keywords first, then others (variety maintained across ALL categories).
 
 **CRITICAL DISTINCTION:**
 - "I want to go rock climbing" = HIGH (0.95) → ONLY rock climbing activities
-- "I'm feeling adventurous" = MEDIUM (0.7) → ALL adventure activities (climbing, hiking, biking, etc.)
-- "I want sports" = MEDIUM (0.8) → ALL sports activities (tennis, badminton, swimming, basketball, etc.)
-- "feeling energetic" = MEDIUM (0.7) → ALL high-energy activities across database
+- "adrenaline" or "I want adrenaline" = HIGH (0.95) → ONLY high-energy adventure/sports
+- "I'm feeling adventurous" = MEDIUM (0.7) → ALL adventure activities (variety OK)
+- "I want sports" = MEDIUM (0.8) → ALL sports activities
+- "feeling energetic" = MEDIUM (0.7) → ALL high-energy activities (variety OK)
 
 **RULE:** 
 - Exact activity name (rock climbing, kayaking, pottery) → confidence 0.9+
-- Mood/energy state (feeling X, I'm bored, want adventure) → confidence < 0.9
+- Explicit mood word (adrenaline, romantic, zen, thrill) → confidence 0.9+
+- Vague mood state (feeling X, I'm bored, want adventure) → confidence < 0.9
 - Broad category (I want sports, I want fitness) → confidence 0.7-0.85 (NOT 0.9+)
 
 Example: "mountain biking"

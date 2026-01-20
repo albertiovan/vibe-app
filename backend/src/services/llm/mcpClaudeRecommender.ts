@@ -585,15 +585,34 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
     }
     
     if (activities.length === 0) {
-      // DEGRADATION LEVEL 3: Broaden to category only (drop all tag requirements)
+      // DEGRADATION LEVEL 3: Broaden to category + energy only (drop mood tags but KEEP energy for high-confidence vibes)
       degradationLevel = 3;
-      console.log('🔄 DEGRADATION LEVEL 3: Dropping tag requirements, using category only');
+      const isHighConfidenceVibe = (analysis.confidence || 0) >= 0.85;
+      
+      console.log('🔄 DEGRADATION LEVEL 3: Dropping mood tags, keeping category' + (isHighConfidenceVibe ? ' + energy' : ''));
       console.log('🚨 ACTIVITY GAP DETECTED:');
-      console.log(`   Vibe: "${request.vibe}"`);
+      console.log(`   Vibe: "${request.vibe}" (confidence: ${analysis.confidence})`);
       console.log(`   Required tags: ${analysis.requiredTags.join(', ')}`);
       console.log(`   Energy: ${analysis.energyLevel}`);
       console.log(`   Categories: ${analysis.suggestedCategories.join(', ')}`);
       console.log('   💡 Consider adding more activities with these attributes!');
+      
+      // NEW: For high-confidence vibes (like "adrenaline"), PRESERVE energy level filter
+      // This prevents pottery/wine from appearing even in fallback
+      let energyClause = '';
+      let fallbackParams: (string | string[])[] = [region];
+      let paramIndex = 2;
+      
+      if (analysis.suggestedCategories.length > 0) {
+        fallbackParams.push(analysis.suggestedCategories);
+        paramIndex++;
+      }
+      
+      if (isHighConfidenceVibe && analysis.energyLevel) {
+        energyClause = ` AND a.energy_level = $${paramIndex}`;
+        fallbackParams.push(analysis.energyLevel);
+        console.log(`   🎯 HIGH CONFIDENCE: Preserving energy filter (${analysis.energyLevel})`);
+      }
       
       const fallbackQuery = `
         SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags,
@@ -604,15 +623,12 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
         WHERE (a.region = $1 OR a.region = 'București')
         ${analysis.suggestedCategories.length > 0 ? 
           `AND a.category = ANY($2::text[])` : ''}
+        ${energyClause}
         ORDER BY 
           CASE WHEN a.region = $1 THEN 0 ELSE 1 END,
           RANDOM()
         LIMIT 30
       `;
-      
-      const fallbackParams = analysis.suggestedCategories.length > 0 
-        ? [region, analysis.suggestedCategories] 
-        : [region];
       
       let { rows: fallbackActivities } = await pool.query(fallbackQuery, fallbackParams);
       console.log(`📊 Level 3 fallback: Found ${fallbackActivities.length} activities before distance filter`);
@@ -759,6 +775,28 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       
       console.log(`   Found: ${localActivities.length} local, ${outsideActivities.length} outside`);
       
+      // NEW: Build vibe-aware variety filters for high-confidence vibes
+      const isHighConfidenceVibe = (analysis.confidence || 0) >= 0.85;
+      let varietyEnergyClause = '';
+      let varietyCategoryClause = '';
+      const varietyParams: (string | string[])[] = [userCity];
+      let varietyParamIndex = 2;
+      
+      if (isHighConfidenceVibe) {
+        // For high-confidence vibes, variety activities must still match energy/category
+        if (analysis.energyLevel) {
+          varietyEnergyClause = ` AND a.energy_level = $${varietyParamIndex}`;
+          varietyParams.push(analysis.energyLevel);
+          varietyParamIndex++;
+        }
+        if (analysis.suggestedCategories && analysis.suggestedCategories.length > 0) {
+          varietyCategoryClause = ` AND a.category = ANY($${varietyParamIndex}::text[])`;
+          varietyParams.push(analysis.suggestedCategories);
+          varietyParamIndex++;
+        }
+        console.log(`   🎯 HIGH CONFIDENCE: Variety activities must match energy=${analysis.energyLevel}, categories=${analysis.suggestedCategories?.join(',')}`);
+      }
+      
       // Ensure at least 1 local AND 1 outside (if we have enough activities)
       if (localActivities.length === 0 && outsideActivities.length > 0 && activities.length >= 2) {
         console.log('⚠️ No local activities found, fetching some for variety...');
@@ -770,19 +808,26 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
                    a.group_suitability, a.price_tier, a.hero_image_url, a.image_urls
             FROM activities a
             WHERE a.region = $1
+            ${varietyEnergyClause}
+            ${varietyCategoryClause}
             ORDER BY RANDOM()
             LIMIT 2
           `;
-          const { rows: localResults } = await pool.query(localQuery, [userCity]);
+          const { rows: localResults } = await pool.query(localQuery, varietyParams);
           
           if (localResults.length > 0) {
             // Score the local activities
             localResults.forEach(activity => {
               activity._relevanceScore = scoreActivity(activity, analysis);
             });
-            // Mix: keep top outside activities + add local ones
-            activities = [...localResults, ...outsideActivities.slice(0, 3)];
-            console.log(`✅ Added ${localResults.length} local activities for variety`);
+            // Only add if they score above threshold for high-confidence vibes
+            const viableLocal = isHighConfidenceVibe 
+              ? localResults.filter(a => (a._relevanceScore || 0) >= MINIMUM_RELEVANCE_SCORE)
+              : localResults;
+            if (viableLocal.length > 0) {
+              activities = [...viableLocal, ...outsideActivities.slice(0, 3)];
+              console.log(`✅ Added ${viableLocal.length} vibe-matching local activities for variety`);
+            }
           }
         } catch (error) {
           console.log('⚠️ Could not fetch local activities:', error);
@@ -790,6 +835,22 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       } else if (outsideActivities.length === 0 && localActivities.length > 0 && activities.length >= 2) {
         console.log('⚠️ No outside activities found, fetching some for variety...');
         try {
+          // Rebuild params for outside query (different $1 meaning)
+          const outsideParams: (string | string[])[] = [userCity];
+          let outsideParamIndex = 2;
+          let outsideEnergyClause = '';
+          let outsideCategoryClause = '';
+          
+          if (isHighConfidenceVibe && analysis.energyLevel) {
+            outsideEnergyClause = ` AND a.energy_level = $${outsideParamIndex}`;
+            outsideParams.push(analysis.energyLevel);
+            outsideParamIndex++;
+          }
+          if (isHighConfidenceVibe && analysis.suggestedCategories?.length > 0) {
+            outsideCategoryClause = ` AND a.category = ANY($${outsideParamIndex}::text[])`;
+            outsideParams.push(analysis.suggestedCategories);
+          }
+          
           const outsideQuery = `
             SELECT a.id, a.name, a.category, a.city, a.region, a.description, a.tags,
                    a.energy_level, a.indoor_outdoor, a.latitude, a.longitude,
@@ -797,19 +858,26 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
                    a.group_suitability, a.price_tier
             FROM activities a
             WHERE a.region != $1
+            ${outsideEnergyClause}
+            ${outsideCategoryClause}
             ORDER BY RANDOM()
             LIMIT 2
           `;
-          const { rows: outsideResults } = await pool.query(outsideQuery, [userCity]);
+          const { rows: outsideResults } = await pool.query(outsideQuery, outsideParams);
           
           if (outsideResults.length > 0) {
             // Score the outside activities
             outsideResults.forEach(activity => {
               activity._relevanceScore = scoreActivity(activity, analysis);
             });
-            // Mix: keep top local activities + add outside ones
-            activities = [...localActivities.slice(0, 3), ...outsideResults];
-            console.log(`✅ Added ${outsideResults.length} outside activities for variety`);
+            // Only add if they score above threshold for high-confidence vibes
+            const viableOutside = isHighConfidenceVibe
+              ? outsideResults.filter(a => (a._relevanceScore || 0) >= MINIMUM_RELEVANCE_SCORE)
+              : outsideResults;
+            if (viableOutside.length > 0) {
+              activities = [...localActivities.slice(0, 3), ...viableOutside];
+              console.log(`✅ Added ${viableOutside.length} vibe-matching outside activities for variety`);
+            }
           }
         } catch (error) {
           console.log('⚠️ Could not fetch outside activities:', error);
@@ -1013,12 +1081,42 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       console.log(`🔄 Removed ${weatherFilteredActivities.length - uniqueActivities.length} duplicate activities`);
     }
     
-    // Select top 5 activities by relevance (after weather filtering and deduplication)
-    const selectedActivities = uniqueActivities.slice(0, 5);
+    // NEW: Apply minimum relevance threshold for high-confidence vibes
+    // This prevents pottery/wine bars from appearing for "adrenaline" requests
+    const isHighConfidenceVibe = (analysis.confidence || 0) >= HIGH_CONFIDENCE_THRESHOLD;
+    let relevantActivities = uniqueActivities;
     
-    console.log(`✅ Selected top 5 unique activities by relevance score`);
+    if (isHighConfidenceVibe) {
+      const beforeThreshold = uniqueActivities.length;
+      relevantActivities = uniqueActivities.filter(a => 
+        (a._relevanceScore || 0) >= MINIMUM_RELEVANCE_SCORE
+      );
+      
+      if (relevantActivities.length < beforeThreshold) {
+        console.log(`🎯 HIGH CONFIDENCE VIBE: Filtered ${beforeThreshold - relevantActivities.length} low-relevance activities (threshold: ${MINIMUM_RELEVANCE_SCORE})`);
+        console.log(`   Removed activities with scores below threshold:`);
+        uniqueActivities
+          .filter(a => (a._relevanceScore || 0) < MINIMUM_RELEVANCE_SCORE)
+          .slice(0, 5)
+          .forEach(a => console.log(`     ❌ ${a.name}: score ${a._relevanceScore} (${a.category}, ${a.energy_level})`));
+      }
+      
+      // If we filtered too aggressively, keep at least the top 3 by score
+      if (relevantActivities.length < 3 && uniqueActivities.length >= 3) {
+        console.log(`⚠️ Not enough activities above threshold, keeping top 3 by score`);
+        relevantActivities = uniqueActivities
+          .sort((a, b) => (b._relevanceScore || 0) - (a._relevanceScore || 0))
+          .slice(0, 3);
+      }
+    }
+    
+    // Select top 5 activities by relevance (after weather filtering, deduplication, and threshold)
+    const selectedActivities = relevantActivities.slice(0, 5);
+    
+    console.log(`✅ Selected ${selectedActivities.length} activities by relevance score`);
     selectedActivities.forEach((a, i) => {
-      console.log(`   ${i+1}. ${a.name} (ID: ${a.id}) - Score: ${a._relevanceScore} (${a.category}, ${a.energy_level})`);
+      const scoreIndicator = (a._relevanceScore || 0) >= MINIMUM_RELEVANCE_SCORE ? '✓' : '⚠️';
+      console.log(`   ${i+1}. ${scoreIndicator} ${a.name} (ID: ${a.id}) - Score: ${a._relevanceScore} (${a.category}, ${a.energy_level})`);
     });
     
     // STEP 4: For each selected activity, get venues
@@ -1075,7 +1173,8 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
             name: v.name,
             city: v.city,
             rating: v.rating,
-            website: v.website, // NOW INCLUDED!
+            website: v.website,
+            mapsUrl: v.maps_url,
             phone: v.phone,
             address: v.address,
             location: (v.latitude && v.longitude) ? {
@@ -1127,6 +1226,10 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
  * Select diverse activities from candidates
  * Ensures variety in categories and moods
  * Now enhanced with feedback-based scoring AND energy variety
+ * 
+ * NEW: Energy variety is DISABLED for high-confidence vibes (e.g., "adrenaline")
+ * - High confidence = user explicitly asked for something specific
+ * - Don't "stretch" them with opposite energy activities
  */
 function selectDiverseActivities(activities: any[], count: number, analysis: any, feedbackScores?: Map<number, any>): any[] {
   if (activities.length <= count) {
@@ -1150,6 +1253,9 @@ function selectDiverseActivities(activities: any[], count: number, analysis: any
     console.log('🎯 Activities ranked by feedback scores');
   }
   
+  // NEW: Check if this is a high-confidence explicit vibe request
+  const isHighConfidenceVibe = (analysis.confidence || 0) >= HIGH_CONFIDENCE_THRESHOLD;
+  
   // NEW: Map energy levels to numeric values for comparison
   const energyLevelMap: Record<string, number> = {
     'low': 1,
@@ -1162,16 +1268,26 @@ function selectDiverseActivities(activities: any[], count: number, analysis: any
   
   console.log(`⚡ User energy preference: ${userEnergyLevel} (${userEnergyValue})`);
   
-  // NEW: Calculate target distribution - gentle variety, not extreme
-  // If user wants low energy: 3 low, 1 medium, 1 high (gentle push)
-  // If user wants medium: 3 medium, 1 low, 1 high (explore both directions)
-  // If user wants high: 3 high, 1 medium, 1 low (try to balance)
-  let targetDistribution = {
-    matchingEnergy: Math.ceil(count * 0.6), // 60% match user preference (3 out of 5)
-    stretchEnergy: Math.floor(count * 0.4)  // 40% gently stretch (2 out of 5)
-  };
-  
-  console.log(`🎯 Target: ${targetDistribution.matchingEnergy} matching energy, ${targetDistribution.stretchEnergy} stretch activities`);
+  // NEW: For HIGH CONFIDENCE vibes, DISABLE energy variety entirely
+  // User asked for "adrenaline" = they want ALL high-energy, not 40% low-energy stretch
+  let targetDistribution;
+  if (isHighConfidenceVibe) {
+    targetDistribution = {
+      matchingEnergy: count, // 100% match user preference for explicit vibes
+      stretchEnergy: 0       // NO stretch activities
+    };
+    console.log(`🎯 HIGH CONFIDENCE VIBE: Disabling energy variety - ALL ${count} activities must match ${userEnergyLevel} energy`);
+  } else {
+    // Original gentle variety for general requests
+    // If user wants low energy: 3 low, 1 medium, 1 high (gentle push)
+    // If user wants medium: 3 medium, 1 low, 1 high (explore both directions)
+    // If user wants high: 3 high, 1 medium, 1 low (try to balance)
+    targetDistribution = {
+      matchingEnergy: Math.ceil(count * 0.6), // 60% match user preference (3 out of 5)
+      stretchEnergy: Math.floor(count * 0.4)  // 40% gently stretch (2 out of 5)
+    };
+    console.log(`🎯 Target: ${targetDistribution.matchingEnergy} matching energy, ${targetDistribution.stretchEnergy} stretch activities`);
+  }
   
   // First pass: select diverse categories, prioritizing user's energy preference
   const matchingEnergyActivities = activities.filter(a => a.energy_level === userEnergyLevel);
@@ -1267,16 +1383,30 @@ function selectDiverseActivities(activities: any[], count: number, analysis: any
   return selected;
 }
 
+// MINIMUM RELEVANCE THRESHOLD - activities below this score are excluded from final results
+// This prevents irrelevant activities from appearing even when candidate pool is small
+const MINIMUM_RELEVANCE_SCORE = 50;
+
+// HIGH CONFIDENCE THRESHOLD - when vibe analysis confidence >= this, enforce stricter matching
+const HIGH_CONFIDENCE_THRESHOLD = 0.85;
+
 /**
  * Score activity based on how well it matches analysis
  * HIGHER SCORE = BETTER MATCH
+ * 
+ * NEW: Now includes NEGATIVE scoring for:
+ * - Missing required mood tags when confidence is high
+ * - Energy level mismatch for explicit energy vibes
+ * - Activities in avoid categories
  */
 function scoreActivity(activity: any, analysis: any): number {
   let score = 0;
   
   if (!activity.tags || !Array.isArray(activity.tags)) {
-    return score;
+    return -100; // No tags = definitely not a match
   }
+  
+  const isHighConfidence = (analysis.confidence || 0) >= HIGH_CONFIDENCE_THRESHOLD;
   
   // CRITICAL: Category match is most important (100 points per match)
   // This ensures activities in the requested category always rank highest
@@ -1288,6 +1418,11 @@ function scoreActivity(activity: any, analysis: any): number {
     }
   }
   
+  // PENALTY: No category match at all = strong negative signal
+  if (categoryMatches === 0 && (analysis.suggestedCategories || []).length > 0) {
+    score -= 80; // Strong penalty for completely wrong category
+  }
+  
   // Bonus for matching the PRIMARY category (first in list)
   if (analysis.suggestedCategories && analysis.suggestedCategories.length > 0) {
     const primaryCategory = analysis.suggestedCategories[0];
@@ -1296,9 +1431,25 @@ function scoreActivity(activity: any, analysis: any): number {
     }
   }
   
-  // Energy level match (30 points)
-  if (activity.energy_level === analysis.energyLevel) {
-    score += 30;
+  // Energy level scoring with PENALTIES for mismatch
+  if (analysis.energyLevel) {
+    if (activity.energy_level === analysis.energyLevel) {
+      score += 30; // Match bonus
+    } else if (isHighConfidence) {
+      // For high-confidence vibes like "adrenaline", penalize wrong energy
+      const energyMap: Record<string, number> = { 'low': 1, 'medium': 2, 'high': 3 };
+      const targetEnergy = energyMap[analysis.energyLevel] || 2;
+      const activityEnergy = energyMap[activity.energy_level] || 2;
+      const energyDiff = Math.abs(targetEnergy - activityEnergy);
+      
+      if (energyDiff === 2) {
+        // Opposite energy (low vs high) = strong penalty for explicit vibes
+        score -= 60;
+      } else if (energyDiff === 1) {
+        // Adjacent energy = mild penalty
+        score -= 20;
+      }
+    }
   }
   
   // Preferred tags (10 points each)
@@ -1308,19 +1459,56 @@ function scoreActivity(activity: any, analysis: any): number {
     }
   }
   
-  // Required tags match (20 points each)
-  for (const requiredTag of analysis.requiredTags || []) {
+  // Required tags match (20 points each) with PENALTY for missing
+  const requiredTags = analysis.requiredTags || [];
+  let requiredMatches = 0;
+  for (const requiredTag of requiredTags) {
     if (activity.tags.includes(requiredTag)) {
       score += 20;
+      requiredMatches++;
+    }
+  }
+  
+  // PENALTY: Missing required mood tags when confidence is high
+  const moodTags = requiredTags.filter((t: string) => t.startsWith('mood:'));
+  if (isHighConfidence && moodTags.length > 0) {
+    const activityMoodTags = activity.tags.filter((t: string) => t.startsWith('mood:'));
+    const hasMoodMatch = moodTags.some((mt: string) => activityMoodTags.includes(mt));
+    if (!hasMoodMatch) {
+      score -= 50; // Strong penalty for missing mood match on explicit vibe
+    }
+  }
+  
+  // PENALTY: Activity has tags we explicitly want to avoid
+  for (const avoidTag of analysis.avoidTags || []) {
+    if (activity.tags.includes(avoidTag)) {
+      score -= 40; // Penalty for having avoided tags
     }
   }
   
   // Keyword matches in name/description (15 points each)
   if (analysis.keywordPrefer && analysis.keywordPrefer.length > 0) {
     const searchText = `${activity.name} ${activity.description || ''}`.toLowerCase();
+    let keywordMatches = 0;
     for (const keyword of analysis.keywordPrefer) {
       if (searchText.includes(keyword.toLowerCase())) {
         score += 15;
+        keywordMatches++;
+      }
+    }
+    
+    // PENALTY: High confidence request but no keyword matches
+    if (isHighConfidence && keywordMatches === 0) {
+      score -= 30;
+    }
+  }
+  
+  // Keyword AVOID - penalize activities with avoided keywords
+  if (analysis.keywordAvoid && analysis.keywordAvoid.length > 0) {
+    const searchText = `${activity.name} ${activity.description || ''}`.toLowerCase();
+    for (const keyword of analysis.keywordAvoid) {
+      if (searchText.includes(keyword.toLowerCase())) {
+        score -= 25;
       }
     }
   }
