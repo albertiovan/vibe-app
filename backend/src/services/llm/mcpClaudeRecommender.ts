@@ -1416,24 +1416,19 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.85;
 
 /**
  * Extract activity type from tags for diversity enforcement
- * Uses subtype tags first, falls back to category, then name-based extraction
+ * Uses NAME-BASED patterns FIRST for reliable grouping, then subtypes, then category
  * Returns a normalized type string for grouping similar activities
  */
 function getActivityType(activity: any): string {
   const tags = activity.tags || [];
-  
-  // Priority 1: Use subtype tags (most specific)
-  const subtypeTags = tags.filter((t: string) => t.startsWith('subtype:'));
-  if (subtypeTags.length > 0) {
-    // Return first subtype (primary activity type)
-    return subtypeTags[0].replace('subtype:', '');
-  }
-  
-  // Priority 2: Extract type from activity name using common patterns
   const name = (activity.name || '').toLowerCase();
   
-  // Adventure park / zipline activities
-  if (name.includes('zipline') || name.includes('rope course') || name.includes('adventure park') || name.includes('aerial')) {
+  // Priority 1: Name-based patterns (MOST RELIABLE for grouping similar activities)
+  // This ensures "Zipline at Comana" and "Parc Aventura Zipline" are the SAME type
+  
+  // Adventure park / zipline / ropes - ALL are the same type
+  if (name.includes('zipline') || name.includes('rope') || name.includes('adventure park') || 
+      name.includes('aventura') || name.includes('aerial') || name.includes('tyrolean')) {
     return 'zipline_adventure';
   }
   if (name.includes('climbing') || name.includes('bouldering')) return 'climbing';
