@@ -1416,42 +1416,87 @@ const HIGH_CONFIDENCE_THRESHOLD = 0.85;
 
 /**
  * Extract activity type from tags for diversity enforcement
- * Uses NAME-BASED patterns FIRST for reliable grouping, then subtypes, then category
+ * GENERIC APPROACH: Automatically extracts core activity from name without hardcoding
+ * Works for ANY activity type - cooking classes, ziplines, yoga, etc.
  * Returns a normalized type string for grouping similar activities
  */
 function getActivityType(activity: any): string {
   const tags = activity.tags || [];
-  const name = (activity.name || '').toLowerCase();
+  const name = (activity.name || '');
   
-  // Priority 1: Name-based patterns (MOST RELIABLE for grouping similar activities)
-  // This ensures "Zipline at Comana" and "Parc Aventura Zipline" are the SAME type
-  
-  // Adventure park / zipline / ropes - ALL are the same type
-  if (name.includes('zipline') || name.includes('rope') || name.includes('adventure park') || 
-      name.includes('aventura') || name.includes('aerial') || name.includes('tyrolean')) {
-    return 'zipline_adventure';
+  // Priority 1: Use subtype tags if available (most reliable when present)
+  const subtypeTags = tags.filter((t: string) => t.startsWith('subtype:'));
+  if (subtypeTags.length > 0) {
+    return subtypeTags[0].replace('subtype:', '');
   }
-  if (name.includes('climbing') || name.includes('bouldering')) return 'climbing';
-  if (name.includes('kayak') || name.includes('canoe') || name.includes('paddl')) return 'kayak_paddle';
-  if (name.includes('paintball') || name.includes('airsoft') || name.includes('laser tag')) return 'combat_game';
-  if (name.includes('go-kart') || name.includes('karting') || name.includes('racing')) return 'karting';
-  if (name.includes('escape room') || name.includes('escape game')) return 'escape_room';
-  if (name.includes('ski') || name.includes('snowboard')) return 'skiing';
-  if (name.includes('bike') || name.includes('cycling') || name.includes('mtb')) return 'cycling';
-  if (name.includes('hik') || name.includes('trek') || name.includes('trail')) return 'hiking';
-  if (name.includes('spa') || name.includes('massage') || name.includes('wellness')) return 'spa_wellness';
-  if (name.includes('wine') || name.includes('tasting')) return 'wine_tasting';
-  if (name.includes('cooking') || name.includes('culinary') || name.includes('chef')) return 'cooking_class';
-  if (name.includes('pottery') || name.includes('ceramic')) return 'pottery';
-  if (name.includes('museum') || name.includes('gallery')) return 'museum';
-  if (name.includes('theater') || name.includes('theatre') || name.includes('concert')) return 'performance';
-  if (name.includes('pool') || name.includes('swim')) return 'swimming';
-  if (name.includes('boat') || name.includes('cruise') || name.includes('sailing')) return 'boating';
-  if (name.includes('paraglid') || name.includes('skydiv') || name.includes('bungee')) return 'extreme_air';
-  if (name.includes('atv') || name.includes('quad') || name.includes('off-road')) return 'atv_offroad';
+  
+  // Priority 2: GENERIC extraction - extract core activity from name
+  // This works for ANY activity without hardcoding patterns
+  const coreActivity = extractCoreActivity(name);
+  if (coreActivity) {
+    return coreActivity;
+  }
   
   // Priority 3: Fall back to category
   return activity.category || 'unknown';
+}
+
+/**
+ * Extract the core activity type from an activity name
+ * Removes venue names, locations, and filler words to get the essence
+ * 
+ * Examples:
+ * - "Cooking class at Chef's Kitchen (Bucharest)" → "cooking_class"
+ * - "Zipline & Rope Courses at Comana Adventure Park" → "zipline_rope_courses"
+ * - "Parc Aventura Brașov Zipline & Ropes" → "zipline_ropes"
+ * - "Tandem Skydive over the Black Sea (Tuzla)" → "tandem_skydive"
+ * - "Wine tasting in Dealu Mare" → "wine_tasting"
+ */
+function extractCoreActivity(name: string): string {
+  let cleaned = name.toLowerCase();
+  
+  // Step 1: Remove content in parentheses (usually location/venue)
+  cleaned = cleaned.replace(/\s*\([^)]*\)/g, '');
+  
+  // Step 2: Remove "at/in/near [Venue]" patterns
+  cleaned = cleaned.replace(/\s+(at|in|near|from|over|with)\s+.*$/i, '');
+  
+  // Step 3: Remove common Romanian city/region names that might appear without prepositions
+  const romanianLocations = [
+    'bucharest', 'bucurești', 'brasov', 'brașov', 'cluj', 'sibiu', 'timisoara', 'timișoara',
+    'constanta', 'constanța', 'iasi', 'iași', 'oradea', 'craiova', 'galati', 'galați',
+    'ploiesti', 'ploiești', 'sinaia', 'poiana', 'predeal', 'bran', 'mamaia', 'eforie',
+    'comana', 'snagov', 'mogosoaia', 'buftea', 'giurgiu', 'pitesti', 'pitești',
+    'dâmbul morii', 'bunloc', 'tuzla', 'săcele', 'râșnov', 'azuga'
+  ];
+  for (const location of romanianLocations) {
+    // Remove location if it's at the end or surrounded by spaces/punctuation
+    cleaned = cleaned.replace(new RegExp(`\\s*${location}\\s*`, 'gi'), ' ');
+  }
+  
+  // Step 4: Remove common venue/brand patterns
+  cleaned = cleaned
+    .replace(/\s*(park|parc|hub|club|center|centre|studio|school|academy|house|room)\s*$/i, '')
+    .replace(/^(parc|park)\s+/i, '')  // "Parc Aventura..." → "Aventura..."
+    .replace(/\s+&\s+/g, '_')  // "Zipline & Ropes" → "Zipline_Ropes"
+    .replace(/\s+-\s+/g, '_');
+  
+  // Step 5: Remove filler words
+  const fillerWords = ['the', 'a', 'an', 'and', 'or', 'for', 'to', 'of', 'urban', 'traditional', 'authentic', 'local'];
+  let words = cleaned.split(/\s+/).filter(w => 
+    w.length > 1 && !fillerWords.includes(w)
+  );
+  
+  // Step 6: Take first 2-3 significant words as the activity type
+  // This captures "cooking class", "zipline ropes", "wine tasting", etc.
+  const significantWords = words.slice(0, 3);
+  
+  if (significantWords.length === 0) {
+    return '';
+  }
+  
+  // Normalize to snake_case
+  return significantWords.join('_').replace(/[^a-z0-9_]/g, '');
 }
 
 /**
