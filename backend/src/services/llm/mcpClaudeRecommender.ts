@@ -1081,42 +1081,66 @@ async function queryDatabaseDirectly(request: VibeRequest): Promise<Recommendati
       console.log(`🔄 Removed ${weatherFilteredActivities.length - uniqueActivities.length} duplicate activities`);
     }
     
-    // NEW: Apply minimum relevance threshold for high-confidence vibes
-    // This prevents pottery/wine bars from appearing for "adrenaline" requests
+    // NEW: Apply HARD energy filter + relevance threshold for high-confidence vibes
+    // This prevents low-energy activities from EVER appearing for "adrenaline" requests
     const isHighConfidenceVibe = (analysis.confidence || 0) >= HIGH_CONFIDENCE_THRESHOLD;
     let relevantActivities = uniqueActivities;
     
     if (isHighConfidenceVibe) {
-      const beforeThreshold = uniqueActivities.length;
-      relevantActivities = uniqueActivities.filter(a => 
+      const beforeFilter = uniqueActivities.length;
+      
+      // HARD FILTER 1: Energy level must match for explicit energy vibes
+      // "adrenaline" = high energy ONLY, no low/medium allowed
+      if (analysis.energyLevel) {
+        relevantActivities = relevantActivities.filter(a => 
+          a.energy_level === analysis.energyLevel
+        );
+        const energyFiltered = beforeFilter - relevantActivities.length;
+        if (energyFiltered > 0) {
+          console.log(`🎯 HIGH CONFIDENCE: Hard-filtered ${energyFiltered} activities with wrong energy (need: ${analysis.energyLevel})`);
+          uniqueActivities
+            .filter(a => a.energy_level !== analysis.energyLevel)
+            .slice(0, 5)
+            .forEach(a => console.log(`     ❌ ${a.name}: ${a.energy_level} energy (need ${analysis.energyLevel})`));
+        }
+      }
+      
+      // HARD FILTER 2: Relevance threshold
+      const beforeThreshold = relevantActivities.length;
+      relevantActivities = relevantActivities.filter(a => 
         (a._relevanceScore || 0) >= MINIMUM_RELEVANCE_SCORE
       );
       
       if (relevantActivities.length < beforeThreshold) {
-        console.log(`🎯 HIGH CONFIDENCE VIBE: Filtered ${beforeThreshold - relevantActivities.length} low-relevance activities (threshold: ${MINIMUM_RELEVANCE_SCORE})`);
-        console.log(`   Removed activities with scores below threshold:`);
-        uniqueActivities
-          .filter(a => (a._relevanceScore || 0) < MINIMUM_RELEVANCE_SCORE)
-          .slice(0, 5)
-          .forEach(a => console.log(`     ❌ ${a.name}: score ${a._relevanceScore} (${a.category}, ${a.energy_level})`));
+        console.log(`🎯 HIGH CONFIDENCE: Filtered ${beforeThreshold - relevantActivities.length} low-relevance activities (threshold: ${MINIMUM_RELEVANCE_SCORE})`);
       }
       
-      // If we filtered too aggressively, keep at least the top 3 by score
-      if (relevantActivities.length < 3 && uniqueActivities.length >= 3) {
-        console.log(`⚠️ Not enough activities above threshold, keeping top 3 by score`);
-        relevantActivities = uniqueActivities
-          .sort((a, b) => (b._relevanceScore || 0) - (a._relevanceScore || 0))
-          .slice(0, 3);
+      // If we filtered too aggressively, keep at least the top 3 by score FROM ENERGY-MATCHED
+      if (relevantActivities.length < 3) {
+        const energyMatched = uniqueActivities.filter(a => 
+          !analysis.energyLevel || a.energy_level === analysis.energyLevel
+        );
+        if (energyMatched.length >= 3) {
+          console.log(`⚠️ Not enough high-scoring activities, keeping top 3 energy-matched by score`);
+          relevantActivities = energyMatched
+            .sort((a, b) => (b._relevanceScore || 0) - (a._relevanceScore || 0))
+            .slice(0, 3);
+        }
       }
+      
+      console.log(`✅ After high-confidence filtering: ${relevantActivities.length} activities remain`);
     }
     
-    // Select top 5 activities by relevance (after weather filtering, deduplication, and threshold)
-    const selectedActivities = relevantActivities.slice(0, 5);
+    // Select top 5 activities with TYPE DIVERSITY
+    // This ensures user sees variety (not 3 zipline parks) while maintaining relevance
+    console.log(`\n🎯 Applying type diversity to ${relevantActivities.length} candidates...`);
+    const selectedActivities = selectWithTypeDiversity(relevantActivities, 5, analysis);
     
-    console.log(`✅ Selected ${selectedActivities.length} activities by relevance score`);
+    console.log(`✅ Final selection: ${selectedActivities.length} diverse activities`);
     selectedActivities.forEach((a, i) => {
       const scoreIndicator = (a._relevanceScore || 0) >= MINIMUM_RELEVANCE_SCORE ? '✓' : '⚠️';
-      console.log(`   ${i+1}. ${scoreIndicator} ${a.name} (ID: ${a.id}) - Score: ${a._relevanceScore} (${a.category}, ${a.energy_level})`);
+      const activityType = getActivityType(a);
+      console.log(`   ${i+1}. ${scoreIndicator} ${a.name} (type: ${activityType}, score: ${a._relevanceScore}, ${a.energy_level} energy)`);
     });
     
     // STEP 4: For each selected activity, get venues
@@ -1389,6 +1413,122 @@ const MINIMUM_RELEVANCE_SCORE = 50;
 
 // HIGH CONFIDENCE THRESHOLD - when vibe analysis confidence >= this, enforce stricter matching
 const HIGH_CONFIDENCE_THRESHOLD = 0.85;
+
+/**
+ * Extract activity type from tags for diversity enforcement
+ * Uses subtype tags first, falls back to category, then name-based extraction
+ * Returns a normalized type string for grouping similar activities
+ */
+function getActivityType(activity: any): string {
+  const tags = activity.tags || [];
+  
+  // Priority 1: Use subtype tags (most specific)
+  const subtypeTags = tags.filter((t: string) => t.startsWith('subtype:'));
+  if (subtypeTags.length > 0) {
+    // Return first subtype (primary activity type)
+    return subtypeTags[0].replace('subtype:', '');
+  }
+  
+  // Priority 2: Extract type from activity name using common patterns
+  const name = (activity.name || '').toLowerCase();
+  
+  // Adventure park / zipline activities
+  if (name.includes('zipline') || name.includes('rope course') || name.includes('adventure park') || name.includes('aerial')) {
+    return 'zipline_adventure';
+  }
+  if (name.includes('climbing') || name.includes('bouldering')) return 'climbing';
+  if (name.includes('kayak') || name.includes('canoe') || name.includes('paddl')) return 'kayak_paddle';
+  if (name.includes('paintball') || name.includes('airsoft') || name.includes('laser tag')) return 'combat_game';
+  if (name.includes('go-kart') || name.includes('karting') || name.includes('racing')) return 'karting';
+  if (name.includes('escape room') || name.includes('escape game')) return 'escape_room';
+  if (name.includes('ski') || name.includes('snowboard')) return 'skiing';
+  if (name.includes('bike') || name.includes('cycling') || name.includes('mtb')) return 'cycling';
+  if (name.includes('hik') || name.includes('trek') || name.includes('trail')) return 'hiking';
+  if (name.includes('spa') || name.includes('massage') || name.includes('wellness')) return 'spa_wellness';
+  if (name.includes('wine') || name.includes('tasting')) return 'wine_tasting';
+  if (name.includes('cooking') || name.includes('culinary') || name.includes('chef')) return 'cooking_class';
+  if (name.includes('pottery') || name.includes('ceramic')) return 'pottery';
+  if (name.includes('museum') || name.includes('gallery')) return 'museum';
+  if (name.includes('theater') || name.includes('theatre') || name.includes('concert')) return 'performance';
+  if (name.includes('pool') || name.includes('swim')) return 'swimming';
+  if (name.includes('boat') || name.includes('cruise') || name.includes('sailing')) return 'boating';
+  if (name.includes('paraglid') || name.includes('skydiv') || name.includes('bungee')) return 'extreme_air';
+  if (name.includes('atv') || name.includes('quad') || name.includes('off-road')) return 'atv_offroad';
+  
+  // Priority 3: Fall back to category
+  return activity.category || 'unknown';
+}
+
+/**
+ * Select activities with TYPE diversity - ensures variety in what user sees
+ * Even if 5 zipline parks all score high, user only sees 1 zipline + 4 different types
+ * 
+ * @param activities - Sorted by relevance score (highest first)
+ * @param count - Number to select (typically 5)
+ * @param analysis - Vibe analysis for context
+ * @returns Array of diverse activities maintaining relevance order
+ */
+function selectWithTypeDiversity(activities: any[], count: number, analysis: any): any[] {
+  const selected: any[] = [];
+  const usedTypes = new Set<string>();
+  const usedCategories = new Set<string>();
+  
+  // Pass 1: Pick one activity per unique type (highest scoring of each type)
+  for (const activity of activities) {
+    if (selected.length >= count) break;
+    
+    const activityType = getActivityType(activity);
+    
+    if (!usedTypes.has(activityType)) {
+      selected.push(activity);
+      usedTypes.add(activityType);
+      usedCategories.add(activity.category);
+      console.log(`   🎯 Type diversity: Added ${activity.name} (type: ${activityType}, score: ${activity._relevanceScore})`);
+    }
+  }
+  
+  // Pass 2: If we still need more, allow second activity per category (but not same type)
+  if (selected.length < count) {
+    for (const activity of activities) {
+      if (selected.length >= count) break;
+      if (selected.includes(activity)) continue;
+      
+      const activityType = getActivityType(activity);
+      
+      // Allow if different type, even if same category
+      if (!usedTypes.has(activityType)) {
+        selected.push(activity);
+        usedTypes.add(activityType);
+        console.log(`   🎯 Type diversity (pass 2): Added ${activity.name} (type: ${activityType}, score: ${activity._relevanceScore})`);
+      }
+    }
+  }
+  
+  // Pass 3: Fill remaining slots with best scoring activities regardless of type
+  // (Only if we couldn't find enough diverse types)
+  if (selected.length < count) {
+    for (const activity of activities) {
+      if (selected.length >= count) break;
+      if (!selected.includes(activity)) {
+        const activityType = getActivityType(activity);
+        selected.push(activity);
+        console.log(`   ⚠️ Filling slot: Added ${activity.name} (type: ${activityType}, duplicate type allowed)`);
+      }
+    }
+  }
+  
+  // Log type distribution
+  const typeDistribution = selected.reduce((acc, a) => {
+    const t = getActivityType(a);
+    acc[t] = (acc[t] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  console.log(`✅ Type diversity result: ${Object.keys(typeDistribution).length} unique types from ${selected.length} activities`);
+  console.log(`   Types: ${Object.entries(typeDistribution).map(([t, c]) => `${t}(${c})`).join(', ')}`);
+  
+  return selected;
+}
 
 /**
  * Score activity based on how well it matches analysis
